@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { Header } from './Header'
-import { Footer } from './Footer'
 
 interface LayoutProps {
   children: ReactNode
@@ -9,10 +8,9 @@ interface LayoutProps {
 
 export function Layout({ children, className = '' }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="dark">
       <Header />
-      <main className={`flex-1 ${className}`}>{children}</main>
-      <Footer />
+      <main className={`${className}`}>{children}</main>
     </div>
   )
 }

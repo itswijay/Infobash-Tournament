@@ -63,14 +63,19 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-md supports-[backdrop-filter]:bg-slate-900/60 nav-enter">
       <div className="container flex h-16 items-center">
         {/* Logo */}
-        <Link to={ROUTES.HOME} className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600">
+        <Link
+          to={ROUTES.HOME}
+          className="flex items-center space-x-2 transition-all duration-300 hover:scale-105"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
             <Trophy className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold text-xl">{APP_NAME}</span>
+          <span className="font-bold text-xl bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            {APP_NAME}
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -82,15 +87,20 @@ export function Header() {
                   <Link
                     to={item.href}
                     className={cn(
-                      'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50',
-                      isActive(item.href) && 'bg-accent text-accent-foreground',
-                      item.highlight && 'text-green-600 hover:text-green-700'
+                      'group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-emerald-400 focus:bg-slate-800/50 focus:text-emerald-400 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
+                      isActive(item.href) &&
+                        'bg-slate-800/70 text-emerald-400 shadow-md',
+                      item.highlight &&
+                        'text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20'
                     )}
                   >
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}
                     {item.badge && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                      >
                         {item.badge}
                       </Badge>
                     )}
@@ -104,12 +114,19 @@ export function Header() {
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-4">
           {/* User menu placeholder */}
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-slate-300 hover:text-emerald-400 hover:bg-slate-800/50"
+          >
             <BarChart3 className="h-4 w-4 mr-2" />
             Dashboard
           </Button>
 
-          <Button size="sm" className="hidden sm:flex">
+          <Button
+            size="sm"
+            className="hidden sm:flex bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105"
+          >
             Login
           </Button>
         </div>

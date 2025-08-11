@@ -1,43 +1,147 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  text-align: center;
-  
+  min-height: 100vh;
+  width: 100%;
+  background: #0f172a;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.container {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
-@keyframes logo-spin {
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+@keyframes fadeInUp {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(30px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Page animation classes */
+.page-enter {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.card-enter {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.nav-enter {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+/* Scroll snap functionality for full-height sections */
+.scroll-snap-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: auto;
+}
+
+.scroll-snap-section {
+  scroll-snap-align: start;
+  height: calc(100vh - 64px); /* Fixed height instead of min-height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent content overflow affecting height */
+}
+
+/* Ensure section content fills available height */
+.scroll-snap-section .container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Fast scroll snap for sections */
 @media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    scroll-behavior: smooth;
   }
 }
 
-.card {
-  padding: 2em;
+/* Section navigation dots */
+.section-nav {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.read-the-docs {
-  color: #888;
+.section-nav-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.section-nav-dot.active {
+  background: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.section-nav-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.2);
 }

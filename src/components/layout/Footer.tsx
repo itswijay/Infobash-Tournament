@@ -32,18 +32,23 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-gray-50 border-t">
+    <footer className="bg-slate-900/90 border-t border-slate-700/50 backdrop-blur-sm">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <Link to={ROUTES.HOME} className="flex items-center space-x-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600">
+            <Link
+              to={ROUTES.HOME}
+              className="flex items-center space-x-2 mb-4 transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
                 <Trophy className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-xl">{APP_NAME}</span>
+              <span className="font-bold text-xl bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                {APP_NAME}
+              </span>
             </Link>
-            <p className="text-gray-600 text-sm mb-6 max-w-md">
+            <p className="text-slate-300 text-sm mb-6 max-w-md">
               The most comprehensive cricket tournament management platform.
               Register your team, follow live matches, and track tournament
               progress with real-time updates.
@@ -55,7 +60,7 @@ export function Footer() {
                   variant="ghost"
                   size="sm"
                   asChild
-                  className="h-9 w-9 p-0"
+                  className="h-9 w-9 p-0 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
                 >
                   <a href={item.href} target="_blank" rel="noopener noreferrer">
                     <item.icon className="h-4 w-4" />
@@ -68,13 +73,13 @@ export function Footer() {
 
           {/* Tournament Links */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Tournament</h3>
+            <h3 className="font-semibold text-white mb-4">Tournament</h3>
             <ul className="space-y-3">
               {footerLinks.tournament.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                    className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
                   >
                     {item.name}
                   </Link>
@@ -85,13 +90,13 @@ export function Footer() {
 
           {/* Support Links */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
+            <h3 className="font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-3">
               {footerLinks.support.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                    className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
                   >
                     {item.name}
                   </Link>
@@ -102,13 +107,13 @@ export function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Legal</h3>
+            <h3 className="font-semibold text-white mb-4">Legal</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-sm text-gray-600 hover:text-green-600 transition-colors"
+                    className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
                   >
                     {item.name}
                   </Link>
@@ -119,12 +124,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-sm text-gray-600">
+        <div className="border-t border-slate-700/50 mt-10 pt-8 flex flex-col sm:flex-row justify-center items-center">
+          <p className="text-sm text-slate-400">
             © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
-          </p>
-          <p className="text-sm text-gray-600 mt-2 sm:mt-0">
-            Built with ❤️ for cricket enthusiasts
           </p>
         </div>
       </div>
