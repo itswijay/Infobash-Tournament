@@ -95,8 +95,8 @@ export const isValidEmail = (email: string) => {
 }
 
 export const isValidPhone = (phone: string) => {
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/
-  return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))
+  const phoneRegex = /^[+]?([1-9][\d]{0,15})$/
+  return phoneRegex.test(phone.replace(/[\s\-()]/g, ''))
 }
 
 // File utilities
@@ -147,7 +147,7 @@ export const removeFromStorage = (key: string): void => {
 }
 
 // Debounce utility
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
