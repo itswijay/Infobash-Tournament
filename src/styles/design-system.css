@@ -1,0 +1,84 @@
+/* InfoBash Design System Tokens (Phase 0) */
+:root {
+  /* Core Brand Colors */
+  --color-primary: #0e1628; /* Deep navy */
+  --color-secondary: #dd830a; /* Gold-orange */
+  --color-accent-1: #f4bc45; /* Light gold */
+  --color-accent-2: #f8b24f; /* Light gold */
+  --color-accent-3: #ffffff; /* White (use sparingly) */
+  --color-accent-4: #d6dbe1; /* muted White (use sparingly) */
+
+  /* Semantic Surfaces */
+  --brand-bg: var(--color-primary);
+  --brand-surface: #142132; /* Slightly lighter navy */
+  --brand-surface-alt: #1b2838; /* Alternate surface */
+  --brand-border: #243246;
+  --brand-focus: rgba(221, 131, 10, 0.55);
+
+  /* Text Roles */
+  --text-primary: var(--color-accent-2);
+  --text-secondary: #d6dbe1; /* Muted light */
+  --text-accent: var(--color-accent-1);
+  --text-brand: var(--color-secondary);
+
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #dd830a 0%, #f4bc45 100%);
+  --gradient-primary-gold: linear-gradient(135deg, #0e1628 0%, #dd830a 100%);
+  --gradient-accent-gold: linear-gradient(135deg, #f4bc45 0%, #dd830a 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 18px -4px rgba(0, 0, 0, 0.55);
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-base: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Utility Classes (to be used gradually) */
+.text-gradient-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-brand {
+  background: var(--gradient-primary-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+.bg-gradient-brand {
+  background: var(--gradient-primary-gold);
+}
+
+.surface {
+  background: var(--brand-surface);
+  border: 1px solid var(--brand-border);
+}
+.surface-alt {
+  background: var(--brand-surface-alt);
+  border: 1px solid var(--brand-border);
+}
+.border-brand {
+  border-color: var(--brand-border);
+}
+.text-brand {
+  color: var(--color-secondary);
+}
+.text-accent {
+  color: var(--color-accent-1);
+}
+.focus-ring {
+  outline: 2px solid var(--brand-focus);
+  outline-offset: 2px;
+}

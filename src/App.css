@@ -1,7 +1,7 @@
 #root {
   min-height: 100vh;
   width: 100%;
-  background: #0f172a;
+  background: var(--brand-bg);
 }
 
 .container {
@@ -98,10 +98,6 @@ html {
   scroll-behavior: smooth;
 }
 
-* {
-  scroll-behavior: smooth;
-}
-
 /* Fast scroll snap for sections */
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -129,19 +125,27 @@ html {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(244, 188, 69, 0.28); /* light gold translucent */
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.section-nav-dot.active {
-  background: #10b981;
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  transition: background var(--transition-base),
+    transform var(--transition-base), box-shadow var(--transition-base);
+  border: 2px solid rgba(221, 131, 10, 0.35);
+  box-shadow: 0 0 0 0 rgba(221, 131, 10, 0);
 }
 
 .section-nav-dot:hover {
-  background: rgba(255, 255, 255, 0.6);
-  transform: scale(1.2);
+  background: rgba(244, 188, 69, 0.45);
+  transform: scale(1.15);
+}
+
+.section-nav-dot:focus-visible {
+  outline: 2px solid var(--brand-focus);
+  outline-offset: 2px;
+}
+
+.section-nav-dot.active {
+  background: var(--gradient-gold);
+  border-color: rgba(221, 131, 10, 0.6);
+  box-shadow: 0 0 0 4px rgba(221, 131, 10, 0.18);
+  transform: scale(1.25);
 }

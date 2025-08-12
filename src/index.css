@@ -1,60 +1,72 @@
+@import './styles/design-system.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Phase 2: Global Brand Base Styles */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Remapped shadcn tokens to InfoBash brand (dark-first) */
+    /* Base surfaces */
+    --background: 222 48% 11%; /* #0e1628 */
+    --foreground: 210 18% 86%; /* #d6dbe1 (muted light) */
+    --card: 214 43% 14%; /* #142132 */
+    --card-foreground: 210 18% 86%;
+    --popover: 214 43% 14%;
+    --popover-foreground: 210 18% 86%;
+
+    /* Brand roles */
+    --primary: 34 91% 45%; /* #dd830a */
+    --primary-foreground: 222 48% 11%;
+    --secondary: 41 89% 61%; /* #f4bc45 */
+    --secondary-foreground: 222 48% 11%;
+    --accent: 41 89% 61%;
+    --accent-foreground: 222 48% 11%;
+
+    /* Muted / subtle */
+    --muted: 213 35% 16%; /* #1b2838 */
+    --muted-foreground: 215 15% 59%; /* approx #8892a0 */
+    --border: 215 32% 21%; /* #243246 */
+    --input: 215 32% 21%;
+    --ring: 34 91% 45%;
+
+    /* Charts (placeholder palette tuned to brand) */
+    --chart-1: 34 91% 45%;
+    --chart-2: 41 89% 61%;
+    --chart-3: 215 32% 21%;
+    --chart-4: 213 35% 16%;
+    --chart-5: 222 48% 11%;
+
     --radius: 0.5rem;
   }
+
+  /* Dark class mirrors root (app is dark-first). Kept for library compatibility */
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 222 48% 11%;
+    --foreground: 210 18% 86%;
+    --card: 214 43% 14%;
+    --card-foreground: 210 18% 86%;
+    --popover: 214 43% 14%;
+    --popover-foreground: 210 18% 86%;
+    --primary: 34 91% 45%;
+    --primary-foreground: 222 48% 11%;
+    --secondary: 41 89% 61%;
+    --secondary-foreground: 222 48% 11%;
+    --muted: 213 35% 16%;
+    --muted-foreground: 215 15% 59%;
+    --accent: 41 89% 61%;
+    --accent-foreground: 222 48% 11%;
+    --destructive: 0 63% 41%;
+    --destructive-foreground: 210 18% 86%;
+    --border: 215 32% 21%;
+    --input: 215 32% 21%;
+    --ring: 34 91% 45%;
+    --chart-1: 34 91% 45%;
+    --chart-2: 41 89% 61%;
+    --chart-3: 215 32% 21%;
+    --chart-4: 213 35% 16%;
+    --chart-5: 222 48% 11%;
   }
 }
 
@@ -62,19 +74,160 @@
   * {
     @apply border-border;
   }
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-  }
-  body {
-    @apply bg-transparent text-foreground;
-    color: #e2e8f0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
+
   html {
     color-scheme: dark;
+  }
+
+  body {
+    /* Layer subtle texture/gradient if desired later; start with solid brand bg */
+    background: var(--brand-bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+      'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
+      'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(221, 131, 10, 0.35);
+    color: var(--color-accent-1);
+  }
+
+  /* Scrollbar (webkit) */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: var(--brand-surface);
+  }
+  *::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #243246, #1b2838);
+    border: 2px solid var(--brand-surface);
+    border-radius: 8px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2f4259, #243246);
+  }
+
+  a {
+    color: var(--text-accent);
+    text-decoration: none;
+    transition: color var(--transition-base);
+  }
+  a:hover {
+    color: var(--color-secondary);
+  }
+  a:focus-visible {
+    outline: 2px solid var(--brand-focus);
+    outline-offset: 2px;
+  }
+
+  button:focus-visible,
+  [role='button']:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--brand-focus);
+    outline-offset: 2px;
+  }
+
+  /* Typography scale */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--text-primary);
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5vw, 3rem);
+  }
+  h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+  h3 {
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+  }
+  h4 {
+    font-size: 1.375rem;
+  }
+  h5 {
+    font-size: 1.125rem;
+  }
+  h6 {
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+  }
+  p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  small {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+  strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Early minimal brand component helpers (will expand in later phases) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md font-medium px-4 py-2 text-sm shadow-md;
+    background: var(--gradient-gold);
+    color: rgb(14 22 40);
+    transition: transform var(--transition-base), opacity var(--transition-base);
+  }
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  .btn-ghost-brand {
+    @apply inline-flex items-center justify-center rounded-md font-medium px-3 py-2 text-sm;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: background var(--transition-base), color var(--transition-base);
+  }
+  .btn-ghost-brand:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-secondary);
+  }
+}
+
+@layer utilities {
+  .surface-brand {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+  }
+  .surface-alt-brand {
+    background: var(--brand-surface-alt);
+    border: 1px solid var(--brand-border);
+  }
+  .text-faint {
+    color: var(--text-secondary);
   }
 }

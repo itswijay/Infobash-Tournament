@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { APP_NAME, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import logoImg from '@/assets/logo.png'
 
 const navigation = [
   {
@@ -63,61 +64,71 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-md supports-[backdrop-filter]:bg-slate-900/60 nav-enter">
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--brand-border)] bg-[color:rgb(14_22_40/0.78)] backdrop-blur-md supports-[backdrop-filter]:bg-[color:rgb(14_22_40/0.6)] nav-enter">
       <div className="container flex h-16 items-center">
         {/* Logo */}
         <Link
           to={ROUTES.HOME}
           className="flex items-center space-x-2 transition-all duration-300 hover:scale-105"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
-            <Trophy className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-bold text-xl bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+          <img
+            src={logoImg}
+            alt="InfoBash Logo"
+            className="h-14 w-auto object-contain"
+          />
+          <span className="font-bold text-xl text-gradient-gold">
             {APP_NAME}
           </span>
         </Link>
-
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex mx-6">
           <NavigationMenuList>
-            {navigation.map((item) => (
-              <NavigationMenuItem key={item.name}>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to={item.href}
-                    className={cn(
-                      'group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-all duration-200 hover:bg-slate-800/50 hover:text-emerald-400 focus:bg-slate-800/50 focus:text-emerald-400 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
-                      isActive(item.href) &&
-                        'bg-slate-800/70 text-emerald-400 shadow-md',
-                      item.highlight &&
-                        'text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20'
-                    )}
-                  >
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                    {item.badge && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-2 text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                      >
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
+            {navigation.map((item) => {
+              const active = isActive(item.href)
+              return (
+                <NavigationMenuItem key={item.name}>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to={item.href}
+                      className={cn(
+                        // Base
+                        'group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-white transition-all duration-200 focus:outline-none disabled:pointer-events-none disabled:opacity-50',
+                        // Non-active interactive colors
+                        !active &&
+                          'hover:bg-[color:rgb(255_255_255/0.04)] focus:bg-[color:rgb(255_255_255/0.05)] hover:text-[var(--color-accent-1)] focus:text-[var(--color-accent-1)]',
+                        // Active state (lock text to white even on hover/focus)
+                        active &&
+                          'bg-[color:rgb(255_255_255/0.06)] text-white shadow-md hover:text-white focus:text-white hover:bg-[color:rgb(255_255_255/0.06)] focus:bg-[color:rgb(255_255_255/0.08)]',
+                        // Highlight variant
+                        item.highlight &&
+                          (active
+                            ? 'text-white bg-[color:rgb(221_131_10/0.18)] hover:bg-[color:rgb(221_131_10/0.2)] focus:bg-[color:rgb(221_131_10/0.22)]'
+                            : 'text-white bg-[color:rgb(221_131_10/0.12)] hover:bg-[color:rgb(221_131_10/0.18)] hover:text-[var(--color-accent-1)]')
+                      )}
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.name}
+                      {item.badge && (
+                        <Badge
+                          variant="secondary"
+                          className="ml-2 text-[10px] tracking-wide bg-[color:rgb(221_131_10/0.18)] text-[var(--color-accent-1)] border-[color:rgb(221_131_10/0.35)] pointer-events-none"
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              )
+            })}
           </NavigationMenuList>
         </NavigationMenu>
-
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-4">
-          {/* User menu placeholder */}
           <Button
             variant="ghost"
             size="sm"
-            className="text-slate-300 hover:text-emerald-400 hover:bg-slate-800/50"
+            className="text-[var(--text-secondary)] hover:text-[var(--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)]"
           >
             <BarChart3 className="h-4 w-4 mr-2" />
             Dashboard
@@ -125,12 +136,11 @@ export function Header() {
 
           <Button
             size="sm"
-            className="hidden sm:flex bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105"
+            className="hidden sm:flex bg-gradient-gold text-[color:rgb(14_22_40)] font-medium hover:opacity-90 border-0 shadow-lg transition-all duration-300 hover:scale-105"
           >
             Login
           </Button>
         </div>
-
         {/* Mobile Navigation */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="md:hidden ml-4">
@@ -146,37 +156,54 @@ export function Header() {
                 className="flex items-center space-x-2"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-green-600">
-                  <Trophy className="h-4 w-4 text-white" />
-                </div>
-                <span className="font-bold">{APP_NAME}</span>
+                <img
+                  src={logoImg}
+                  alt="InfoBash Logo"
+                  className="h-6 w-auto object-contain"
+                />
+                <span className="font-bold text-gradient-gold">{APP_NAME}</span>
               </Link>
 
               <div className="grid gap-2">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={cn(
-                      'flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors',
-                      isActive(item.href) && 'bg-accent text-accent-foreground',
-                      item.highlight && 'text-green-600'
-                    )}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                    {item.badge && (
-                      <Badge variant="secondary" className="ml-auto text-xs">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </Link>
-                ))}
+                {navigation.map((item) => {
+                  const active = isActive(item.href)
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={cn(
+                        'flex items-center rounded-md px-3 py-2 text-sm font-medium text-white transition-colors',
+                        !active &&
+                          'hover:bg-[color:rgb(255_255_255/0.05)] hover:text-[var(--color-secondary)]',
+                        active &&
+                          'bg-[color:rgb(255_255_255/0.08)] text-white hover:text-white',
+                        item.highlight &&
+                          (active
+                            ? 'text-white bg-[color:rgb(221_131_10/0.2)] hover:bg-[color:rgb(221_131_10/0.24)]'
+                            : 'text-white bg-[color:rgb(221_131_10/0.16)] hover:bg-[color:rgb(221_131_10/0.22)] hover:text-[var(--color-accent-1)]')
+                      )}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.name}
+                      {item.badge && (
+                        <Badge
+                          variant="secondary"
+                          className="ml-auto text-xs bg-[color:rgb(221_131_10/0.2)] text-[var(--color-accent-1)] border-[color:rgb(221_131_10/0.35)] pointer-events-none"
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </Link>
+                  )
+                })}
               </div>
 
-              <div className="border-t pt-4">
-                <Button className="w-full" size="sm">
+              <div className="border-t border-[var(--brand-border)] pt-4">
+                <Button
+                  className="w-full bg-gradient-gold text-[color:rgb(14_22_40)]"
+                  size="sm"
+                >
                   Login
                 </Button>
               </div>

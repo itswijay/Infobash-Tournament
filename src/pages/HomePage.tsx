@@ -29,25 +29,25 @@ const stats = [
     label: 'Active Tournaments',
     value: '3',
     icon: Trophy,
-    color: 'text-green-600',
+    color: 'text-[var(--color-secondary)]',
   },
   {
     label: 'Registered Teams',
     value: '24',
     icon: Users,
-    color: 'text-blue-600',
+    color: 'text-[var(--color-accent-1)]',
   },
   {
     label: 'Matches Played',
     value: '48',
     icon: Calendar,
-    color: 'text-purple-600',
+    color: 'text-[var(--text-secondary)]',
   },
   {
     label: 'Live Matches',
     value: '2',
     icon: Play,
-    color: 'text-red-600',
+    color: 'text-[var(--color-secondary)]',
   },
 ]
 
@@ -220,13 +220,13 @@ export function HomePage() {
       </div>
 
       {/* Hero Section - Full Height */}
-      <section className="scroll-snap-section bg-gradient-to-br from-slate-800 via-slate-900 to-blue-900 text-white relative overflow-hidden justify-center">
+      <section className="scroll-snap-section relative overflow-hidden justify-center bg-[radial-gradient(circle_at_30%_30%,rgba(221,131,10,0.18),transparent_60%)]">
         <div className="container py-16 md:py-24 flex items-center min-h-full">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-[var(--text-primary)]">
               Cricket Tournament Management Made Simple
             </h1>
-            <p className="text-xl md:text-2xl mb-12 text-slate-300 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-12 text-[var(--text-secondary)] max-w-3xl mx-auto">
               Register teams, manage matches, and follow live scores in the most
               comprehensive cricket tournament platform.
             </p>
@@ -234,7 +234,7 @@ export function HomePage() {
               <Button
                 size="lg"
                 asChild
-                className="bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-105 text-lg px-8 py-4"
+                className="bg-[color:rgb(255_255_255/0.08)] hover:bg-[color:rgb(255_255_255/0.12)] text-white border border-[color:rgb(255_255_255/0.15)] shadow-lg transition-all duration-300 hover:scale-105 text-lg px-8 py-4 backdrop-blur-sm"
               >
                 <Link to={ROUTES.REGISTER_TEAM}>
                   Register Your Team
@@ -245,7 +245,7 @@ export function HomePage() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all duration-300 text-lg px-8 py-4"
+                className="border-[color:rgb(255_255_255/0.18)] text-[var(--text-secondary)] hover:text-white hover:bg-[color:rgb(255_255_255/0.08)] hover:border-[color:rgb(255_255_255/0.28)] transition-all duration-300 text-lg px-8 py-4"
               >
                 <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
               </Button>
@@ -254,35 +254,38 @@ export function HomePage() {
         </div>
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="h-8 w-8 text-emerald-400" />
+          <ChevronDown className="h-8 w-8 text-[var(--color-secondary)]" />
         </div>
       </section>
 
       {/* Stats Section - Full Height */}
-      <section className="scroll-snap-section bg-slate-900 justify-center">
+      <section className="scroll-snap-section justify-center">
         <div className="container py-16 flex items-center min-h-full">
           <div className="w-full">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-[var(--text-secondary)]">
               Tournament Statistics
             </h2>
+            <div className="mx-auto mb-16 h-1 w-48 bg-[var(--color-accent-4)] opacity-80 rounded-full" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {stats.map((stat, index) => (
                 <Card
                   key={stat.label}
-                  className="text-center bg-slate-800/50 border-slate-700/50 backdrop-blur-sm card-enter"
+                  className="text-center surface-alt border-[var(--brand-border)] backdrop-blur-sm card-enter"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <CardContent className="pt-8 pb-8">
                     <div className="flex justify-center mb-6">
-                      <div className="rounded-full bg-gradient-to-br from-emerald-500/20 to-blue-500/20 p-4 shadow-lg">
+                      <div className="rounded-full bg-[color:rgb(221_131_10/0.12)] p-4 shadow-lg">
                         <stat.icon className={`h-8 w-8 ${stat.color}`} />
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <p className="text-4xl font-bold text-white">
+                      <p className="text-4xl font-bold text-[var(--text-primary)]">
                         {stat.value}
                       </p>
-                      <p className="text-lg text-slate-400">{stat.label}</p>
+                      <p className="text-lg text-[var(--text-secondary)]">
+                        {stat.label}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -293,24 +296,25 @@ export function HomePage() {
       </section>
 
       {/* Features Section - Full Height */}
-      <section className="scroll-snap-section bg-gradient-to-br from-slate-900 to-slate-800 justify-center">
+      <section className="scroll-snap-section justify-center">
         <div className="container py-16 flex items-center min-h-full">
           <div className="w-full">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-[var(--text-primary)]">
               Platform Features
             </h2>
+            <div className="mx-auto mb-16 h-1 w-44 bg-gradient-gold opacity-80 rounded-full" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
               {/* Upcoming Matches */}
               <div>
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">
                     Upcoming Matches
                   </h3>
                   <Button
                     variant="ghost"
                     size="sm"
                     asChild
-                    className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                    className="text-[var(--color-secondary)] hover:text-[var(--color-accent-1)] hover:bg-[color:rgb(255_255_255/0.05)]"
                   >
                     <Link to={ROUTES.MATCHES}>
                       View All
@@ -322,18 +326,20 @@ export function HomePage() {
                   {upcomingMatches.map((match, index) => (
                     <Card
                       key={match.id}
-                      className="bg-slate-800/50 border-slate-700/50 backdrop-blur-sm card-enter"
+                      className="surface-alt border-[var(--brand-border)] backdrop-blur-sm card-enter"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                           <div className="space-y-2">
-                            <div className="flex items-center space-x-2 text-lg font-medium text-white">
+                            <div className="flex items-center space-x-2 text-lg font-medium text-[var(--text-primary)]">
                               <span>{match.team1}</span>
-                              <span className="text-slate-400">vs</span>
+                              <span className="text-[var(--text-secondary)]">
+                                vs
+                              </span>
                               <span>{match.team2}</span>
                             </div>
-                            <div className="flex items-center space-x-4 text-slate-400">
+                            <div className="flex items-center space-x-4 text-[var(--text-secondary)]">
                               <div className="flex items-center space-x-1">
                                 <Clock className="h-4 w-4" />
                                 <span>{match.time}</span>
@@ -343,7 +349,7 @@ export function HomePage() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="border-emerald-500/50 text-emerald-400"
+                            className="border-[color:rgb(221_131_10/0.5)] text-[var(--color-secondary)]"
                           >
                             Scheduled
                           </Badge>
@@ -356,26 +362,26 @@ export function HomePage() {
 
               {/* Key Features */}
               <div>
-                <h3 className="text-2xl font-bold mb-8 text-white">
+                <h3 className="text-2xl font-bold mb-8 text-[var(--text-primary)]">
                   Key Features
                 </h3>
                 <div className="space-y-6">
                   {features.map((feature, index) => (
                     <Card
                       key={feature.title}
-                      className="bg-slate-800/50 border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/70 transition-all duration-300 hover:scale-105 card-enter"
+                      className="surface-alt border-[var(--brand-border)] backdrop-blur-sm hover:bg-[color:rgb(255_255_255/0.04)] transition-all duration-300 hover:scale-105 card-enter"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <CardHeader className="pb-4">
                         <div className="flex items-center space-x-4">
-                          <div className="rounded-lg bg-gradient-to-br from-emerald-500/20 to-blue-500/20 p-3 shadow-lg">
-                            <feature.icon className="h-6 w-6 text-emerald-400" />
+                          <div className="rounded-lg bg-[color:rgb(221_131_10/0.12)] p-3 shadow-lg">
+                            <feature.icon className="h-6 w-6 text-[var(--color-secondary)]" />
                           </div>
                           <div className="flex-1">
-                            <CardTitle className="text-xl text-white">
+                            <CardTitle className="text-xl text-[var(--text-primary)]">
                               {feature.title}
                             </CardTitle>
-                            <CardDescription className="text-slate-400 mt-1">
+                            <CardDescription className="text-[var(--text-secondary)] mt-1">
                               {feature.description}
                             </CardDescription>
                           </div>
@@ -386,7 +392,7 @@ export function HomePage() {
                           variant="ghost"
                           size="sm"
                           asChild
-                          className="p-0 h-auto text-emerald-400 hover:text-emerald-300"
+                          className="p-0 h-auto text-[var(--color-secondary)] hover:text-[var(--color-accent-1)]"
                         >
                           <Link to={feature.href}>
                             {feature.action}
@@ -404,23 +410,24 @@ export function HomePage() {
       </section>
 
       {/* Tournament Highlights Section - Full Height */}
-      <section className="scroll-snap-section bg-gradient-to-br from-slate-800/80 to-blue-900/80 justify-center">
+      <section className="scroll-snap-section justify-center">
         <div className="container py-16 flex items-center min-h-full">
           <div className="w-full">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-[var(--text-primary)]">
               Tournament Highlights
             </h2>
-            <Card className="bg-slate-800/50 border-slate-700/50 backdrop-blur-sm max-w-6xl mx-auto">
+            <div className="mx-auto mb-16 h-1 w-64 bg-gradient-gold opacity-80 rounded-full" />
+            <Card className="surface-alt border-[var(--brand-border)] backdrop-blur-sm max-w-6xl mx-auto">
               <CardContent className="p-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                   <div>
-                    <Badge className="mb-6 bg-gradient-to-r from-emerald-500 to-blue-600 text-white border-0 text-lg px-4 py-2">
+                    <Badge className="mb-6 bg-[color:rgb(255_255_255/0.08)] text-white border border-[color:rgb(255_255_255/0.15)] backdrop-blur-sm text-sm font-medium px-3 py-1 tracking-wide">
                       Featured Tournament
                     </Badge>
-                    <h3 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+                    <h3 className="text-3xl md:text-4xl font-bold mb-6 text-[var(--text-primary)]">
                       InfoBash Cricket Championship 2025
                     </h3>
-                    <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+                    <p className="text-xl text-[var(--text-secondary)] mb-8 leading-relaxed">
                       Join the biggest cricket tournament of the year with 32
                       teams competing for the championship trophy. Registration
                       ends soon!
@@ -429,7 +436,7 @@ export function HomePage() {
                       <Button
                         asChild
                         size="lg"
-                        className="bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white border-0 text-lg px-8 py-4"
+                        className="bg-[color:rgb(255_255_255/0.08)] hover:bg-[color:rgb(255_255_255/0.14)] text-white border border-[color:rgb(255_255_255/0.15)] text-lg px-8 py-4 backdrop-blur-sm"
                       >
                         <Link to={ROUTES.REGISTER_TEAM}>Register Team</Link>
                       </Button>
@@ -437,21 +444,23 @@ export function HomePage() {
                         variant="outline"
                         asChild
                         size="lg"
-                        className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 text-lg px-8 py-4"
+                        className="border-[color:rgb(255_255_255/0.18)] text-[var(--text-secondary)] hover:text-white hover:bg-[color:rgb(255_255_255/0.08)] text-lg px-8 py-4"
                       >
                         <Link to={ROUTES.TOURNAMENTS}>Learn More</Link>
                       </Button>
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 text-white mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-40 h-40 rounded-full bg-[color:rgb(255_255_255/0.08)] text-white mb-6 shadow-2xl border border-[color:rgb(255_255_255/0.15)] backdrop-blur-sm">
                       <Trophy className="h-20 w-20" />
                     </div>
                     <div className="space-y-3">
-                      <p className="text-3xl md:text-4xl font-bold text-white">
+                      <p className="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
                         Rs. 50,000
                       </p>
-                      <p className="text-lg text-slate-400">Prize Pool</p>
+                      <p className="text-lg text-[var(--text-secondary)]">
+                        Prize Pool
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -462,7 +471,7 @@ export function HomePage() {
       </section>
 
       {/* Footer Section - Full Height */}
-      <section className="scroll-snap-section bg-slate-900/90 justify-center items-center">
+      <section className="scroll-snap-section justify-center items-center">
         <div className="w-full flex items-center justify-center min-h-full">
           <div className="container py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-center lg:text-left">
@@ -472,14 +481,14 @@ export function HomePage() {
                   to={ROUTES.HOME}
                   className="flex items-center space-x-2 mb-4 transition-all duration-300 hover:scale-105"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
-                    <Trophy className="h-5 w-5 text-white" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-gold shadow-lg">
+                    <Trophy className="h-5 w-5 text-[color:rgb(14_22_40)]" />
                   </div>
-                  <span className="font-bold text-xl bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                  <span className="font-bold text-xl text-gradient-gold">
                     InfoBash Tournament
                   </span>
                 </Link>
-                <p className="text-slate-300 text-sm mb-6 max-w-md text-center lg:text-left">
+                <p className="text-[var(--text-secondary)] text-sm mb-6 max-w-md text-center lg:text-left">
                   The most comprehensive cricket tournament management platform.
                   Register your team, follow live matches, and track tournament
                   progress with real-time updates.
@@ -488,28 +497,28 @@ export function HomePage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 w-9 p-0 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
+                    className="h-9 w-9 p-0 text-[var(--text-secondary)] hover:text-[var(--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)] transition-all duration-200"
                   >
                     <Github className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 w-9 p-0 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
+                    className="h-9 w-9 p-0 text-[var(--text-secondary)] hover:text-[var(--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)] transition-all duration-200"
                   >
                     <Twitter className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 w-9 p-0 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
+                    className="h-9 w-9 p-0 text-[var(--text-secondary)] hover:text-[var(--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)] transition-all duration-200"
                   >
                     <Instagram className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 w-9 p-0 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200"
+                    className="h-9 w-9 p-0 text-[var(--text-secondary)] hover:text-[var,--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)] transition-all duration-200"
                   >
                     <Mail className="h-4 w-4" />
                   </Button>
@@ -518,12 +527,14 @@ export function HomePage() {
 
               {/* Tournament Links */}
               <div>
-                <h3 className="font-semibold text-white mb-4">Tournament</h3>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+                  Tournament
+                </h3>
                 <ul className="space-y-3">
                   <li>
                     <Link
                       to={ROUTES.TOURNAMENTS}
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
                     >
                       Tournaments
                     </Link>
@@ -531,7 +542,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to={ROUTES.TEAMS}
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
                     >
                       Teams
                     </Link>
@@ -539,7 +550,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to={ROUTES.MATCHES}
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
                     >
                       Matches
                     </Link>
@@ -547,7 +558,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to={ROUTES.REGISTER_TEAM}
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
                     >
                       Register Team
                     </Link>
@@ -557,12 +568,14 @@ export function HomePage() {
 
               {/* Support Links */}
               <div>
-                <h3 className="font-semibold text-white mb-4">Support</h3>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+                  Support
+                </h3>
                 <ul className="space-y-3">
                   <li>
                     <Link
                       to="/help"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
                     >
                       Help Center
                     </Link>
@@ -570,7 +583,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to="/contact"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Contact Us
                     </Link>
@@ -578,7 +591,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to="/rules"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Tournament Rules
                     </Link>
@@ -586,7 +599,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to="/faq"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       FAQ
                     </Link>
@@ -596,12 +609,14 @@ export function HomePage() {
 
               {/* Legal Links */}
               <div>
-                <h3 className="font-semibold text-white mb-4">Legal</h3>
+                <h3 className="font-semibold text-[var(--text-primary)] mb-4">
+                  Legal
+                </h3>
                 <ul className="space-y-3">
                   <li>
                     <Link
                       to="/privacy"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Privacy Policy
                     </Link>
@@ -609,7 +624,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to="/terms"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Terms of Service
                     </Link>
@@ -617,7 +632,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to="/conduct"
-                      className="text-sm text-slate-300 hover:text-emerald-400 transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Code of Conduct
                     </Link>
@@ -627,8 +642,8 @@ export function HomePage() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-slate-700/50 mt-12 pt-8 flex flex-col sm:flex-row justify-center items-center text-center sm:text-left">
-              <p className="text-sm text-slate-400">
+            <div className="border-t border-[var(--brand-border)] mt-12 pt-8 flex flex-col sm:flex-row justify-center items-center text-center sm:text-left">
+              <p className="text-sm text-[var(--text-secondary)]">
                 © 2025 InfoBash Tournament. All rights reserved.
               </p>
             </div>
