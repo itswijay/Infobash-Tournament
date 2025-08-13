@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { Layout } from '@/components/layout'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { HomePage } from '@/pages/HomePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
 import { TeamsPage } from '@/pages/TeamsPage'
@@ -41,7 +42,11 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTES.REGISTER_TEAM,
-        element: <RegisterTeamPage />,
+        element: (
+          <ProtectedRoute>
+            <RegisterTeamPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

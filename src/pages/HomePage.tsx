@@ -23,6 +23,8 @@ import {
 } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 
 const stats = [
   {
@@ -93,6 +95,7 @@ const features = [
 ]
 
 export function HomePage() {
+  const { user } = useAuth()
   const [activeSection, setActiveSection] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
@@ -296,7 +299,7 @@ export function HomePage() {
 
       {/* Countdown Section - Full Height */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_70%_40%,rgba(221,131,10,0.12),transparent_70%)] relative">
-        <div className="container py-12 flex items-center min-h-full">
+        <div className="container py-4 md:py-12 flex items-center min-h-full">
           <div className="w-full">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[var(--text-primary)]">
@@ -358,24 +361,50 @@ export function HomePage() {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg"
-                >
-                  <Link to={ROUTES.REGISTER_TEAM}>
-                    Register Now
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105"
-                >
-                  <Link to={ROUTES.TOURNAMENTS}>Learn More</Link>
-                </Button>
+                {user ? (
+                  // Authenticated user buttons
+                  <>
+                    <Button
+                      asChild
+                      size="lg"
+                      className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                    >
+                      <Link to={ROUTES.REGISTER_TEAM}>
+                        Register Your Team
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105"
+                    >
+                      <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
+                    </Button>
+                  </>
+                ) : (
+                  // Guest user buttons
+                  <>
+                    <GoogleLoginButton
+                      variant="modern"
+                      size="lg"
+                      className="px-8 py-3 transition-all duration-200 hover:scale-105 shadow-lg hover:border-[var(--color-accent-1)]"
+                    >
+                      <span className="">
+                        Get Started
+                      </span>
+                    </GoogleLoginButton>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105"
+                    >
+                      <Link to={ROUTES.TOURNAMENTS}>Learn More</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -607,8 +636,6 @@ export function HomePage() {
                   </span>
                 </a>
               </div>
-
-
             </div>
           </div>
         </div>

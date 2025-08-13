@@ -9,17 +9,12 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import {
-  Trophy,
-  Users,
-  Calendar,
-  UserPlus,
-  Menu,
-  Home,
-  BarChart3,
-} from 'lucide-react'
+import { Trophy, Users, Calendar, UserPlus, Menu, Home } from 'lucide-react'
 import { APP_NAME, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/hooks/useAuth'
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
+import { UserProfile } from '@/components/auth/UserProfile'
 import logoImg from '@/assets/logo.png'
 
 const navigation = [
@@ -55,6 +50,7 @@ const navigation = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
+  const { user, loading } = useAuth()
 
   const isActive = (href: string) => {
     if (href === ROUTES.HOME) {
@@ -125,32 +121,32 @@ export function Header() {
         </NavigationMenu>
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--text-secondary)] hover:text-[var(--color-secondary)] hover:bg-[color:rgb(255_255_255/0.04)]"
-          >
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Dashboard
-          </Button>
-
-          <Button
-            size="sm"
-            className="hidden sm:flex bg-gradient-gold text-[color:rgb(14_22_40)] font-medium hover:opacity-90 border-0 shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            Login
-          </Button>
+          {loading ? (
+            <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
+          ) : user ? (
+            <UserProfile />
+          ) : (
+            <GoogleLoginButton
+              variant="modern"
+              size="sm"
+              className="hidden sm:flex"
+            />
+          )}
         </div>
         {/* Mobile Navigation */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="md:hidden ml-4">
-            <Button variant="ghost" size="sm">
-              <Menu className="h-5 w-5" />
+            <Button
+              variant="ghost"
+              size="lg"
+              className="p-4 min-w-[48px] min-h-[48px]"
+            >
+              <Menu className="h-8 w-8" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px]">
-            <div className="grid gap-6 p-6">
+            <div className="grid gap-6">
               <Link
                 to={ROUTES.HOME}
                 className="flex items-center space-x-2"
@@ -159,9 +155,11 @@ export function Header() {
                 <img
                   src={logoImg}
                   alt="InfoBash Logo"
-                  className="h-6 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
-                <span className="font-bold text-gradient-gold">{APP_NAME}</span>
+                <span className="font-bold text-xl text-gradient-gold">
+                  {APP_NAME}
+                </span>
               </Link>
 
               <div className="grid gap-2">
@@ -200,12 +198,20 @@ export function Header() {
               </div>
 
               <div className="border-t border-[var(--brand-border)] pt-4">
-                <Button
-                  className="w-full bg-gradient-gold text-[color:rgb(14_22_40)]"
-                  size="sm"
-                >
-                  Login
-                </Button>
+                {loading ? (
+                  <div className="h-10 w-full rounded-md bg-dark-light animate-pulse" />
+                ) : user ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Signed in as:</span>
+                    <UserProfile />
+                  </div>
+                ) : (
+                  <GoogleLoginButton
+                    variant="modern"
+                    size="sm"
+                    className="w-full"
+                  />
+                )}
               </div>
             </div>
           </SheetContent>
