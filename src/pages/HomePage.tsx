@@ -95,8 +95,57 @@ const features = [
 export function HomePage() {
   const [activeSection, setActiveSection] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
 
-  const sections = ['hero', 'stats', 'features', 'highlights', 'footer']
+  const sections = ['countdown', 'stats', 'features', 'highlights', 'footer']
+
+  // Countdown timer effect
+  useEffect(() => {
+    const targetDate = new Date('2025-08-29T09:00:00').getTime()
+
+    const updateCountdown = () => {
+      const now = new Date().getTime()
+      const difference = targetDate - now
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+        const hours = Math.floor(
+          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        )
+        const minutes = Math.floor(
+          (difference % (1000 * 60 * 60)) / (1000 * 60)
+        )
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+
+        setTimeLeft({ days, hours, minutes, seconds })
+
+        // Update DOM elements directly for smooth animation
+        const daysEl = document.getElementById('countdown-days')
+        const hoursEl = document.getElementById('countdown-hours')
+        const minutesEl = document.getElementById('countdown-minutes')
+        const secondsEl = document.getElementById('countdown-seconds')
+
+        if (daysEl) daysEl.textContent = days.toString().padStart(2, '0')
+        if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0')
+        if (minutesEl)
+          minutesEl.textContent = minutes.toString().padStart(2, '0')
+        if (secondsEl)
+          secondsEl.textContent = seconds.toString().padStart(2, '0')
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      }
+    }
+
+    updateCountdown() // Initial call
+    const interval = setInterval(updateCountdown, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     let autoScrollTimeout: NodeJS.Timeout
@@ -219,36 +268,97 @@ export function HomePage() {
         ))}
       </div>
 
-      {/* Hero Section - Full Height */}
-      <section className="scroll-snap-section relative overflow-hidden justify-center bg-[radial-gradient(circle_at_30%_30%,rgba(221,131,10,0.18),transparent_60%)]">
-        <div className="container py-16 md:py-24 flex items-center min-h-full">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-[var(--text-primary)]">
-              Cricket Tournament Management Made Simple
-            </h1>
-            <p className="text-xl md:text-2xl mb-12 text-[var(--text-secondary)] max-w-3xl mx-auto">
-              Register teams, manage matches, and follow live scores in the most
-              comprehensive cricket tournament platform.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button
-                size="lg"
-                asChild
-                className="bg-[color:rgb(255_255_255/0.08)] hover:bg-[color:rgb(255_255_255/0.12)] text-white border border-[color:rgb(255_255_255/0.15)] shadow-lg transition-all duration-300 hover:scale-105 text-lg px-8 py-4 backdrop-blur-sm"
-              >
-                <Link to={ROUTES.REGISTER_TEAM}>
-                  Register Your Team
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="border-[color:rgb(255_255_255/0.18)] text-[var(--text-secondary)] hover:text-white hover:bg-[color:rgb(255_255_255/0.08)] hover:border-[color:rgb(255_255_255/0.28)] transition-all duration-300 text-lg px-8 py-4"
-              >
-                <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
-              </Button>
+      {/* Countdown Section - Full Height */}
+      <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_70%_40%,rgba(221,131,10,0.12),transparent_70%)]">
+        <div className="container py-16 flex items-center min-h-full">
+          <div className="w-full">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 text-[var(--text-primary)]">
+                InfoBash v4.0
+              </h1>
+              <div className="mx-auto mb-8 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
+              <p className="text-xl md:text-2xl text-[var(--text-secondary)] mb-12 max-w-2xl mx-auto">
+                The biggest cricket tournament is coming soon. Get ready for an
+                epic showdown!
+              </p>
+
+              {/* Countdown Timer */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-3xl mx-auto">
+                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-6 shadow-lg">
+                  <div
+                    className="text-3xl md:text-4xl font-bold text-[var(--color-secondary)] mb-2"
+                    id="countdown-days"
+                  >
+                    {String(timeLeft.days).padStart(2, '0')}
+                  </div>
+                  <div className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">
+                    Days
+                  </div>
+                </div>
+                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-6 shadow-lg">
+                  <div
+                    className="text-3xl md:text-4xl font-bold text-[var(--color-secondary)] mb-2"
+                    id="countdown-hours"
+                  >
+                    {String(timeLeft.hours).padStart(2, '0')}
+                  </div>
+                  <div className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">
+                    Hours
+                  </div>
+                </div>
+                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-6 shadow-lg">
+                  <div
+                    className="text-3xl md:text-4xl font-bold text-[var(--color-secondary)] mb-2"
+                    id="countdown-minutes"
+                  >
+                    {String(timeLeft.minutes).padStart(2, '0')}
+                  </div>
+                  <div className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">
+                    Minutes
+                  </div>
+                </div>
+                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-6 shadow-lg">
+                  <div
+                    className="text-3xl md:text-4xl font-bold text-[var(--color-secondary)] mb-2"
+                    id="countdown-seconds"
+                  >
+                    {String(timeLeft.seconds).padStart(2, '0')}
+                  </div>
+                  <div className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">
+                    Seconds
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center mb-8">
+                <p className="text-lg text-[var(--text-secondary)] mb-2">
+                  Tournament Starts
+                </p>
+                <p className="text-2xl font-semibold text-[var(--color-accent-1)]">
+                  August 29, 2025 at 9:00 AM
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <Button
+                  size="lg"
+                  asChild
+                  className="bg-gradient-gold text-[color:rgb(14_22_40)] border-0 shadow-lg transition-all duration-300 hover:scale-105 text-lg px-8 py-4"
+                >
+                  <Link to={ROUTES.REGISTER_TEAM}>
+                    Register Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="border-[color:rgb(255_255_255/0.18)] text-[var(--text-secondary)] hover:text-white hover:bg-[color:rgb(255_255_255/0.08)] hover:border-[color:rgb(255_255_255/0.28)] transition-all duration-300 text-lg px-8 py-4"
+                >
+                  <Link to={ROUTES.TOURNAMENTS}>Learn More</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -550,7 +660,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to={ROUTES.MATCHES}
-                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Matches
                     </Link>
@@ -558,7 +668,7 @@ export function HomePage() {
                   <li>
                     <Link
                       to={ROUTES.REGISTER_TEAM}
-                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--color-secondary)] transition-colors duration-200"
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var,--color-secondary)] transition-colors duration-200"
                     >
                       Register Team
                     </Link>
