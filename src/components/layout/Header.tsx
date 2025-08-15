@@ -65,16 +65,7 @@ const navigation = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
-  const { user, userProfile, loading, profileLoading } = useAuth()
-
-  // Temporary debugging
-  console.log('Header render:', {
-    user: !!user,
-    userProfile: !!userProfile,
-    loading,
-    profileLoading,
-    userEmail: user?.email,
-  })
+  const { user, loading } = useAuth()
 
   const isActive = (href: string) => {
     if (href === ROUTES.HOME) {
@@ -145,23 +136,19 @@ export function Header() {
         </NavigationMenu>
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-4">
-          {loading || profileLoading ? (
+          {loading ? (
             <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
           ) : user ? (
             <div className="flex items-center space-x-2">
-              {/* Profile incomplete indicator */}
-              {user && userProfile && !userProfile.is_profile_complete && (
-                <div className="relative">
-                  <Link
-                    to={ROUTES.PROFILE_COMPLETE}
-                    className="flex items-center space-x-1 text-xs text-yellow-600 hover:text-yellow-500 transition-colors"
-                    title="Complete your profile"
-                  >
-                    <AlertCircle className="h-3 w-3" />
-                    <span className="hidden sm:inline">Complete Profile</span>
-                  </Link>
+              {/* Profile functionality temporarily disabled for deployment */}
+              <div className="relative">
+                <div className="flex items-center space-x-1 text-xs text-gray-500 cursor-not-allowed opacity-50">
+                  <AlertCircle className="h-3 w-3" />
+                  <span className="hidden sm:inline">
+                    Profile (Coming Soon)
+                  </span>
                 </div>
-              )}
+              </div>
               <UserProfile />
             </div>
           ) : (
@@ -244,23 +231,15 @@ export function Header() {
               </div>
 
               <div className="border-t border-[var(--brand-border)] pt-4">
-                {loading || profileLoading ? (
+                {loading ? (
                   <div className="h-10 w-full rounded-md bg-dark-light animate-pulse" />
                 ) : user ? (
                   <div className="space-y-3">
-                    {/* Profile completion prompt */}
-                    {user &&
-                      userProfile &&
-                      !userProfile.is_profile_complete && (
-                        <Link
-                          to={ROUTES.PROFILE_COMPLETE}
-                          className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm bg-yellow-600/10 border border-yellow-600/20 text-yellow-600 hover:bg-yellow-600/20 transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <AlertCircle className="h-4 w-4" />
-                          <span>Complete Profile</span>
-                        </Link>
-                      )}
+                    {/* Profile functionality temporarily disabled for deployment */}
+                    <div className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm bg-gray-600/10 border border-gray-600/20 text-gray-500 opacity-50">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>Profile (Coming Soon)</span>
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-white/70">

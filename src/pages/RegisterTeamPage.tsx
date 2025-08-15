@@ -2,7 +2,7 @@ import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { useAuth } from '@/hooks/useAuth'
 // import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Lock, UserPlus } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 export function RegisterTeamPage() {
   const { user, loading } = useAuth()
