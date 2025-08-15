@@ -6,6 +6,7 @@ import { TournamentsPage } from '@/pages/TournamentsPage'
 import { TeamsPage } from '@/pages/TeamsPage'
 import { MatchesPage } from '@/pages/MatchesPage'
 import { RegisterTeamPage } from '@/pages/RegisterTeamPage'
+import { InstructionsPage } from '@/pages/InstructionsPage'
 import { ROUTES } from '@/lib/constants'
 
 function RootLayout() {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.REGISTER_TEAM,
         element: <RegisterTeamPage />,
+      },
+      {
+        path: ROUTES.INSTRUCTIONS,
+        element: <InstructionsPage />,
       },
     ],
   },

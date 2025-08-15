@@ -8,12 +8,26 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Trophy, Users, Calendar, UserPlus, Menu, Home } from 'lucide-react'
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet'
+import {
+  Trophy,
+  Users,
+  Calendar,
+  UserPlus,
+  Menu,
+  Home,
+  AlertCircle,
+} from 'lucide-react'
 import { APP_NAME, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
-import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
+// import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
 import { UserProfile } from '@/components/auth/UserProfile'
 import logoImg from '@/assets/logo.png'
 
@@ -27,7 +41,7 @@ const navigation = [
     name: 'Tournaments',
     href: ROUTES.TOURNAMENTS,
     icon: Trophy,
-    badge: 'Active',
+    badge: 'Inactive',
   },
   {
     name: 'Teams',
@@ -44,13 +58,23 @@ const navigation = [
     href: ROUTES.REGISTER_TEAM,
     icon: UserPlus,
     highlight: true,
+    disabled: true, // Temporarily disabled for deployment
   },
 ]
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
-  const { user, loading } = useAuth()
+  const { user, userProfile, loading, profileLoading } = useAuth()
+
+  // Temporary debugging
+  console.log('Header render:', {
+    user: !!user,
+    userProfile: !!userProfile,
+    loading,
+    profileLoading,
+    userEmail: user?.email,
+  })
 
   const isActive = (href: string) => {
     if (href === ROUTES.HOME) {
@@ -121,16 +145,34 @@ export function Header() {
         </NavigationMenu>
         {/* Right side actions */}
         <div className="ml-auto flex items-center space-x-4">
-          {loading ? (
+          {loading || profileLoading ? (
             <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
           ) : user ? (
-            <UserProfile />
+            <div className="flex items-center space-x-2">
+              {/* Profile incomplete indicator */}
+              {user && userProfile && !userProfile.is_profile_complete && (
+                <div className="relative">
+                  <Link
+                    to={ROUTES.PROFILE_COMPLETE}
+                    className="flex items-center space-x-1 text-xs text-yellow-600 hover:text-yellow-500 transition-colors"
+                    title="Complete your profile"
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    <span className="hidden sm:inline">Complete Profile</span>
+                  </Link>
+                </div>
+              )}
+              <UserProfile />
+            </div>
           ) : (
-            <GoogleLoginButton
-              variant="modern"
+            <Button
+              disabled
+              variant="ghost"
               size="sm"
-              className="hidden sm:flex"
-            />
+              className="hidden sm:flex opacity-50 cursor-not-allowed text-gray-400"
+            >
+              Sign In (Coming Soon)
+            </Button>
           )}
         </div>
         {/* Mobile Navigation */}
@@ -146,6 +188,10 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px]">
+            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <SheetDescription className="sr-only">
+              Access navigation links and user account options
+            </SheetDescription>
             <div className="grid gap-6">
               <Link
                 to={ROUTES.HOME}
@@ -198,19 +244,40 @@ export function Header() {
               </div>
 
               <div className="border-t border-[var(--brand-border)] pt-4">
-                {loading ? (
+                {loading || profileLoading ? (
                   <div className="h-10 w-full rounded-md bg-dark-light animate-pulse" />
                 ) : user ? (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Signed in as:</span>
-                    <UserProfile />
+                  <div className="space-y-3">
+                    {/* Profile completion prompt */}
+                    {user &&
+                      userProfile &&
+                      !userProfile.is_profile_complete && (
+                        <Link
+                          to={ROUTES.PROFILE_COMPLETE}
+                          className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm bg-yellow-600/10 border border-yellow-600/20 text-yellow-600 hover:bg-yellow-600/20 transition-colors"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <AlertCircle className="h-4 w-4" />
+                          <span>Complete Profile</span>
+                        </Link>
+                      )}
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-white/70">
+                        Signed in as:
+                      </span>
+                      <UserProfile />
+                    </div>
                   </div>
                 ) : (
-                  <GoogleLoginButton
-                    variant="modern"
+                  <Button
+                    disabled
+                    variant="ghost"
                     size="sm"
-                    className="w-full"
-                  />
+                    className="w-full opacity-50 cursor-not-allowed text-gray-400"
+                  >
+                    Sign In (Coming Soon)
+                  </Button>
                 )}
               </div>
             </div>

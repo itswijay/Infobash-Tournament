@@ -16,38 +16,36 @@ import {
   Play,
   Clock,
   ChevronDown,
-  Github,
-  Twitter,
+  Facebook,
   Instagram,
-  Mail,
 } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
+// import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
 
 const stats = [
   {
     label: 'Active Tournaments',
-    value: '3',
+    value: '0',
     icon: Trophy,
     color: 'text-[var(--color-secondary)]',
   },
   {
     label: 'Registered Teams',
-    value: '24',
+    value: '0',
     icon: Users,
-    color: 'text-[var(--color-accent-1)]',
+    color: 'text-[var(--color-secondary)]',
   },
   {
     label: 'Matches Played',
-    value: '48',
+    value: '0',
     icon: Calendar,
-    color: 'text-[var(--text-secondary)]',
+    color: 'text-[var(--color-secondary)]',
   },
   {
     label: 'Live Matches',
-    value: '2',
+    value: '0',
     icon: Play,
     color: 'text-[var(--color-secondary)]',
   },
@@ -56,17 +54,24 @@ const stats = [
 const upcomingMatches = [
   {
     id: '1',
-    team1: 'Lightning Bolts',
-    team2: 'Thunder Hawks',
-    time: '2:00 PM',
-    venue: 'Cricket Ground A',
+    team1: 'Avengers',
+    team2: 'Thunderbolts',
+    time: '9:00 AM',
+    venue: 'Hunduwa Ground',
   },
   {
     id: '2',
-    team1: 'Fire Eagles',
-    team2: 'Storm Tigers',
-    time: '4:30 PM',
-    venue: 'Cricket Ground B',
+    team1: 'Justice League',
+    team2: 'Suicide Squad',
+    time: '11:00 AM',
+    venue: 'Hunduwa Ground',
+  },
+  {
+    id: '3',
+    team1: 'S.H.I.E.L.D.',
+    team2: 'Hydra',
+    time: '01:00 PM',
+    venue: 'Hunduwa Ground',
   },
 ]
 
@@ -307,8 +312,8 @@ export function HomePage() {
               </h1>
               <div className="mx-auto mb-8 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
               <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-4 md:mb-8 max-w-2xl mx-auto">
-                The biggest cricket tournament is coming soon. Get ready for an
-                epic showdown!
+                FOC's grand cricket clash is almost here – get ready for the
+                ultimate showdown!
               </p>
 
               {/* Countdown Timer */}
@@ -386,22 +391,28 @@ export function HomePage() {
                 ) : (
                   // Guest user buttons
                   <>
-                    <GoogleLoginButton
+                    {/* Temporarily disabled for deployment */}
+                    <Button
+                      disabled
+                      size="lg"
+                      className="px-8 py-3 opacity-50 cursor-not-allowed bg-gray-600 text-gray-300"
+                    >
+                      <span className="">Get Started (Coming Soon)</span>
+                    </Button>
+                    {/* <GoogleLoginButton
                       variant="modern"
                       size="lg"
                       className="px-8 py-3 transition-all duration-200 hover:scale-105 shadow-lg hover:border-[var(--color-accent-1)]"
                     >
-                      <span className="">
-                        Get Started
-                      </span>
-                    </GoogleLoginButton>
+                      <span className="">Get Started</span>
+                    </GoogleLoginButton> */}
                     <Button
                       asChild
                       variant="outline"
                       size="lg"
                       className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105"
                     >
-                      <Link to={ROUTES.TOURNAMENTS}>Learn More</Link>
+                      <Link to={ROUTES.INSTRUCTIONS}>How It Works</Link>
                     </Button>
                   </>
                 )}
@@ -461,7 +472,7 @@ export function HomePage() {
 
       {/* Key Features Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_80%_20%,rgba(221,131,10,0.10),transparent_70%)]">
-        <div className="container py-16 md:py-24 flex items-center min-h-full">
+        <div className="container py-12 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
@@ -512,19 +523,19 @@ export function HomePage() {
 
       {/* Upcoming Matches Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_20%_80%,rgba(244,188,69,0.06),transparent_70%)]">
-        <div className="container py-16 md:py-24 flex items-center min-h-full">
+        <div className="container py-10 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-16">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
                 Upcoming Matches
               </h2>
-              <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
+              <div className="mx-auto mb-6 h-1 w-24 bg-gradient-gold rounded-full" />
               <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
                 Don't miss these exciting upcoming cricket matches
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {upcomingMatches.map((match) => (
                 <Card
                   key={match.id}
@@ -549,13 +560,13 @@ export function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-center mb-4">
-                      <div className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+                      <div className="text-xl font-semibold text-[var(--text-primary)] mb-2">
                         {match.team1}
                       </div>
                       <div className="text-sm text-[var(--text-secondary)] mb-2">
                         vs
                       </div>
-                      <div className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+                      <div className="text-xl font-semibold text-[var(--text-primary)] mb-4">
                         {match.team2}
                       </div>
                     </div>
@@ -598,30 +609,12 @@ export function HomePage() {
             </div>
 
             <div className="max-w-2xl mx-auto text-center">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+              <div className="grid grid-cols-2 gap-6 mb-12 max-w-md mx-auto">
                 <a
-                  href="mailto:info@infobash.com"
+                  href="https://facebook.com"
                   className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
                 >
-                  <Mail className="w-8 h-8 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
-                  <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
-                    Email
-                  </span>
-                </a>
-                <a
-                  href="https://github.com"
-                  className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
-                >
-                  <Github className="w-8 h-8 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
-                  <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
-                    GitHub
-                  </span>
-                </a>
-                <a
-                  href="https://twitter.com"
-                  className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
-                >
-                  <Twitter className="w-8 h-8 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <Facebook className="w-12 h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
                   <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
                     Facebook
                   </span>
@@ -630,7 +623,7 @@ export function HomePage() {
                   href="https://instagram.com"
                   className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
                 >
-                  <Instagram className="w-8 h-8 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <Instagram className="w-12 h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
                   <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
                     Instagram
                   </span>

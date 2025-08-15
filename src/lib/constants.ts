@@ -14,6 +14,7 @@ export const ROUTES = {
   MATCHES: '/matches',
   MATCH_DETAIL: '/matches/:id',
   REGISTER_TEAM: '/register',
+  INSTRUCTIONS: '/instructions',
   PROFILE: '/profile',
   ADMIN: '/admin',
   LOGIN: '/login',
