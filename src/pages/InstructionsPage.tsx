@@ -95,7 +95,7 @@ export function InstructionsPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-6 py-3 ml-4 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                  className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-6 py-3 md:ml-4 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                 >
                   <Link to={ROUTES.REGISTER_TEAM}>
                     Start Team Registration
@@ -106,7 +106,7 @@ export function InstructionsPage() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-6 mr-4 py-3 transition-all duration-200 hover:scale-105"
+                  className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-6 md:mr-4 py-3 transition-all duration-200 hover:scale-105"
                 >
                   <Link to={ROUTES.TOURNAMENTS}>
                     View Tournaments

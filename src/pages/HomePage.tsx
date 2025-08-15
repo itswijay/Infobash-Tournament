@@ -312,8 +312,15 @@ export function HomePage() {
               </h1>
               <div className="mx-auto mb-8 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
               <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-4 md:mb-8 max-w-2xl mx-auto">
-                FOC's grand cricket clash is almost here – get ready for the
-                ultimate showdown!
+                <span className="hidden md:inline">
+                  FOC's grand cricket clash is almost here – get ready for the
+                  ultimate showdown!
+                </span>
+                <span className="md:hidden">
+                  FOC's grand cricket clash is almost here
+                  <br />
+                  Get ready for the ultimate showdown!
+                </span>
               </p>
 
               {/* Countdown Timer */}
