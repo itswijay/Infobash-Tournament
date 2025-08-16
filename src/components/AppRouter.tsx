@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 import { Layout } from '@/components/layout'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
+import { ProfileGuard } from '@/components/auth/ProfileGuard'
 import { HomePage } from '@/pages/HomePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
 import { TeamsPage } from '@/pages/TeamsPage'
@@ -8,9 +9,23 @@ import { MatchesPage } from '@/pages/MatchesPage'
 import { RegisterTeamPage } from '@/pages/RegisterTeamPage'
 import { InstructionsPage } from '@/pages/InstructionsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
+import { ProfileCompletionPage } from '@/pages/ProfileCompletionPage'
 import { ROUTES } from '@/lib/constants'
 
 function RootLayout() {
+  return (
+    <ErrorBoundary>
+      <Layout>
+        <ProfileGuard>
+          <Outlet />
+        </ProfileGuard>
+      </Layout>
+    </ErrorBoundary>
+  )
+}
+
+// Special layout for profile completion page (no ProfileGuard)
+function ProfileCompletionLayout() {
   return (
     <ErrorBoundary>
       <Layout>
@@ -52,6 +67,16 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PROFILE,
         element: <ProfilePage />,
+      },
+    ],
+  },
+  {
+    path: ROUTES.PROFILE_COMPLETION,
+    element: <ProfileCompletionLayout />,
+    children: [
+      {
+        index: true,
+        element: <ProfileCompletionPage />,
       },
     ],
   },

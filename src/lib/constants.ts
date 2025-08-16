@@ -16,6 +16,7 @@ export const ROUTES = {
   REGISTER_TEAM: '/register',
   INSTRUCTIONS: '/instructions',
   PROFILE: '/profile',
+  PROFILE_COMPLETION: '/profile/complete',
   ADMIN: '/admin',
   LOGIN: '/login',
   SIGNUP: '/signup',

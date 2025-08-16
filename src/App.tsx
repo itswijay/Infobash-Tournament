@@ -1,6 +1,6 @@
 import { AppRouter } from '@/components/AppRouter'
 import { AuthProvider } from '@/contexts/AuthContext'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from 'sonner'
 import './App.css'
 
 function App() {

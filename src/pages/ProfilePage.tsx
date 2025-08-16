@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,32 +8,145 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { User, Save, Mail, Calendar, Shield } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
+import {
+  getUserProfile,
+  updateUserProfile,
+  type UserProfile,
+} from '@/lib/api/profiles'
+import { ROUTES } from '@/lib/constants'
+
+interface ProfileFormData {
+  firstName: string
+  lastName: string
+  batch: string
+  campusCard: string
+}
 
 export function ProfilePage() {
   const { user, loading } = useAuth()
+  const navigate = useNavigate()
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
-  const [formData, setFormData] = useState({
+  const [imageError, setImageError] = useState(false)
+  const [formData, setFormData] = useState<ProfileFormData>({
     firstName: '',
     lastName: '',
+    batch: '',
+    campusCard: '',
   })
-  const [message, setMessage] = useState<{
-    type: 'success' | 'error'
-    text: string
-  } | null>(null)
+  const [errors, setErrors] = useState<Partial<ProfileFormData>>({})
 
+  // Load user profile
   useEffect(() => {
-    if (user?.user_metadata) {
-      const fullName = user.user_metadata.full_name || ''
-      const nameParts = fullName.split(' ')
-      setFormData({
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-      })
-    }
-  }, [user])
+    const loadProfile = async () => {
+      if (!user) return
 
-  if (loading) {
+      try {
+        const userProfile = await getUserProfile(user.id)
+        if (userProfile) {
+          setProfile(userProfile)
+          setFormData({
+            firstName: userProfile.first_name,
+            lastName: userProfile.last_name,
+            batch: userProfile.batch,
+            campusCard: userProfile.campus_card || '',
+          })
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error)
+        toast.error('Failed to load profile data')
+      } finally {
+        setProfileLoading(false)
+      }
+    }
+
+    if (!loading && user) {
+      loadProfile()
+    } else if (!loading && !user) {
+      setProfileLoading(false)
+    }
+  }, [user, loading])
+
+  // Validation functions
+  const validateBatch = (batch: string): boolean => {
+    const batchRegex = /^\d{2}\/\d{2}$/
+    return batchRegex.test(batch.trim())
+  }
+
+  const handleInputChange = (field: keyof ProfileFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  // Validate form
+  const validateForm = (): boolean => {
+    const newErrors: Partial<ProfileFormData> = {}
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required'
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required'
+    }
+
+    if (!formData.batch.trim()) {
+      newErrors.batch = 'Batch is required'
+    } else if (!validateBatch(formData.batch)) {
+      newErrors.batch = 'Batch must be in format XX/XX (e.g., 23/24)'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form')
+      return
+    }
+
+    if (!user) {
+      toast.error('User not found. Please sign in again.')
+      return
+    }
+
+    setIsUpdating(true)
+
+    try {
+      const updatedProfile = await updateUserProfile(user.id, {
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        batch: formData.batch.trim(),
+        campus_card: formData.campusCard.trim() || undefined,
+      })
+
+      setProfile(updatedProfile)
+      toast.success('Profile updated successfully!')
+
+      // Navigate to home page after successful update
+      setTimeout(() => {
+        navigate(ROUTES.HOME)
+      }, 1500) // Small delay to show the success message
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update profile'
+      )
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  if (loading || profileLoading) {
     return (
       <div className="container py-8">
         <PageLoading message="Loading profile..." />
@@ -54,52 +168,23 @@ export function ProfilePage() {
     )
   }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsUpdating(true)
-    setMessage(null)
-
-    try {
-      const fullName =
-        `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim()
-
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          full_name: fullName,
-          first_name: formData.firstName.trim(),
-          last_name: formData.lastName.trim(),
-        },
-      })
-
-      if (error) throw error
-
-      setMessage({
-        type: 'success',
-        text: 'Profile updated successfully!',
-      })
-
-      // Clear message after 3 seconds
-      setTimeout(() => setMessage(null), 3000)
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      setMessage({
-        type: 'error',
-        text: 'Failed to update profile. Please try again.',
-      })
-    } finally {
-      setIsUpdating(false)
-    }
+  if (!profile) {
+    return (
+      <div className="container py-8">
+        <Card className="max-w-lg mx-auto bg-card-bg border-card-border">
+          <CardContent className="text-center p-8">
+            <p className="text-[var(--text-secondary)]">
+              Profile not found. Please complete your profile setup.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   // Get avatar URL with fallbacks
   const rawAvatarUrl =
+    profile.avatar_url ||
     user.user_metadata?.avatar_url ||
     user.user_metadata?.picture ||
     user.user_metadata?.avatar ||
@@ -111,8 +196,8 @@ export function ProfilePage() {
     : null
 
   const userInitials =
-    `${formData.firstName[0] || ''}${
-      formData.lastName[0] || ''
+    `${profile.first_name[0] || ''}${
+      profile.last_name[0] || ''
     }`.toUpperCase() ||
     user.email?.[0]?.toUpperCase() ||
     '?'
@@ -140,10 +225,11 @@ export function ProfilePage() {
             <div className="mx-auto mb-4">
               <Avatar className="h-24 w-24">
                 <AvatarImage
-                  src={avatarUrl}
-                  alt={user.user_metadata?.full_name || user.email || 'User'}
+                  src={!imageError ? avatarUrl : undefined}
+                  alt={`${profile.first_name} ${profile.last_name}`}
                   referrerPolicy="no-referrer"
                   crossOrigin="anonymous"
+                  onError={() => setImageError(true)}
                 />
                 <AvatarFallback className="bg-[var(--color-secondary)] text-[var(--brand-bg)] font-semibold text-2xl">
                   {userInitials}
@@ -151,7 +237,7 @@ export function ProfilePage() {
               </Avatar>
             </div>
             <CardTitle className="text-[var(--text-primary)]">
-              {user.user_metadata?.full_name || 'Unknown User'}
+              {profile.first_name} {profile.last_name}
             </CardTitle>
             <p className="text-[var(--text-secondary)] text-sm">{user.email}</p>
           </CardHeader>
@@ -171,7 +257,7 @@ export function ProfilePage() {
             <div className="flex items-center space-x-3 text-sm">
               <Shield className="h-4 w-4 text-[var(--color-secondary)]" />
               <span className="text-[var(--text-secondary)]">
-                Account Active
+                Profile Complete
               </span>
             </div>
           </CardContent>
@@ -207,6 +293,9 @@ export function ProfilePage() {
                       placeholder="Enter your first name"
                       required
                     />
+                    {errors.firstName && (
+                      <p className="text-sm text-red-500">{errors.firstName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label
@@ -226,6 +315,9 @@ export function ProfilePage() {
                       placeholder="Enter your last name"
                       required
                     />
+                    {errors.lastName && (
+                      <p className="text-sm text-red-500">{errors.lastName}</p>
+                    )}
                   </div>
                 </div>
 
@@ -244,17 +336,59 @@ export function ProfilePage() {
                   </p>
                 </div>
 
-                {message && (
-                  <div
-                    className={`p-4 rounded-lg ${
-                      message.type === 'success'
-                        ? 'bg-green-500/10 border border-green-500/20 text-green-600'
-                        : 'bg-red-500/10 border border-red-500/20 text-red-600'
-                    }`}
+                <div className="space-y-2">
+                  <Label className="text-[var(--text-primary)]">Gender</Label>
+                  <Input
+                    type="text"
+                    value={
+                      profile.gender.charAt(0).toUpperCase() +
+                      profile.gender.slice(1)
+                    }
+                    disabled
+                    className="bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Gender cannot be changed after initial setup
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="batch" className="text-[var(--text-primary)]">
+                    Batch
+                  </Label>
+                  <Input
+                    id="batch"
+                    type="text"
+                    value={formData.batch}
+                    onChange={(e) => handleInputChange('batch', e.target.value)}
+                    className="bg-[var(--brand-bg)] border-[var(--brand-border)] text-[var(--text-primary)]"
+                    placeholder="e.g., 23/24"
+                    required
+                  />
+                  {errors.batch && (
+                    <p className="text-sm text-red-500">{errors.batch}</p>
+                  )}
+                </div>
+
+                {/* Campus Card */}
+                {/* <div className="space-y-2">
+                  <Label
+                    htmlFor="campusCard"
+                    className="text-[var(--text-primary)]"
                   >
-                    {message.text}
-                  </div>
-                )}
+                    Campus Card (Optional)
+                  </Label>
+                  <Input
+                    id="campusCard"
+                    type="text"
+                    value={formData.campusCard}
+                    onChange={(e) =>
+                      handleInputChange('campusCard', e.target.value)
+                    }
+                    className="bg-[var(--brand-bg)] border-[var(--brand-border)] text-[var(--text-primary)]"
+                    placeholder="Enter your campus card number"
+                  />
+                </div> */}
 
                 <div className="flex justify-end">
                   <Button
