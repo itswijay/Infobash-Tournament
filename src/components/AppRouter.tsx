@@ -7,6 +7,7 @@ import { TeamsPage } from '@/pages/TeamsPage'
 import { MatchesPage } from '@/pages/MatchesPage'
 import { RegisterTeamPage } from '@/pages/RegisterTeamPage'
 import { InstructionsPage } from '@/pages/InstructionsPage'
+import { ProfilePage } from '@/pages/ProfilePage'
 import { ROUTES } from '@/lib/constants'
 
 function RootLayout() {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.INSTRUCTIONS,
         element: <InstructionsPage />,
+      },
+      {
+        path: ROUTES.PROFILE,
+        element: <ProfilePage />,
       },
     ],
   },
