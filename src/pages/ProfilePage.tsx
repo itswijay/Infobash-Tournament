@@ -329,7 +329,7 @@ export function ProfilePage() {
                     type="email"
                     value={user.email || ''}
                     disabled
-                    className="bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
+                    className="bg-gray-200 border-gray-300 text-gray-800 cursor-not-allowed"
                   />
                   <p className="text-xs text-[var(--text-secondary)]">
                     Email address cannot be changed
@@ -345,7 +345,7 @@ export function ProfilePage() {
                       profile.gender.slice(1)
                     }
                     disabled
-                    className="bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
+                    className="bg-gray-200 border-gray-300 text-gray-800 cursor-not-allowed"
                   />
                   <p className="text-xs text-[var(--text-secondary)]">
                     Gender cannot be changed after initial setup
