@@ -22,7 +22,6 @@ import {
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 
 const stats = [
   {
@@ -379,7 +378,7 @@ export function HomePage() {
                     <Button
                       asChild
                       size="lg"
-                      className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                      className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-8 py-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                     >
                       <Link to={ROUTES.REGISTER_TEAM}>
                         Register Your Team
@@ -398,18 +397,26 @@ export function HomePage() {
                 ) : (
                   // Guest user buttons
                   <>
-                    <GoogleLoginButton
-                      variant="modern"
+                    <Button
+                      asChild
                       size="lg"
-                      className="px-8 py-3 transition-all duration-200 hover:scale-105 shadow-lg hover:border-[var(--color-accent-1)]"
+                      className="relative overflow-hidden bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] hover:text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 group"
                     >
-                      <span className="">Get Started</span>
-                    </GoogleLoginButton>
+                      <Link
+                        to={ROUTES.REGISTER_TEAM}
+                        className="flex items-center space-x-2 relative z-10"
+                      >
+                        <Users className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                        <span className="tracking-wide">
+                          Register Your Team
+                        </span>
+                      </Link>
+                    </Button>
                     <Button
                       asChild
                       variant="outline"
                       size="lg"
-                      className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105"
+                      className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
                     >
                       <Link to={ROUTES.INSTRUCTIONS}>How It Works</Link>
                     </Button>
