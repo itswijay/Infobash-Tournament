@@ -40,11 +40,18 @@ export const ProfileGuard: React.FC<ProfileGuardProps> = ({ children }) => {
         const profileComplete = profile?.is_completed === true
         setHasCompleteProfile(profileComplete)
 
-        // If profile is not complete and user is not already on the completion page
+        // Handle navigation based on profile completion status
         if (
+          profileComplete &&
+          location.pathname === ROUTES.PROFILE_COMPLETION
+        ) {
+          // User has completed profile but is on completion page - redirect to home
+          navigate(ROUTES.HOME, { replace: true })
+        } else if (
           !profileComplete &&
           location.pathname !== ROUTES.PROFILE_COMPLETION
         ) {
+          // User doesn't have completed profile and is not on completion page - redirect to completion
           navigate(ROUTES.PROFILE_COMPLETION, { replace: true })
         }
       } catch (error) {
@@ -80,8 +87,20 @@ export const ProfileGuard: React.FC<ProfileGuardProps> = ({ children }) => {
     return <>{children}</>
   }
 
-  // If user doesn't have a complete profile and is not on completion page,
-  // the useEffect will handle the redirect
+  // Handle redirect scenarios (the useEffect will handle the actual navigation)
+  if (hasCompleteProfile && location.pathname === ROUTES.PROFILE_COMPLETION) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--brand-bg)]">
+        <div className="flex flex-col items-center space-y-4">
+          <LoadingSpinner size="lg" />
+          <p className="text-[var(--text-secondary)]">
+            Profile already complete. Redirecting to home...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   if (!hasCompleteProfile && location.pathname !== ROUTES.PROFILE_COMPLETION) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--brand-bg)]">
