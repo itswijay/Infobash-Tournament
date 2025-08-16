@@ -67,7 +67,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--brand-border)] bg-[color:rgb(14_22_40/0.78)] backdrop-blur-md supports-[backdrop-filter]:bg-[color:rgb(14_22_40/0.6)] nav-enter">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link
           to={ROUTES.HOME}
@@ -82,8 +82,9 @@ export function Header() {
             {APP_NAME}
           </span>
         </Link>
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex mx-6">
+
+        {/* Desktop Navigation - Centered */}
+        <NavigationMenu className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
           <NavigationMenuList>
             {navigation.map((item) => {
               const active = isActive(item.href)
@@ -125,8 +126,9 @@ export function Header() {
             })}
           </NavigationMenuList>
         </NavigationMenu>
+
         {/* Right side actions */}
-        <div className="ml-auto flex items-center space-x-4">
+        <div className="flex items-center space-x-4">
           {loading ? (
             <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
           ) : user ? (
