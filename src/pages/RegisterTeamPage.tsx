@@ -1,6 +1,6 @@
 import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { useAuth } from '@/hooks/useAuth'
-// import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Lock } from 'lucide-react'
 
@@ -53,22 +53,17 @@ export function RegisterTeamPage() {
               </p>
 
               <div className="space-y-4">
-                <button
-                  disabled
-                  className="w-full px-6 py-3 text-lg font-medium rounded-lg bg-gray-600 text-gray-300 opacity-50 cursor-not-allowed border border-gray-500"
-                >
-                  Sign In to Register Team (Coming Soon)
-                </button>
-                {/* <GoogleLoginButton
+                <GoogleLoginButton
                   variant="modern"
                   size="lg"
                   className="w-full"
                 >
                   Sign In to Register Team
-                </GoogleLoginButton> */}
+                </GoogleLoginButton>
 
                 <p className="text-sm text-[var(--text-secondary)]">
-                  Team registration will be available soon. Check back later!
+                  Sign in securely with Google to access team registration and
+                  tournament features.
                 </p>
               </div>
             </CardContent>

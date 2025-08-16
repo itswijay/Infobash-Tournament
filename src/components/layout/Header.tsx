@@ -15,19 +15,11 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import {
-  Trophy,
-  Users,
-  Calendar,
-  UserPlus,
-  Menu,
-  Home,
-  AlertCircle,
-} from 'lucide-react'
+import { Trophy, Users, Calendar, UserPlus, Menu, Home } from 'lucide-react'
 import { APP_NAME, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
-// import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 import { UserProfile } from '@/components/auth/UserProfile'
 import logoImg from '@/assets/logo.png'
 
@@ -58,7 +50,6 @@ const navigation = [
     href: ROUTES.REGISTER_TEAM,
     icon: UserPlus,
     highlight: true,
-    disabled: true, // Temporarily disabled for deployment
   },
 ]
 
@@ -140,26 +131,16 @@ export function Header() {
             <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
           ) : user ? (
             <div className="flex items-center space-x-2">
-              {/* Profile functionality temporarily disabled for deployment */}
-              <div className="relative">
-                <div className="flex items-center space-x-1 text-xs text-gray-500 cursor-not-allowed opacity-50">
-                  <AlertCircle className="h-3 w-3" />
-                  <span className="hidden sm:inline">
-                    Profile (Coming Soon)
-                  </span>
-                </div>
-              </div>
               <UserProfile />
             </div>
           ) : (
-            <Button
-              disabled
-              variant="ghost"
+            <GoogleLoginButton
+              variant="modern"
               size="sm"
-              className="hidden sm:flex opacity-50 cursor-not-allowed text-gray-400"
+              className="hidden sm:flex"
             >
-              Sign In (Coming Soon)
-            </Button>
+              Continue with Google
+            </GoogleLoginButton>
           )}
         </div>
         {/* Mobile Navigation */}
@@ -235,12 +216,6 @@ export function Header() {
                   <div className="h-10 w-full rounded-md bg-dark-light animate-pulse" />
                 ) : user ? (
                   <div className="space-y-3">
-                    {/* Profile functionality temporarily disabled for deployment */}
-                    <div className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm bg-gray-600/10 border border-gray-600/20 text-gray-500 opacity-50">
-                      <AlertCircle className="h-4 w-4" />
-                      <span>Profile (Coming Soon)</span>
-                    </div>
-
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-white/70">
                         Signed in as:
@@ -249,14 +224,13 @@ export function Header() {
                     </div>
                   </div>
                 ) : (
-                  <Button
-                    disabled
+                  <GoogleLoginButton
                     variant="ghost"
                     size="sm"
-                    className="w-full opacity-50 cursor-not-allowed text-gray-400"
+                    className="w-full"
                   >
-                    Sign In (Coming Soon)
-                  </Button>
+                    Sign In
+                  </GoogleLoginButton>
                 )}
               </div>
             </div>

@@ -22,7 +22,7 @@ import {
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-// import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton' // Temporarily disabled
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 
 const stats = [
   {
@@ -398,21 +398,13 @@ export function HomePage() {
                 ) : (
                   // Guest user buttons
                   <>
-                    {/* Temporarily disabled for deployment */}
-                    <Button
-                      disabled
-                      size="lg"
-                      className="px-8 py-3 opacity-50 cursor-not-allowed bg-gray-600 text-gray-300"
-                    >
-                      <span className="">Get Started (Coming Soon)</span>
-                    </Button>
-                    {/* <GoogleLoginButton
+                    <GoogleLoginButton
                       variant="modern"
                       size="lg"
                       className="px-8 py-3 transition-all duration-200 hover:scale-105 shadow-lg hover:border-[var(--color-accent-1)]"
                     >
                       <span className="">Get Started</span>
-                    </GoogleLoginButton> */}
+                    </GoogleLoginButton>
                     <Button
                       asChild
                       variant="outline"

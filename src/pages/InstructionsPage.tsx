@@ -116,8 +116,8 @@ export function InstructionsPage() {
               </div>
 
               <p className="text-sm text-[var(--text-secondary)]">
-                Team registration will be available soon. Check back later for
-                full functionality!
+                Follow these steps to successfully register your team for
+                InfoBash v4.0!
               </p>
             </div>
           </CardContent>
