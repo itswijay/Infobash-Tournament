@@ -135,6 +135,47 @@ export async function sendConfirmationEmail({
   return await response.json()
 }
 
+// Fetch all registered teams with captain information
+export async function getAllTeams() {
+  // First, get all teams
+  const { data: teams, error: teamsError } = await supabase
+    .from('teams')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (teamsError) throw teamsError
+
+  // Then, get captain information for each team from team_members table
+  const teamsWithCaptains = await Promise.all(
+    teams.map(async (team) => {
+      const { data: captainData, error: captainError } = await supabase
+        .from('team_members')
+        .select('first_name, last_name, batch')
+        .eq('team_id', team.id)
+        .eq('is_captain', true)
+        .single()
+
+      if (captainError) {
+        console.warn(
+          `Could not fetch captain for team ${team.id}:`,
+          captainError
+        )
+        return {
+          ...team,
+          captain: null,
+        }
+      }
+
+      return {
+        ...team,
+        captain: captainData,
+      }
+    })
+  )
+
+  return teamsWithCaptains
+}
+
 // Types
 export type TeamMemberInput = {
   first_name: string
