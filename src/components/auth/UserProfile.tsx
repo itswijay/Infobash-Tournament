@@ -37,7 +37,7 @@ export const UserProfile: React.FC = () => {
 
   // Optimize Google avatar URL for better loading
   const avatarUrl = rawAvatarUrl
-    ? rawAvatarUrl.replace('=s96-c', '=s128-c') // Increase size and remove crop
+    ? rawAvatarUrl.replace('=s96-c', '=s128-c')
     : null
 
   const userInitials =

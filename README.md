@@ -1,69 +1,118 @@
-# React + TypeScript + Vite
+# InfoBash Tournament v4.0
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A professional cricket tournament management system built with React, TypeScript, and Supabase.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Team Registration**: Complete team registration with member management
+- **User Authentication**: Google OAuth integration via Supabase
+- **Profile Management**: User profile creation and management
+- **Modern UI**: Clean, responsive design with Tailwind CSS
+- **Real-time Updates**: Supabase real-time capabilities
+- **Type Safety**: Full TypeScript implementation
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Radix UI components
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **State Management**: React Context + Hooks
+- **Form Handling**: React Hook Form + Zod validation
+- **Routing**: React Router DOM v7
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 18+
+- npm or yarn
+- Supabase account and project
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd infobash-tournament
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+3. Set up environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+Add your Supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. Start development server
+
+```bash
+npm run dev
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+## Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── auth/           # Authentication components
+│   ├── layout/         # Layout components (Header, Footer)
+│   ├── shared/         # Shared components (Loading, Error states)
+│   ├── team/           # Team-related components
+│   └── ui/             # Base UI components
+├── contexts/           # React contexts
+├── hooks/              # Custom React hooks
+├── lib/                # Utility libraries and API functions
+├── pages/              # Page components
+└── types/              # TypeScript type definitions
+```
+
+## Key Components
+
+- **RegisterTeamPage**: Team registration and editing
+- **ProfilePage**: User profile management
+- **TeamRegistrationForm**: Team creation and editing form
+- **AuthContext**: Authentication state management
+
+## Database Schema
+
+The application uses the following main tables:
+
+- `user_profiles`: User profile information
+- `teams`: Team details and metadata
+- `team_members`: Individual team member information
+- `tournaments`: Tournament configuration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is private and proprietary.
+
+## Support
+
+For support and questions, please contact the development team.

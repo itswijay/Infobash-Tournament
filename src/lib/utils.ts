@@ -145,15 +145,3 @@ export const removeFromStorage = (key: string): void => {
     console.error('Error removing from localStorage:', error)
   }
 }
-
-// Debounce utility
-export const debounce = <T extends (...args: unknown[]) => unknown>(
-  func: T,
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => func(...args), delay)
-  }
-}

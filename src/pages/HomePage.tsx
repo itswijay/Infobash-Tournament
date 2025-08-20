@@ -176,7 +176,6 @@ export function HomePage() {
         const scrollWithinSection = scrollPosition % sectionHeight
         const scrollPercentage = scrollWithinSection / sectionHeight
 
-        // Detect scroll direction
         const scrollDirection =
           scrollPosition > lastScrollPosition ? 'down' : 'up'
         lastScrollPosition = scrollPosition
@@ -192,7 +191,7 @@ export function HomePage() {
 
           // Handle scrolling based on direction and percentage
           if (scrollDirection === 'down') {
-            // Scrolling down - go to next section if scrolled enough
+
             if (
               scrollPercentage > threshold &&
               currentSectionIndex < sections.length - 1
@@ -203,7 +202,7 @@ export function HomePage() {
               targetSection = currentSectionIndex
             }
           } else if (scrollDirection === 'up') {
-            // Scrolling up - go to previous section if scrolled enough from top
+
             if (scrollPercentage < threshold && currentSectionIndex > 0) {
               targetSection = currentSectionIndex - 1
             } else {
@@ -212,13 +211,11 @@ export function HomePage() {
             }
           }
 
-          // Ensure we don't exceed boundaries
           targetSection = Math.max(
             0,
             Math.min(targetSection, sections.length - 1)
           )
 
-          // Only auto-scroll if we need to move to a different position
           const targetY = targetSection * sectionHeight
           const tolerance = 50
 
@@ -237,7 +234,7 @@ export function HomePage() {
         }, 150)
       }
 
-      // Update active section for navigation dots (both mobile and desktop)
+
       const sectionThresholds = [
         0,
         sectionHeight,
@@ -280,7 +277,6 @@ export function HomePage() {
       behavior: 'smooth',
     })
 
-    // Reset scrolling flag after animation completes
     setTimeout(() => {
       setIsScrolling(false)
     }, 200)

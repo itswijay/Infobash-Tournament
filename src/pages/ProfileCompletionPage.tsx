@@ -14,16 +14,16 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { toast } from 'sonner'
-import { createUserProfile } from '@/lib/api/profiles'
+import { User, Calendar, CheckCircle2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { ROUTES } from '@/lib/constants'
-import { CheckCircle2, User, Calendar } from 'lucide-react'
+import { createUserProfile } from '@/lib/api/profiles'
 
 interface ProfileFormData {
   firstName: string
@@ -319,12 +319,11 @@ export const ProfileCompletionPage: React.FC = () => {
               </div>
 
               {/* Campus Card Field */}
-              {/* <div className="space-y-2">
+              <div className="space-y-2">
                 <Label
                   htmlFor="campusCard"
                   className="text-white font-medium flex items-center gap-2"
                 >
-                  <CreditCard className="h-4 w-4" />
                   Campus Card
                   <span className="text-[color:rgb(255_255_255/0.6)] text-sm font-normal">
                     (Optional)
@@ -340,7 +339,7 @@ export const ProfileCompletionPage: React.FC = () => {
                   className="bg-[color:rgb(255_255_255/0.1)] border-[color:rgb(255_255_255/0.2)] text-white placeholder-[color:rgb(255_255_255/0.5)] focus:border-[var(--color-accent-1)] focus:ring-[var(--color-accent-1)]/50"
                   placeholder="Enter your campus card number"
                 />
-              </div> */}
+              </div>
 
               {/* Submit Button */}
               <Button

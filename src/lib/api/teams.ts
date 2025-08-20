@@ -33,7 +33,7 @@ export async function uploadTeamLogo(
   const filePath = `${teamName
     .replace(/\s+/g, '_')
     .toLowerCase()}_${Date.now()}.${fileExt}`
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('team-assets')
     .upload(filePath, file, { upsert: true })
   if (error) throw error

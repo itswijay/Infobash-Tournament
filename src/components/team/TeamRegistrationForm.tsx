@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { ChangeEvent } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Users, UserPlus, Crown, Shield, X, Save } from 'lucide-react'
+import { Crown, Shield, X, Save, Users, UserPlus } from 'lucide-react'
 import type { TeamMemberInput } from '@/lib/api/teams'
 import type { User } from '@supabase/supabase-js'
 
@@ -28,7 +28,7 @@ type TeamRegistrationFormProps = {
   } | null
   onSubmit: (data: {
     teamName: string
-    logoFile: File | null
+    logoFile: File | null | undefined
     members: TeamMemberInput[]
   }) => Promise<void>
   loading?: boolean
@@ -168,6 +168,7 @@ export function TeamRegistrationForm({
   const [logoPreview, setLogoPreview] = useState<string | null>(
     existingTeam?.logo_url || null
   )
+  const [logoRemoved, setLogoRemoved] = useState(false)
   const [members, setMembers] = useState<TeamMemberInput[]>(() => {
     if (isEditMode && existingMembers) {
       return existingMembers.map((member) => ({
@@ -204,12 +205,22 @@ export function TeamRegistrationForm({
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  // Reset logo states when entering edit mode
+  useEffect(() => {
+    if (isEditMode && existingTeam) {
+      setLogoPreview(existingTeam.logo_url || null)
+      setLogoFile(null)
+      setLogoRemoved(false)
+    }
+  }, [isEditMode, existingTeam])
+
   // Logo preview handler
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setLogoFile(file)
       setLogoPreview(URL.createObjectURL(file))
+      setLogoRemoved(false) // New logo uploaded
     }
   }
 
@@ -217,6 +228,7 @@ export function TeamRegistrationForm({
   const handleRemoveLogo = () => {
     setLogoFile(null)
     setLogoPreview(null)
+    setLogoRemoved(true) // Logo explicitly removed
     // Reset the file input
     const fileInput = document.getElementById('team-logo') as HTMLInputElement
     if (fileInput) {
@@ -308,7 +320,20 @@ export function TeamRegistrationForm({
     }
     setSubmitting(true)
     try {
-      await onSubmit({ teamName, logoFile, members })
+      // Determine logo handling based on state
+      let finalLogoFile: File | null | undefined = null
+      if (logoFile) {
+        // New logo uploaded
+        finalLogoFile = logoFile
+      } else if (logoRemoved) {
+        // Logo was explicitly removed
+        finalLogoFile = null
+      } else {
+        // No logo change in edit mode
+        finalLogoFile = undefined
+      }
+
+      await onSubmit({ teamName, logoFile: finalLogoFile, members })
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
@@ -384,9 +409,11 @@ export function TeamRegistrationForm({
                     Remove Logo
                   </Button>
                 )}
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Recommended: Square image, max 512kB
-                </p>
+                {logoRemoved && !logoPreview && !logoFile && (
+                  <p className="text-xs text-orange-600">
+                    Logo will be removed when you update the team
+                  </p>
+                )}
               </div>
             </div>
           </div>

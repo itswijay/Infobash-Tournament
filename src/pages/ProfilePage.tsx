@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { User, Save, Mail, Calendar, Shield } from 'lucide-react'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
 import {
   getUserProfile,
   updateUserProfile,
@@ -78,7 +78,6 @@ export function ProfilePage() {
   const handleInputChange = (field: keyof ProfileFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }))
     }
@@ -371,7 +370,7 @@ export function ProfilePage() {
                 </div>
 
                 {/* Campus Card */}
-                {/* <div className="space-y-2">
+                <div className="space-y-2">
                   <Label
                     htmlFor="campusCard"
                     className="text-[var(--text-primary)]"
@@ -388,7 +387,7 @@ export function ProfilePage() {
                     className="bg-[var(--brand-bg)] border-[var(--brand-border)] text-[var(--text-primary)]"
                     placeholder="Enter your campus card number"
                   />
-                </div> */}
+                </div>
 
                 <div className="flex justify-end">
                   <Button

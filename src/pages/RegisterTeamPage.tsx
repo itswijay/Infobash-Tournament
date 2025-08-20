@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase'
 import { TeamRegistrationForm } from '@/components/team/TeamRegistrationForm'
 import { Button } from '@/components/ui/button'
 import type { TeamMemberInput } from '@/lib/api/teams'
+import toast from 'react-hot-toast'
 
 interface Team {
   id: string
@@ -107,6 +108,7 @@ export function RegisterTeamPage() {
       if (error) throw error
       setTeamMembers(members || [])
     } catch (error) {
+      toast.error('Failed to load team members. Please refresh the page.')
       console.error('Error fetching team members:', error)
     }
   }
@@ -121,7 +123,7 @@ export function RegisterTeamPage() {
 
   const handleUpdateTeam = async (data: {
     teamName: string
-    logoFile: File | null
+    logoFile: File | null | undefined
     members: TeamMemberInput[]
   }) => {
     try {
@@ -136,8 +138,9 @@ export function RegisterTeamPage() {
 
       if (teamError) throw teamError
 
-      // Update team logo if provided
+      // Handle logo update/removal
       if (data.logoFile) {
+        // Upload new logo
         const logoUrl = await import('@/lib/api/teams').then((m) =>
           m.uploadTeamLogo(data.logoFile!, data.teamName)
         )
@@ -146,7 +149,14 @@ export function RegisterTeamPage() {
           .from('teams')
           .update({ logo_url: logoUrl })
           .eq('id', team!.id)
+      } else if (data.logoFile === null) {
+        // Logo was explicitly removed - set logo_url to null
+        await supabase
+          .from('teams')
+          .update({ logo_url: null })
+          .eq('id', team!.id)
       }
+      // If logoFile is undefined, no change to logo
 
       // Delete existing team members
       await supabase.from('team_members').delete().eq('team_id', team!.id)
@@ -165,16 +175,24 @@ export function RegisterTeamPage() {
       // Refresh team data
       const updatedTeam = await getUserTeam(user!.id)
       setTeam(updatedTeam)
-      await fetchTeamMembers(team!.id)
+      await fetchTeamMembers(updatedTeam!.id)
+
+      // Force a re-render by updating the state with a fresh timestamp
+      setTeam((prev) =>
+        prev ? { ...prev, updated_at: new Date().toISOString() } : null
+      )
+
+      // Add a small delay to ensure UI updates properly
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
       setIsEditing(false)
-      alert('Team updated successfully!')
+      toast.success('Team updated successfully!')
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
           ? err.message
           : 'Failed to update team. Please try again.'
-      alert(errorMessage)
+      toast.error(errorMessage)
     }
   }
 
@@ -336,7 +354,7 @@ export function RegisterTeamPage() {
               </div>
 
               {/* Action Button */}
-              <div >
+              <div>
                 <Button
                   onClick={handleEditTeam}
                   className="w-full bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] font-semibold py-3 transition-all duration-200 hover:scale-[1.02]"
@@ -515,7 +533,7 @@ export function RegisterTeamPage() {
                   err instanceof Error
                     ? err.message
                     : 'Registration failed. Please try again.'
-                alert(errorMessage)
+                toast.error(errorMessage)
               }
             }}
           />

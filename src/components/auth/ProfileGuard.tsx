@@ -82,7 +82,6 @@ export const ProfileGuard: React.FC<ProfileGuardProps> = ({ children }) => {
     )
   }
 
-  // If user is not authenticated, let the parent handle it
   if (!user) {
     return <>{children}</>
   }
