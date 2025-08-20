@@ -477,8 +477,16 @@ export function TeamRegistrationForm({
                       </span>
                       <div className="flex items-center space-x-2 text-xs text-[var(--text-secondary)]">
                         <span className="capitalize">{member.gender}</span>
-                        <span>•</span>
+                        <span>|</span>
                         <span>Batch: {member.batch}</span>
+                        {member.campus_card && (
+                          <>
+                            <span>|</span>
+                            <span className="font-semibold text-[13px]">
+                              {member.campus_card}
+                            </span>
+                          </>
+                        )}
                         {member.is_captain && (
                           <>
                             <span>•</span>

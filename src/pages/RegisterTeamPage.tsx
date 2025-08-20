@@ -114,10 +114,12 @@ export function RegisterTeamPage() {
   }
 
   const handleEditTeam = () => {
+    toast.success('Entering edit mode. You can now modify your team details.')
     setIsEditing(true)
   }
 
   const handleCancelEdit = () => {
+    toast('Edit mode cancelled. No changes were made.')
     setIsEditing(false)
   }
 
@@ -127,6 +129,9 @@ export function RegisterTeamPage() {
     members: TeamMemberInput[]
   }) => {
     try {
+      // Show loading toast
+      const loadingToast = toast.loading('Updating team...')
+
       // Update team details
       const { error: teamError } = await supabase
         .from('teams')
@@ -141,6 +146,7 @@ export function RegisterTeamPage() {
       // Handle logo update/removal
       if (data.logoFile) {
         // Upload new logo
+        toast.loading('Uploading new logo...', { id: loadingToast })
         const logoUrl = await import('@/lib/api/teams').then((m) =>
           m.uploadTeamLogo(data.logoFile!, data.teamName)
         )
@@ -151,6 +157,7 @@ export function RegisterTeamPage() {
           .eq('id', team!.id)
       } else if (data.logoFile === null) {
         // Logo was explicitly removed - set logo_url to null
+        toast.loading('Updating team details...', { id: loadingToast })
         await supabase
           .from('teams')
           .update({ logo_url: null })
@@ -159,6 +166,7 @@ export function RegisterTeamPage() {
       // If logoFile is undefined, no change to logo
 
       // Delete existing team members
+      toast.loading('Updating team members...', { id: loadingToast })
       await supabase.from('team_members').delete().eq('team_id', team!.id)
 
       // Insert updated team members
@@ -185,8 +193,11 @@ export function RegisterTeamPage() {
       // Add a small delay to ensure UI updates properly
       await new Promise((resolve) => setTimeout(resolve, 100))
 
-      setIsEditing(false)
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast)
       toast.success('Team updated successfully!')
+
+      setIsEditing(false)
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
@@ -487,6 +498,9 @@ export function RegisterTeamPage() {
             user={user!}
             onSubmit={async ({ teamName, logoFile, members }) => {
               try {
+                // Show loading toast
+                const loadingToast = toast.loading('Registering your team...')
+
                 // 1. Get current tournament
                 const tournament = await import('@/lib/api/teams')
                   .then((m) => m.getCurrentTournament())
@@ -496,12 +510,16 @@ export function RegisterTeamPage() {
                 // 2. Upload logo if provided
                 let logoUrl: string | undefined = undefined
                 if (logoFile) {
+                  toast.loading('Uploading team logo...', { id: loadingToast })
                   logoUrl = await import('@/lib/api/teams').then((m) =>
                     m.uploadTeamLogo(logoFile, teamName)
                   )
                 }
 
                 // 3. Register team and members
+                toast.loading('Creating team and adding members...', {
+                  id: loadingToast,
+                })
                 await import('@/lib/api/teams').then((m) =>
                   m.registerTeam({
                     teamName,
@@ -512,8 +530,16 @@ export function RegisterTeamPage() {
                   })
                 )
 
-                // Registration complete, reload page
-                window.location.reload()
+                // Dismiss loading toast and show success
+                toast.dismiss(loadingToast)
+                toast.success(
+                  `Team "${teamName}" successfully registered! Welcome to InfoBash v4.0!`
+                )
+
+                // Registration complete, reload page after a short delay to show the toast
+                setTimeout(() => {
+                  window.location.reload()
+                }, 2000)
               } catch (err: unknown) {
                 const errorMessage =
                   err instanceof Error
