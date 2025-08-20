@@ -228,27 +228,7 @@ export function RegisterTeamPage() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
-          {/* Info Card */}
-          <Card className="bg-card-bg border-card-border">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4">
-                <div className="h-16 w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
-                  <Trophy className="h-8 w-8 text-[var(--color-secondary)]" />
-                </div>
-              </div>
-              <CardTitle className="text-[var(--text-primary)]">
-                Tournament Ready
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <p className="text-[var(--text-secondary)] text-sm">
-                Professional cricket tournament management with live updates and
-                comprehensive tracking.
-              </p>
-            </CardContent>
-          </Card>
-
+        <div className="flex flex-col items-center justify-center max-w-lg mx-auto">
           {/* Sign In Card */}
           <Card className="bg-card-bg border-card-border md:col-span-2">
             <CardHeader className="text-center">
@@ -323,7 +303,13 @@ export function RegisterTeamPage() {
                   />
                 ) : (
                   <div className="h-24 w-24 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto border-4 border-[var(--color-secondary)]/20">
-                    <Users className="h-16 w-16 text-[var(--color-secondary)]" />
+                    <span className="text-3xl font-bold text-[var(--color-secondary)]">
+                      {team.name
+                        .split(' ')
+                        .map((word) => word[0]?.toUpperCase())
+                        .join('')
+                        .slice(0, 2) || 'TM'}
+                    </span>
                   </div>
                 )}
               </div>
