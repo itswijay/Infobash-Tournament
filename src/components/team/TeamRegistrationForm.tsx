@@ -447,8 +447,8 @@ export function TeamRegistrationForm({
               </Button>
             </div>
             <div className="text-xs text-[var(--text-secondary)]">
-              Exactly 10 members required. 7 males and 3 females. Captain is the
-              one who fills this form.
+              Exactly 10 members required. 7 males and 3 females. You (the
+              captain) will add all team members during registration.
             </div>
           </div>
 

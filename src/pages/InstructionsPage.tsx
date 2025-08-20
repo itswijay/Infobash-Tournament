@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Clock, Trophy, UserCheck, Info, ArrowRight } from 'lucide-react'
+import { Clock, Trophy, Info, ArrowRight, Crown } from 'lucide-react'
 import { ROUTES } from '@/lib/constants'
 
 export function InstructionsPage() {
@@ -47,13 +47,14 @@ export function InstructionsPage() {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <UserCheck className="w-5 h-5 text-[var(--color-accent-1)] mt-0.5 flex-shrink-0" />
+                <Crown className="w-5 h-5 text-[var(--color-accent-1)] mt-0.5 flex-shrink-0" />
                 <p className="text-[var(--text-secondary)]">
                   <strong className="text-[var(--text-primary)]">
-                    Account Verification:
+                    Captain Requirements:
                   </strong>{' '}
-                  All team members must have verified accounts before team
-                  registration can be completed.
+                  Only the team captain needs a verified Google account and
+                  completed profile. Team members will be added during
+                  registration without requiring individual accounts.
                 </p>
               </div>
             </div>
@@ -68,25 +69,26 @@ export function InstructionsPage() {
                     <strong className="text-[var(--text-primary)]">
                       Step 1:
                     </strong>{' '}
-                    All users must sign in with their Google account
+                    Team captain signs in with their Google account
                   </div>
                   <div>
                     <strong className="text-[var(--text-primary)]">
                       Step 2:
                     </strong>{' '}
-                    Ensure all 10 team members have individual accounts
+                    Complete your profile (name, gender, batch, etc.)
                   </div>
                   <div>
                     <strong className="text-[var(--text-primary)]">
                       Step 3:
                     </strong>{' '}
-                    Team must have exactly 7 boys and 3 girls
+                    Add all 10 team members (7 boys + 3 girls) during
+                    registration
                   </div>
                   <div>
                     <strong className="text-[var(--text-primary)]">
                       Step 4:
                     </strong>{' '}
-                    Team captain can then register the complete team
+                    Submit team registration with logo and member details
                   </div>
                 </div>
               </div>
