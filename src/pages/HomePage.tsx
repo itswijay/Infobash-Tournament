@@ -76,7 +76,7 @@ const upcomingMatches = [
 const features = [
   {
     title: 'Team Registration',
-    description: 'Register your cricket team with player details and team logo',
+    description: 'Register your team with player details and team logo',
     icon: Users,
     href: ROUTES.REGISTER_TEAM,
     action: 'Register Now',
@@ -434,10 +434,10 @@ export function HomePage() {
 
       {/* Tournament Statistics Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_30%_60%,rgba(244,188,69,0.08),transparent_70%)]">
-        <div className="container py-16 md:py-24 flex items-center min-h-full">
+        <div className="container py-12 md:py-24 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
+            <div className="text-center mb-4 md:mb-16">
+              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
                 Tournament Statistics
               </h2>
               <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
@@ -473,12 +473,12 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Key Features Section */}
+      {/* Platform Features Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_80%_20%,rgba(221,131,10,0.10),transparent_70%)]">
-        <div className="container py-12 flex items-center min-h-full">
+        <div className="container py-4 md:py-12 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
+            <div className="text-center mb-4 md:mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-2 md:mb-4">
                 Platform Features
               </h2>
               <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
@@ -487,7 +487,7 @@ export function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 px-4 md:px-0">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon
                 return (
@@ -495,24 +495,24 @@ export function HomePage() {
                     key={index}
                     className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-105 group"
                   >
-                    <CardHeader>
-                      <IconComponent className="w-12 h-12 text-[var(--color-secondary)] mb-4" />
-                      <CardTitle className="text-[var(--text-primary)]">
+                    <CardHeader className="p-1.5 md:p-3">
+                      <IconComponent className="w-5 h-5 md:w-8 md:h-8 text-[var(--color-secondary)] mb-1 md:mb-2 mx-auto" />
+                      <CardTitle className="text-xs md:text-base lg:text-lg text-[var(--text-primary)] text-center">
                         {feature.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-[var(--text-secondary)] mb-6">
+                    <CardContent className="p-1.5 md:p-3 pt-0">
+                      <CardDescription className="text-xs md:text-sm text-[var(--text-secondary)] mb-1.5 md:mb-3 text-center leading-tight">
                         {feature.description}
                       </CardDescription>
                       <Button
                         asChild
                         variant="outline"
-                        className="w-full border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] group-hover:scale-105 transition-all duration-200"
+                        className="w-full border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] group-hover:scale-105 transition-all duration-200 text-xs md:text-xs py-0.5 md:py-1.5"
                       >
                         <Link to={feature.href}>
                           {feature.action}
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <ArrowRight className="ml-1 md:ml-2 h-2.5 w-2.5 md:h-3 md:w-3" />
                         </Link>
                       </Button>
                     </CardContent>
@@ -526,54 +526,51 @@ export function HomePage() {
 
       {/* Upcoming Matches Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_20%_80%,rgba(244,188,69,0.06),transparent_70%)]">
-        <div className="container py-10 flex items-center min-h-full">
+        <div className="container py-4 md:py-6 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-2 md:mb-4">
                 Upcoming Matches
               </h2>
-              <div className="mx-auto mb-6 h-1 w-24 bg-gradient-gold rounded-full" />
-              <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
+              <div className="mx-auto mb-4 md:mb-6 h-1 w-16 md:w-24 bg-gradient-gold rounded-full" />
+              <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto px-4">
                 Don't miss these exciting upcoming cricket matches
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-5xl mx-auto px-4 md:px-0">
               {upcomingMatches.map((match) => (
                 <Card
                   key={match.id}
                   className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-105"
                 >
-                  <CardHeader className="pb-4">
+                  <CardHeader className="pb-1 md:pb-4 p-1 md:p-6">
                     <div className="flex items-center justify-between">
-                      <Badge
-                        variant="secondary"
-                        className="bg-[var(--color-secondary)]/20 text-[var(--color-secondary)]"
-                      >
-                        <Clock className="w-3 h-3 mr-1" />
+                      <div className="text-[var(--color-secondary)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2">
+                        <Clock className="w-2 h-2 md:w-4 md:h-4 mr-1 inline" />
                         {match.time}
-                      </Badge>
+                      </div>
                       <Badge
                         variant="outline"
-                        className="border-[var(--color-accent-1)] text-[var(--color-accent-1)]"
+                        className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2"
                       >
                         Live Soon
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-center mb-4">
-                      <div className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+                  <CardContent className="p-1 md:p-6 pt-0">
+                    <div className="text-center mb-1 md:mb-4">
+                      <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-0.5 md:mb-2">
                         {match.team1}
                       </div>
-                      <div className="text-sm text-[var(--text-secondary)] mb-2">
+                      <div className="text-xs md:text-sm text-[var(--text-secondary)] mb-0.5 md:mb-2">
                         vs
                       </div>
-                      <div className="text-xl font-semibold text-[var(--text-primary)] mb-4">
+                      <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-1 md:mb-4">
                         {match.team2}
                       </div>
                     </div>
-                    <div className="text-sm text-[var(--text-secondary)] text-center">
+                    <div className="text-xs md:text-sm text-[var(--text-secondary)] text-center">
                       📍 {match.venue}
                     </div>
                   </CardContent>
@@ -581,15 +578,15 @@ export function HomePage() {
               ))}
             </div>
 
-            <div className="text-center mt-12">
+            <div className="text-center mt-8 md:mt-8">
               <Button
                 asChild
                 size="lg"
-                className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/90 text-[var(--brand-bg)] font-semibold px-8 py-3 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                className="bg-[var(--color-secondary)] hover:bg-[var(--color-accent-1)] text-[var(--brand-bg)] hover:text-[var(--brand-bg)] font-semibold px-6 md:px-8 py-2 md:py-3 text-sm md:text-base transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
                 <Link to={ROUTES.MATCHES}>
                   View All Matches
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
             </div>
