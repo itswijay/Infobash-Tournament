@@ -207,3 +207,23 @@ export async function updateTeamMemberCampusCard(
     // Don't throw error as this is a sync operation and shouldn't break profile updates
   }
 }
+
+export async function getTeamMembers(teamId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('team_members')
+      .select('*')
+      .eq('team_id', teamId)
+      .order('is_captain', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching team members:', error)
+      throw new Error('Failed to fetch team members')
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getTeamMembers:', error)
+    throw new Error('Failed to fetch team members')
+  }
+}

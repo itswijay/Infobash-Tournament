@@ -2,8 +2,15 @@ import { useState, useEffect } from 'react'
 import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Users, Trophy, Calendar, Crown } from 'lucide-react'
-import { getAllTeams } from '@/lib/api/teams'
+import {
+  Users,
+  Trophy,
+  Calendar,
+  Crown,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react'
+import { getAllTeams, getTeamMembers } from '@/lib/api/teams'
 import toast from 'react-hot-toast'
 
 interface Team {
@@ -22,10 +29,62 @@ interface Team {
   }
 }
 
+interface TeamMember {
+  id: string
+  first_name: string
+  last_name: string
+  campus_card?: string
+  is_captain: boolean
+  user_id: string
+}
+
 export function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set())
+  const [closingTeams, setClosingTeams] = useState<Set<string>>(new Set())
+  const [teamMembers, setTeamMembers] = useState<Record<string, TeamMember[]>>(
+    {}
+  )
+  const [loadingMembers, setLoadingMembers] = useState<Set<string>>(new Set())
+
+  // Add custom CSS animation
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+          max-height: 0;
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          max-height: 500px;
+        }
+      }
+      
+      @keyframes slideUp {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+          max-height: 500px;
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+          max-height: 0;
+        }
+      }
+    `
+    document.head.appendChild(style)
+
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -46,6 +105,49 @@ export function TeamsPage() {
     fetchTeams()
   }, [])
 
+  const toggleTeamExpansion = async (teamId: string) => {
+    if (expandedTeams.has(teamId)) {
+      // Start closing animation
+      setClosingTeams((prev) => new Set(prev).add(teamId))
+
+      // Wait for animation to complete, then remove from expanded
+      setTimeout(() => {
+        setExpandedTeams((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(teamId)
+          return newSet
+        })
+        setClosingTeams((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(teamId)
+          return newSet
+        })
+      }, 500) // Same duration as the animation (600ms)
+    } else {
+      // Expand team
+      setExpandedTeams((prev) => new Set(prev).add(teamId))
+
+      // Fetch team members if not already loaded
+      if (!teamMembers[teamId]) {
+        try {
+          setLoadingMembers((prev) => new Set(prev).add(teamId))
+          const members = await getTeamMembers(teamId)
+          setTeamMembers((prev) => ({ ...prev, [teamId]: members }))
+        } catch (err) {
+          const errorMessage =
+            err instanceof Error ? err.message : 'Failed to load team members'
+          toast.error(errorMessage)
+        } finally {
+          setLoadingMembers((prev) => {
+            const newSet = new Set(prev)
+            newSet.delete(teamId)
+            return newSet
+          })
+        }
+      }
+    }
+  }
+
   // Get team initials for logo fallback
   const getTeamInitials = (teamName: string) => {
     return (
@@ -64,6 +166,11 @@ export function TeamsPage() {
       month: 'short',
       day: 'numeric',
     })
+  }
+
+  // Get member display name
+  const getMemberDisplayName = (member: TeamMember) => {
+    return member.campus_card || `${member.first_name} ${member.last_name}`
   }
 
   if (loading) {
@@ -163,99 +270,166 @@ export function TeamsPage() {
         ) : (
           <div className="space-y-3">
             {teams.map((team) => (
-              <Card
-                key={team.id}
-                className="bg-card-bg border-card-border hover:border-[var(--color-secondary)]/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group"
-              >
-                <CardContent className="p-3 md:p-4">
-                  <div className="flex items-center space-x-3 md:space-x-4">
-                    {/* Team Logo */}
-                    <div className="flex-shrink-0">
-                      {team.logo_url ? (
-                        <img
-                          src={team.logo_url}
-                          alt={`${team.name} logo`}
-                          className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200"
-                        />
-                      ) : (
-                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200">
-                          <span className="text-sm md:text-lg font-bold text-[var(--color-secondary)]">
-                            {getTeamInitials(team.name)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Team Info - Left Side */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 md:space-x-3 mb-1">
-                        <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-200 truncate">
-                          {team.name}
-                        </h3>
-                        <Badge className="bg-[var(--color-secondary)] text-[var(--brand-bg)] hover:bg-[var(--color-secondary)]/90 text-xs">
-                          <Trophy className="h-3 w-3 mr-1" />
-                          Ready
-                        </Badge>
-                      </div>
-
-                      {/* Captain Information */}
-                      <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm">
-                        <div className="flex items-center space-x-1 md:space-x-2">
-                          <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
-                          <span className="text-[var(--text-secondary)]">
-                            Captain:
-                          </span>
-                          <span className="font-semibold text-[var(--text-primary)] truncate">
-                            {team.captain
-                              ? team.captain.campus_card
-                                ? team.captain.campus_card
-                                : `${team.captain.first_name} ${team.captain.last_name}`
-                              : 'Unavailable'}
-                          </span>
-                        </div>
-
-                        {team.captain && (
-                          <div className="flex items-center space-x-1 md:space-x-2">
-                            <span className="text-[var(--text-secondary)]">
-                              Batch:
-                            </span>
-                            <span className="font-medium text-[var(--text-primary)]">
-                              {team.captain.batch}
+              <div key={team.id} className="space-y-0">
+                <Card
+                  className="bg-card-bg border-card-border hover:border-[var(--color-secondary)]/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group cursor-pointer"
+                  onClick={() => toggleTeamExpansion(team.id)}
+                >
+                  <CardContent className="p-3 md:p-4">
+                    <div className="flex items-center space-x-3 md:space-x-4">
+                      {/* Team Logo */}
+                      <div className="flex-shrink-0">
+                        {team.logo_url ? (
+                          <img
+                            src={team.logo_url}
+                            alt={`${team.name} logo`}
+                            className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200">
+                            <span className="text-sm md:text-lg font-bold text-[var(--color-secondary)]">
+                              {getTeamInitials(team.name)}
                             </span>
                           </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Team Stats - Right Side - Hidden on mobile */}
-                    <div className="hidden md:flex items-center space-x-4 text-sm">
-                      <div className="text-center">
-                        <div className="flex items-center space-x-1 mb-1">
-                          <Users className="h-3 w-3 text-[var(--color-accent-1)]" />
-                          <span className="text-[var(--text-secondary)] text-xs">
-                            Members
-                          </span>
+                      {/* Team Info - Left Side */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 md:space-x-3 mb-1">
+                          <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-200 truncate">
+                            {team.name}
+                          </h3>
+                          <Badge className="bg-[var(--color-secondary)] text-[var(--brand-bg)] hover:bg-[var(--color-secondary)]/90 text-xs">
+                            <Trophy className="h-3 w-3 mr-1" />
+                            Ready
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="text-xs">
-                          10
-                        </Badge>
+
+                        {/* Captain Information */}
+                        <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm">
+                          <div className="flex items-center space-x-1 md:space-x-2">
+                            <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
+                            <span className="text-[var(--text-secondary)]">
+                              Captain:
+                            </span>
+                            <span className="font-semibold text-[var(--text-primary)] truncate">
+                              {team.captain
+                                ? team.captain.campus_card
+                                  ? team.captain.campus_card
+                                  : `${team.captain.first_name} ${team.captain.last_name}`
+                                : 'Unavailable'}
+                            </span>
+                          </div>
+
+                          {team.captain && (
+                            <div className="flex items-center space-x-1 md:space-x-2">
+                              <span className="text-[var(--text-secondary)]">
+                                Batch:
+                              </span>
+                              <span className="font-medium text-[var(--text-primary)]">
+                                {team.captain.batch}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="text-center">
-                        <div className="flex items-center space-x-1 mb-1">
-                          <Calendar className="h-3 w-3 text-[var(--color-accent-1)]" />
-                          <span className="text-[var(--text-secondary)] text-xs">
-                            Date
-                          </span>
+                      {/* Team Stats - Right Side - Hidden on mobile */}
+                      <div className="hidden md:flex items-center space-x-4 text-sm">
+                        <div className="text-center">
+                          <div className="flex items-center space-x-1 mb-1">
+                            <Users className="h-3 w-3 text-[var(--color-accent-1)]" />
+                            <span className="text-[var(--text-secondary)] text-xs">
+                              Members
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            10
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="text-xs">
-                          {formatDate(team.created_at)}
-                        </Badge>
+
+                        <div className="text-center">
+                          <div className="flex items-center space-x-1 mb-1">
+                            <Calendar className="h-3 w-3 text-[var(--color-accent-1)]" />
+                            <span className="text-[var(--text-secondary)] text-xs">
+                              Date
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {formatDate(team.created_at)}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Expand/Collapse Icon */}
+                      <div className="flex-shrink-0">
+                        {expandedTeams.has(team.id) ? (
+                          <ChevronUp className="h-5 w-5 text-[var(--color-secondary)] transition-transform duration-200" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-[var(--color-secondary)] transition-transform duration-200" />
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Expanded Members Section */}
+                {(expandedTeams.has(team.id) || closingTeams.has(team.id)) && (
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      animation: closingTeams.has(team.id)
+                        ? 'slideUp 500ms ease-out forwards'
+                        : 'slideDown 500ms ease-out forwards',
+                    }}
+                  >
+                    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg mx-2 border-t-0 rounded-t-none">
+                      <div className="p-4">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+                          <h4 className="text-sm font-semibold text-[var(--text-primary)]">
+                            Team Members
+                          </h4>
+                        </div>
+
+                        {loadingMembers.has(team.id) ? (
+                          <div className="flex items-center justify-center py-4">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-secondary)]"></div>
+                          </div>
+                        ) : teamMembers[team.id] ? (
+                          <div className="space-y-2">
+                            {teamMembers[team.id].map((member) => (
+                              <div
+                                key={member.id}
+                                className="flex items-center justify-between p-2 rounded-lg bg-[var(--brand-bg)]/5 border border-[var(--card-border)]/50 hover:bg-[var(--brand-bg)]/10 transition-colors duration-200"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  {member.is_captain && (
+                                    <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
+                                  )}
+                                  <span className="text-sm text-[var(--text-primary)] font-medium">
+                                    {getMemberDisplayName(member)}
+                                  </span>
+                                </div>
+                                {member.is_captain && (
+                                  <Badge className="bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] text-xs">
+                                    Captain
+                                  </Badge>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-[var(--text-secondary)] text-sm">
+                            No members found
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             ))}
           </div>
         )}
