@@ -150,7 +150,7 @@ export async function getAllTeams() {
     teams.map(async (team) => {
       const { data: captainData, error: captainError } = await supabase
         .from('team_members')
-        .select('first_name, last_name, batch')
+        .select('first_name, last_name, batch, campus_card')
         .eq('team_id', team.id)
         .eq('is_captain', true)
         .single()
@@ -172,7 +172,6 @@ export async function getAllTeams() {
       }
     })
   )
-
   return teamsWithCaptains
 }
 

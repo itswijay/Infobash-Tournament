@@ -18,6 +18,7 @@ interface Team {
     first_name: string
     last_name: string
     batch: string
+    campus_card?: string
   }
 }
 
@@ -110,9 +111,9 @@ export function TeamsPage() {
     <div className="container py-8 page-enter">
       <div className="space-y-8">
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                 Teams
               </h1>
               <div className="mt-2 h-1 w-16 rounded-full bg-gradient-gold opacity-80" />
@@ -121,23 +122,23 @@ export function TeamsPage() {
               </p>
             </div>
 
-            {/* Tournament Overview - Top Right */}
+            {/* Tournament Overview - Centered on mobile, right-aligned on desktop */}
             {teams.length > 0 && (
-              <div className="text-center sm:text-right">
-                <div className="flex items-center justify-center sm:justify-end space-x-6">
+              <div className="text-center md:text-right">
+                <div className="flex items-center justify-center md:justify-end space-x-6">
                   <div className="text-center">
-                    <div className="text-xl font-bold text-[var(--color-accent-1)]">
+                    <div className="text-xl md:text-2xl font-bold text-[var(--color-accent-1)]">
                       {teams.length}
                     </div>
-                    <div className="text-xs text-[var(--text-secondary)]">
+                    <div className="text-sm text-[var(--text-secondary)]">
                       Teams
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-[var(--color-accent-1)]">
+                    <div className="text-xl md:text-2xl font-bold text-[var(--color-accent-1)]">
                       {teams.length * 10}
                     </div>
-                    <div className="text-xs text-[var(--text-secondary)]">
+                    <div className="text-sm text-[var(--text-secondary)]">
                       Players
                     </div>
                   </div>
@@ -166,57 +167,55 @@ export function TeamsPage() {
                 key={team.id}
                 className="bg-card-bg border-card-border hover:border-[var(--color-secondary)]/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group"
               >
-                <CardContent className="p-3 sm:p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex items-center space-x-3 md:space-x-4">
                     {/* Team Logo */}
-                    <div className="flex-shrink-0 flex justify-center sm:justify-start">
+                    <div className="flex-shrink-0">
                       {team.logo_url ? (
                         <img
                           src={team.logo_url}
                           alt={`${team.name} logo`}
-                          className="h-12 w-12 rounded-full object-cover border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200"
+                          className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200"
                         />
                       ) : (
-                        <div className="h-12 w-12 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200">
-                          <span className="text-lg font-bold text-[var(--color-secondary)]">
+                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center border-2 md:border-3 border-[var(--color-secondary)]/20 group-hover:border-[var(--color-secondary)]/40 transition-all duration-200">
+                          <span className="text-sm md:text-lg font-bold text-[var(--color-secondary)]">
                             {getTeamInitials(team.name)}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Team Info - Middle Section */}
-                    <div className="flex-1 min-w-0 text-center sm:text-left">
-                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2 sm:mb-1">
-                        <h3 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-200 truncate">
+                    {/* Team Info - Left Side */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 md:space-x-3 mb-1">
+                        <h3 className="text-base md:text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--color-secondary)] transition-colors duration-200 truncate">
                           {team.name}
                         </h3>
-                        <Badge className="bg-[var(--color-secondary)] text-[var(--brand-bg)] hover:bg-[var(--color-secondary)]/90 text-xs self-center sm:self-auto">
+                        <Badge className="bg-[var(--color-secondary)] text-[var(--brand-bg)] hover:bg-[var(--color-secondary)]/90 text-xs">
                           <Trophy className="h-3 w-3 mr-1" />
                           Ready
                         </Badge>
                       </div>
 
                       {/* Captain Information */}
-                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm">
-                        <div className="flex items-center justify-center sm:justify-start space-x-2">
+                      <div className="flex items-center space-x-3 md:space-x-4 text-xs md:text-sm">
+                        <div className="flex items-center space-x-1 md:space-x-2">
                           <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
                           <span className="text-[var(--text-secondary)]">
                             Captain:
                           </span>
-                          {team.captain ? (
-                            <span className="font-semibold text-[var(--text-primary)]">
-                              {team.captain.first_name} {team.captain.last_name}
-                            </span>
-                          ) : (
-                            <span className="text-[var(--text-secondary)] italic">
-                              Unavailable
-                            </span>
-                          )}
+                          <span className="font-semibold text-[var(--text-primary)] truncate">
+                            {team.captain
+                              ? team.captain.campus_card
+                                ? team.captain.campus_card
+                                : `${team.captain.first_name} ${team.captain.last_name}`
+                              : 'Unavailable'}
+                          </span>
                         </div>
 
                         {team.captain && (
-                          <div className="flex items-center justify-center sm:justify-start space-x-2">
+                          <div className="flex items-center space-x-1 md:space-x-2">
                             <span className="text-[var(--text-secondary)]">
                               Batch:
                             </span>
@@ -228,8 +227,8 @@ export function TeamsPage() {
                       </div>
                     </div>
 
-                    {/* Team Stats - Right Side */}
-                    <div className="flex items-center justify-center sm:justify-end space-x-4 text-sm">
+                    {/* Team Stats - Right Side - Hidden on mobile */}
+                    <div className="hidden md:flex items-center space-x-4 text-sm">
                       <div className="text-center">
                         <div className="flex items-center space-x-1 mb-1">
                           <Users className="h-3 w-3 text-[var(--color-accent-1)]" />
