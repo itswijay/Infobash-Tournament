@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -76,7 +77,7 @@ export function Header() {
           <img
             src={logoImg}
             alt="InfoBash Logo"
-            className="h-14 w-auto object-contain"
+            className="h-12 md:h-14 w-auto object-contain"
           />
           <span className="font-bold text-xl text-gradient-gold">
             {APP_NAME}
@@ -132,7 +133,7 @@ export function Header() {
           {loading ? (
             <div className="h-8 w-8 rounded-full bg-dark-light animate-pulse" />
           ) : user ? (
-            <div className="flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-2">
               <UserProfile />
             </div>
           ) : (
@@ -150,8 +151,8 @@ export function Header() {
           <SheetTrigger asChild className="md:hidden ml-4">
             <Button
               variant="ghost"
-              size="lg"
-              className="p-4 min-w-[48px] min-h-[48px]"
+              size="icon"
+              className="min-w-[44px] min-h-[44px]"
             >
               <Menu className="h-8 w-8" />
               <span className="sr-only">Toggle menu</span>
@@ -177,6 +178,78 @@ export function Header() {
                   {APP_NAME}
                 </span>
               </Link>
+
+              {/* Profile Section - Mobile */}
+              {!loading && (
+                <div className="border-b border-[var(--brand-border)] pb-4">
+                  {user ? (
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-[color:rgb(255_255_255/0.05)]">
+                      <div className="h-10 w-10 rounded-full bg-[var(--color-secondary)]/20 flex items-center justify-center">
+                        <Avatar className="h-10 w-10 ring-2 ring-[color:rgb(255_255_255/0.1)]">
+                          <AvatarImage
+                            src={
+                              user.user_metadata?.avatar_url ||
+                              user.user_metadata?.picture
+                            }
+                            alt={
+                              user.user_metadata?.full_name ||
+                              user.email ||
+                              'User'
+                            }
+                            referrerPolicy="no-referrer"
+                            crossOrigin="anonymous"
+                            className="object-cover"
+                          />
+                          <AvatarFallback className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent-1)] text-[var(--brand-bg)] font-semibold text-sm">
+                            {user.user_metadata?.full_name
+                              ?.split(' ')
+                              ?.map((name: string) => name[0])
+                              ?.join('')
+                              ?.toUpperCase() ||
+                              user.email?.[0]?.toUpperCase() ||
+                              '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-white">
+                          {user.user_metadata?.full_name || user.email}
+                        </div>
+                        <div className="text-xs text-white/70">
+                          {user.email}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-lg bg-[color:rgb(255_255_255/0.05)]">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="h-10 w-10 rounded-full bg-[var(--color-secondary)]/20 flex items-center justify-center">
+                          <Avatar className="h-10 w-10 ring-2 ring-[color:rgb(255_255_255/0.1)]">
+                            <AvatarFallback className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent-1)] text-[var(--brand-bg)] font-semibold text-sm">
+                              G
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white">
+                            Guest User
+                          </div>
+                          <div className="text-xs text-white/70">
+                            Sign in to access your profile
+                          </div>
+                        </div>
+                      </div>
+                      <GoogleLoginButton
+                        variant="ghost"
+                        size="sm"
+                        className="w-full"
+                      >
+                        Sign In
+                      </GoogleLoginButton>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="grid gap-2">
                 {navigation.map((item) => {
@@ -211,29 +284,6 @@ export function Header() {
                     </Link>
                   )
                 })}
-              </div>
-
-              <div className="border-t border-[var(--brand-border)] pt-4">
-                {loading ? (
-                  <div className="h-10 w-full rounded-md bg-dark-light animate-pulse" />
-                ) : user ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-white/70">
-                        Signed in as:
-                      </span>
-                      <UserProfile />
-                    </div>
-                  </div>
-                ) : (
-                  <GoogleLoginButton
-                    variant="ghost"
-                    size="sm"
-                    className="w-full"
-                  >
-                    Sign In
-                  </GoogleLoginButton>
-                )}
               </div>
             </div>
           </SheetContent>
