@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { updateTeamMemberCampusCard } from './teams'
 
 export interface UserProfile {
   id: string
@@ -72,6 +73,11 @@ export async function createUserProfile(
     throw new Error(`Failed to create user profile: ${error.message}`)
   }
 
+  // Sync campus_card with team_members table if user is a team captain
+  if (profileData.campus_card !== undefined) {
+    await updateTeamMemberCampusCard(userId, profileData.campus_card)
+  }
+
   return data
 }
 
@@ -94,6 +100,11 @@ export async function updateUserProfile(
 
   if (error) {
     throw new Error(`Failed to update user profile: ${error.message}`)
+  }
+
+  // Sync campus_card with team_members table if user is a team captain
+  if (profileData.campus_card !== undefined) {
+    await updateTeamMemberCampusCard(userId, profileData.campus_card)
   }
 
   return data

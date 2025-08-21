@@ -185,3 +185,25 @@ export type TeamMemberInput = {
   is_captain: boolean
   user_id?: string
 }
+
+/**
+ * Update a team member's campus_card field
+ * This is used to sync campus_card between user_profiles and team_members tables
+ */
+export async function updateTeamMemberCampusCard(
+  userId: string,
+  campusCard: string | undefined
+): Promise<void> {
+  const { error } = await supabase
+    .from('team_members')
+    .update({ campus_card: campusCard })
+    .eq('user_id', userId)
+
+  if (error) {
+    console.warn(
+      `Failed to update team member campus_card for user ${userId}:`,
+      error
+    )
+    // Don't throw error as this is a sync operation and shouldn't break profile updates
+  }
+}
