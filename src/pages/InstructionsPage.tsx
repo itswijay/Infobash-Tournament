@@ -9,7 +9,7 @@ export function InstructionsPage() {
     <div className="container py-6">
       <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl md:text-2xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-xl md:text-2xl font-bold text-[var(--text-primary)]">
             How to Register Your Team for INFOBASH v4.0
           </h1>
           <div className="mt-2 lg:mb-8 h-1 w-32 rounded-full bg-gradient-gold opacity-80 mx-auto" />

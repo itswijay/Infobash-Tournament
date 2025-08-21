@@ -16,9 +16,8 @@ import {
   Play,
   Clock,
   ChevronDown,
-  Facebook,
-  Instagram,
 } from 'lucide-react'
+import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa'
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
@@ -191,7 +190,6 @@ export function HomePage() {
 
           // Handle scrolling based on direction and percentage
           if (scrollDirection === 'down') {
-
             if (
               scrollPercentage > threshold &&
               currentSectionIndex < sections.length - 1
@@ -202,7 +200,6 @@ export function HomePage() {
               targetSection = currentSectionIndex
             }
           } else if (scrollDirection === 'up') {
-
             if (scrollPercentage < threshold && currentSectionIndex > 0) {
               targetSection = currentSectionIndex - 1
             } else {
@@ -233,7 +230,6 @@ export function HomePage() {
           }
         }, 150)
       }
-
 
       const sectionThresholds = [
         0,
@@ -302,11 +298,11 @@ export function HomePage() {
         <div className="container py-4 md:py-12 flex items-center min-h-full">
           <div className="w-full">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[var(--text-primary)]">
+              <h1 className="text-3xl md:text-5xl font-bold mb-2 text-[var(--text-primary)]">
                 InfoBash v4.0
               </h1>
-              <div className="mx-auto mb-8 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
-              <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-4 md:mb-8 max-w-2xl mx-auto">
+              <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
+              <p className="text-md md:text-xl text-[var(--text-secondary)] mb-6 md:mb-8 max-w-2xl mx-auto">
                 <span className="hidden md:inline">
                   FOC's grand cricket clash is almost here – get ready for the
                   ultimate showdown!
@@ -603,36 +599,63 @@ export function HomePage() {
 
       {/* Contact Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(221,131,10,0.08),transparent_70%)]">
-        <div className="container py-16 md:py-24 flex items-center min-h-full">
+        <div className="container py-12 md:py-24 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-                Get In Touch
+              <div className="text-4xl md:text-5xl font-bold mb-2">
+                <span className="bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] bg-clip-text text-transparent">
+                  Lumetrix Media
+                </span>
+              </div>
+              <h2 className="text-[15px] md:text-lg font-bold text-[var(--text-primary)] mb-2">
+                The Official Media Partner
               </h2>
-              <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
-              <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-                Have questions about the tournament? We're here to help!
-              </p>
             </div>
 
             <div className="max-w-2xl mx-auto text-center">
-              <div className="grid grid-cols-2 gap-6 mb-12 max-w-md mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12 max-w-2xl mx-auto">
                 <a
-                  href="https://facebook.com"
+                  href="https://www.youtube.com/@LumetrixMedia"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
                 >
-                  <Facebook className="w-12 h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
-                  <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
+                  <FaYoutube className="w-10 h-10 md:w-12 md:h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <span className="text-xs md:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
+                    YouTube
+                  </span>
+                </a>
+                <a
+                  href="https://www.instagram.com/Lumetrix_Media/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
+                >
+                  <FaInstagram className="w-10 h-10 md:w-12 md:h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <span className="text-xs md:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
+                    Instagram
+                  </span>
+                </a>
+                <a
+                  href="https://www.facebook.com/share/1BE9KQkWtL/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
+                >
+                  <FaFacebook className="w-10 h-10 md:w-12 md:h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <span className="text-xs md:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
                     Facebook
                   </span>
                 </a>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.tiktok.com/@lumetrixmedia"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex flex-col items-center p-4 rounded-lg hover:bg-[var(--color-accent-1)]/10 transition-all duration-200 hover:scale-105 group"
                 >
-                  <Instagram className="w-12 h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
-                  <span className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
-                    Instagram
+                  <FaTiktok className="w-10 h-10 md:w-12 md:h-12 text-[var(--color-secondary)] mb-2 group-hover:text-[var(--color-accent-1)]" />
+                  <span className="text-xs md:text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]">
+                    TikTok
                   </span>
                 </a>
               </div>
