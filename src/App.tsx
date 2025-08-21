@@ -1,9 +1,21 @@
+import { useState } from 'react'
 import { AppRouter } from '@/components/AppRouter'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Toaster } from 'react-hot-toast'
+import { AppLoader } from '@/components/shared/AppLoader'
 import './App.css'
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false)
+  }
+
+  if (isLoading) {
+    return <AppLoader onLoadingComplete={handleLoadingComplete} />
+  }
+
   return (
     <AuthProvider>
       <AppRouter />
