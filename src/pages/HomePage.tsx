@@ -21,6 +21,8 @@ import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa'
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { ImageSlideshow } from '@/components/home/ImageSlideshow'
+import { slideshowImages, slideshowConfig } from '@/data/slideshow'
 
 const stats = [
   {
@@ -427,6 +429,27 @@ export function HomePage() {
           <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 z-10">
             <div className="flex items-center justify-center text-[var(--text-secondary)] animate-bounce shadow-lg">
               <ChevronDown className="h-5 w-5 md:h-6 md:w-6" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Image Slideshow Section */}
+      <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(244,188,69,0.05),transparent_70%)]">
+        <div className="container py-8 md:py-4 flex items-center min-h-full">
+          <div className="w-full">
+            <div className="text-center mb-6 md:mb-4">
+              <h2 className="text-2xl md:hidden md:text-4xl font-bold text-[var(--text-primary)] mb-2">
+                Tournament Highlights
+              </h2>
+              <div className="md:hidden mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
+              <p className="font-semibold text-[var(--text-secondary)] max-w-2xl mx-auto">
+                Experience the excitement and energy of the cricket tournaments
+              </p>
+            </div>
+
+            <div className="max-w-6xl mx-auto px-4 md:px-0">
+              <ImageSlideshow slides={slideshowImages} {...slideshowConfig} />
             </div>
           </div>
         </div>
