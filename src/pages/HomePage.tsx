@@ -465,7 +465,7 @@ export function HomePage() {
 
       {/* Tournament Statistics Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_30%_60%,rgba(244,188,69,0.08),transparent_70%)]">
-        <div className="container py-12 md:py-24 flex items-center min-h-full">
+        <div className="container py-2 md:py-24 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-4 md:mb-16">
               <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
@@ -506,19 +506,19 @@ export function HomePage() {
 
       {/* Platform Features Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_80%_20%,rgba(221,131,10,0.10),transparent_70%)]">
-        <div className="container py-4 md:py-12 flex items-center min-h-full">
+        <div className="container py-2 md:py-12 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-4 md:mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-2 md:mb-4">
+            <div className="text-center mb-6 md:mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-1 md:mb-4">
                 Platform Features
               </h2>
-              <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
-              <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
+              <div className="mx-auto mb-4 md:mb-4 h-1 w-16 md:w-24 bg-gradient-gold rounded-full" />
+              <p className="text-xs md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto px-4">
                 Everything you need to manage and follow cricket tournaments
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-8 px-4 md:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8 px-2 md:px-0">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon
                 return (
@@ -526,24 +526,24 @@ export function HomePage() {
                     key={index}
                     className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-105 group"
                   >
-                    <CardHeader className="p-1.5 md:p-3">
-                      <IconComponent className="w-5 h-5 md:w-8 md:h-8 text-[var(--color-secondary)] mb-1 md:mb-2 mx-auto" />
-                      <CardTitle className="text-xs md:text-base lg:text-lg text-[var(--text-primary)] text-center">
+                    <CardHeader className="p-1 md:p-3">
+                      <IconComponent className="w-4 h-4 md:w-8 md:h-8 text-[var(--color-secondary)] mb-1 md:mb-2 mx-auto" />
+                      <CardTitle className="text-xs md:text-lg text-[var(--text-primary)] text-center">
                         {feature.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-1.5 md:p-3 pt-0">
-                      <CardDescription className="text-xs md:text-sm text-[var(--text-secondary)] mb-1.5 md:mb-3 text-center leading-tight">
+                    <CardContent className="p-1 md:p-3 pt-0">
+                      <CardDescription className="text-xs md:text-sm text-[var(--text-secondary)] mb-1 md:mb-3 text-center leading-tight">
                         {feature.description}
                       </CardDescription>
                       <Button
                         asChild
                         variant="outline"
-                        className="w-full border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] group-hover:scale-105 transition-all duration-200 text-xs md:text-xs py-0.5 md:py-1.5"
+                        className="w-full border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] group-hover:scale-105 transition-all duration-200 text-xs md:text-sm py-1 md:py-1.5"
                       >
                         <Link to={feature.href}>
                           {feature.action}
-                          <ArrowRight className="ml-1 md:ml-2 h-2.5 w-2.5 md:h-3 md:w-3" />
+                          <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-3 md:w-3" />
                         </Link>
                       </Button>
                     </CardContent>
@@ -557,9 +557,9 @@ export function HomePage() {
 
       {/* Upcoming Matches Section */}
       <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_20%_80%,rgba(244,188,69,0.06),transparent_70%)]">
-        <div className="container py-4 md:py-6 flex items-center min-h-full">
+        <div className="container py-2 md:py-6 flex items-center min-h-full">
           <div className="w-full">
-            <div className="text-center mb-6 md:mb-8">
+            <div className="text-center mb-4 md:mb-8">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-2 md:mb-4">
                 Upcoming Matches
               </h2>
