@@ -111,7 +111,14 @@ export function HomePage() {
   })
 
   // Section configuration
-  const sections = ['countdown', 'stats', 'features', 'highlights', 'footer']
+  const sections = [
+    'countdown',
+    'slideshow',
+    'stats',
+    'features',
+    'highlights',
+    'footer',
+  ]
 
   // Countdown timer effect
   useEffect(() => {
@@ -239,6 +246,7 @@ export function HomePage() {
         sectionHeight * 2,
         sectionHeight * 3,
         sectionHeight * 4,
+        sectionHeight * 5,
       ]
 
       let newActiveSection = 0
@@ -435,11 +443,11 @@ export function HomePage() {
       </section>
 
       {/* Image Slideshow Section */}
-      <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(244,188,69,0.05),transparent_70%)]">
-        <div className="container py-8 md:py-4 flex items-center min-h-full">
+      <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_50%_50%,rgba(221,131,10,0.06),transparent_70%)]">
+        <div className="container py-12 md:py-3 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-6 md:mb-4">
-              <h2 className="text-2xl md:hidden md:text-4xl font-bold text-[var(--text-primary)] mb-2">
+              <h2 className="md:hidden text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-2">
                 Tournament Highlights
               </h2>
               <div className="md:hidden mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
