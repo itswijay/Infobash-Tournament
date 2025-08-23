@@ -23,6 +23,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { ImageSlideshow } from '@/components/home/ImageSlideshow'
 import { slideshowImages, slideshowConfig } from '@/data/slideshow'
+import { motion } from 'framer-motion'
 
 const stats = [
   {
@@ -120,9 +121,22 @@ export function HomePage() {
     'footer',
   ]
 
+  // Tournament state management
+  const [tournamentPhase, setTournamentPhase] = useState<
+    'upcoming' | 'live' | 'results'
+  >('upcoming')
+
+  // Tournament timing constants (editable for testing)
+  const TOURNAMENT_START_TIME = new Date('2025-08-23T23:23:00').getTime()
+  const TOURNAMENT_DURATION_HOURS = 0.01
+  const TOURNAMENT_END_TIME =
+    TOURNAMENT_START_TIME + TOURNAMENT_DURATION_HOURS * 60 * 60 * 1000
+
+  const MANUAL_TOURNAMENT_END = false
+
   // Countdown timer effect
   useEffect(() => {
-    const targetDate = new Date('2025-08-29T09:00:00').getTime()
+    const targetDate = TOURNAMENT_START_TIME
 
     const updateCountdown = () => {
       const now = new Date().getTime()
@@ -140,7 +154,6 @@ export function HomePage() {
 
         setTimeLeft({ days, hours, minutes, seconds })
 
-        // Update DOM elements directly for smooth animation
         const daysEl = document.getElementById('countdown-days')
         const hoursEl = document.getElementById('countdown-hours')
         const minutesEl = document.getElementById('countdown-minutes')
@@ -155,13 +168,25 @@ export function HomePage() {
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       }
+
+      if (MANUAL_TOURNAMENT_END) {
+        setTournamentPhase('results')
+      } else if (now < TOURNAMENT_START_TIME) {
+        setTournamentPhase('upcoming')
+      } else if (now < TOURNAMENT_END_TIME) {
+        setTournamentPhase('live')
+      } else {
+        setTournamentPhase('results')
+      }
     }
 
-    updateCountdown() // Initial call
+    updateCountdown()
     const interval = setInterval(updateCountdown, 1000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [TOURNAMENT_START_TIME, TOURNAMENT_END_TIME, MANUAL_TOURNAMENT_END])
+
+  const shouldShowCountdown = tournamentPhase === 'upcoming'
 
   useEffect(() => {
     let autoScrollTimeout: NodeJS.Timeout
@@ -232,7 +257,6 @@ export function HomePage() {
               behavior: 'smooth',
             })
 
-            // Reset after animation
             setTimeout(() => {
               setIsScrolling(false)
             }, 600)
@@ -313,123 +337,414 @@ export function HomePage() {
               </h1>
               <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
               <p className="text-md md:text-xl text-[var(--text-secondary)] mb-6 md:mb-8 max-w-2xl mx-auto">
-                <span className="hidden md:inline">
-                  FOC's grand cricket clash is almost here – get ready for the
-                  ultimate showdown!
-                </span>
-                <span className="md:hidden">
-                  FOC's grand cricket clash is almost here
-                  <br />
-                  Get ready for the ultimate showdown!
-                </span>
+                {tournamentPhase === 'upcoming' ? (
+                  <>
+                    <span className="hidden md:inline">
+                      FOC's grand cricket clash is almost here – get ready for
+                      the ultimate showdown!
+                    </span>
+                    <span className="md:hidden">
+                      FOC's grand cricket clash is almost here
+                      <br />
+                      Get ready for the ultimate showdown!
+                    </span>
+                  </>
+                ) : null}
               </p>
 
-              {/* Countdown Timer */}
-              <div className="grid grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-12 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
-                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                  <div
-                    className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                    id="countdown-days"
-                  >
-                    {String(timeLeft.days).padStart(2, '0')}
+              {/* Countdown Timer or Happening Now */}
+              {shouldShowCountdown ? (
+                // Countdown Timer
+                <div className="grid grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-12 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
+                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                    <div
+                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
+                      id="countdown-days"
+                    >
+                      {String(timeLeft.days).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                      Days
+                    </div>
                   </div>
-                  <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                    Days
+                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                    <div
+                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
+                      id="countdown-hours"
+                    >
+                      {String(timeLeft.hours).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                      Hours
+                    </div>
+                  </div>
+                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                    <div
+                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
+                      id="countdown-minutes"
+                    >
+                      {String(timeLeft.minutes).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                      Minutes
+                    </div>
+                  </div>
+                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                    <div
+                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
+                      id="countdown-seconds"
+                    >
+                      {String(timeLeft.seconds).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                      Seconds
+                    </div>
                   </div>
                 </div>
-                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                  <div
-                    className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                    id="countdown-hours"
-                  >
-                    {String(timeLeft.hours).padStart(2, '0')}
-                  </div>
-                  <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                    Hours
-                  </div>
-                </div>
-                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                  <div
-                    className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                    id="countdown-minutes"
-                  >
-                    {String(timeLeft.minutes).padStart(2, '0')}
-                  </div>
-                  <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                    Minutes
-                  </div>
-                </div>
-                <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                  <div
-                    className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                    id="countdown-seconds"
-                  >
-                    {String(timeLeft.seconds).padStart(2, '0')}
-                  </div>
-                  <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                    Seconds
-                  </div>
-                </div>
-              </div>
+              ) : tournamentPhase === 'live' ? (
+                // Happening Now Section
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{
+                    duration: 0.8,
+                    ease: 'easeOut',
+                    type: 'spring',
+                    stiffness: 100,
+                    damping: 15,
+                  }}
+                  className="mb-4 md:mb-6 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto"
+                >
+                  <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm border-2 border-green-400/30 rounded-2xl p-6 md:px-8 md:pb-6 shadow-2xl hover:scale-105 transition-all duration-500">
+                    <div className="text-center">
+                      {/* Live Badge */}
+                      <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.3,
+                          duration: 0.6,
+                          ease: 'easeOut',
+                        }}
+                        className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4 animate-pulse"
+                      >
+                        <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                        LIVE NOW
+                      </motion.div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                {user ? (
-                  // Authenticated user buttons
-                  <>
-                    <Button
-                      asChild
-                      size="lg"
-                      className="relative overflow-hidden bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] hover:text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 group"
-                    >
-                      <Link
-                        to={ROUTES.REGISTER_TEAM}
-                        className="flex items-center space-x-2 relative z-10"
+                      {/* Main Content */}
+                      <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.5,
+                          duration: 0.6,
+                          ease: 'easeOut',
+                        }}
+                        className="text-2xl md:text-4xl font-bold text-green-400 mb-3 md:mb-4"
                       >
-                        <Users className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-                        <span className="tracking-wide">
-                          Register Your Team
-                        </span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="lg"
-                      className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
-                    >
-                      <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
-                    </Button>
-                  </>
-                ) : (
-                  // Guest user buttons
-                  <>
-                    <Button
-                      asChild
-                      size="lg"
-                      className="relative overflow-hidden bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] hover:text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 group"
-                    >
-                      <Link
-                        to={ROUTES.REGISTER_TEAM}
-                        className="flex items-center space-x-2 relative z-10"
+                        Tournament is Happening Now! 🏏
+                      </motion.h2>
+                      <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.7,
+                          duration: 0.6,
+                          ease: 'easeOut',
+                        }}
+                        className="text-sm md:text-lg text-[var(--text-secondary)] mb-4 md:mb-6 max-w-2xl mx-auto"
                       >
-                        <Users className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-                        <span className="tracking-wide">
-                          Register Your Team
-                        </span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="lg"
-                      className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
+                        The excitement is live! Teams are competing on the
+                        field. Follow the action and stay tuned for updates.
+                      </motion.p>
+
+                      {/* Live Stats */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.9,
+                          duration: 0.6,
+                          ease: 'easeOut',
+                        }}
+                        className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-4 md:mb-4"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{
+                            delay: 1.1,
+                            duration: 0.5,
+                            ease: 'easeOut',
+                          }}
+                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 text-center"
+                        >
+                          <div className="text-lg md:text-2xl font-bold text-green-400">
+                            2
+                          </div>
+                          <div className="text-xs md:text-sm text-[var(--text-secondary)]">
+                            Teams Playing
+                          </div>
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{
+                            delay: 1.3,
+                            duration: 0.5,
+                            ease: 'easeOut',
+                          }}
+                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 text-center"
+                        >
+                          <div className="text-lg md:text-2xl font-bold text-green-400">
+                            1
+                          </div>
+                          <div className="text-xs md:text-sm text-[var(--text-secondary)]">
+                            Matches Live
+                          </div>
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{
+                            delay: 1.5,
+                            duration: 0.5,
+                            ease: 'easeOut',
+                          }}
+                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 text-center md:col-span-1 col-span-2"
+                        >
+                          <div className="text-lg md:text-2xl font-bold text-green-400">
+                            Live
+                          </div>
+                          <div className="text-xs md:text-sm text-[var(--text-secondary)]">
+                            Score Updates
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : tournamentPhase === 'results' ? (
+                // Results Section
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    ease: 'easeOut',
+                    type: 'spring',
+                    stiffness: 100,
+                    damping: 15,
+                  }}
+                  className="mb-4 md:mb-6 max-w-2xl md:max-w-3xl mx-auto"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.5, ease: 'easeOut' }}
+                    className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-md border border-slate-600/40 rounded-2xl p-5 md:p-6 shadow-xl"
+                  >
+                    <div className="text-center mb-5">
+                      {/* Simple Header */}
+                      <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.4,
+                          duration: 0.5,
+                          ease: 'easeOut',
+                        }}
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-3"
+                      >
+                        🏆 RESULTS
+                      </motion.div>
+                      <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.6,
+                          duration: 0.5,
+                          ease: 'easeOut',
+                        }}
+                        className="text-lg md:text-xl font-bold text-white"
+                      >
+                        Tournament Completed! 🎉
+                      </motion.h2>
+                    </div>
+
+                    {/* Results Layout */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 0.8,
+                        duration: 0.5,
+                        ease: 'easeOut',
+                      }}
+                      className="grid grid-cols-2 gap-4 mb-5"
                     >
-                      <Link to={ROUTES.INSTRUCTIONS}>How It Works</Link>
-                    </Button>
-                  </>
-                )}
-              </div>
+                      {/* Winner Column */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{
+                          delay: 1.0,
+                          duration: 0.5,
+                          ease: 'easeOut',
+                        }}
+                        className="text-center"
+                      >
+                        <div className="bg-gradient-to-br from-yellow-400/30 to-amber-500/30 border-2 border-yellow-400/60 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                          <div className="text-yellow-400 text-3xl mb-2 animate-pulse">
+                            🏆
+                          </div>
+                          <div className="text-white font-bold text-sm mb-1">
+                            Avengers
+                          </div>
+                          <div className="text-yellow-400 font-bold text-xl mb-1">
+                            156/8
+                          </div>
+                          <div className="text-yellow-400 text-xs font-semibold bg-yellow-400/20 px-2 py-1 rounded-full">
+                            CHAMPIONS
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Runner-up Column */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{
+                          delay: 1.2,
+                          duration: 0.5,
+                          ease: 'easeOut',
+                        }}
+                        className="text-center"
+                      >
+                        <div className="bg-gradient-to-br from-slate-500/20 to-gray-500/20 border border-slate-400/40 rounded-xl p-4">
+                          <div className="text-slate-400 text-2xl mb-3">🥈</div>
+                          <div className="text-white font-semibold text-sm mb-1">
+                            Thunderbolts
+                          </div>
+                          <div className="text-slate-400 font-bold text-lg mb-1">
+                            133/10
+                          </div>
+                          <div className="text-slate-400 text-xs font-semibold bg-slate-400/20 px-2 py-1 rounded-full">
+                            RUNNER-UP
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Congrats */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 1.4,
+                        duration: 0.5,
+                        ease: 'easeOut',
+                      }}
+                      className="bg-green-500/10 border border-green-400/30 rounded-xl p-3 mb-5"
+                    >
+                      <div className="text-center">
+                        <div className="text-green-400 text-sm font-semibold mb-1">
+                          🎊 Congratulations Team Alpha! 🎊
+                        </div>
+                        <p className="text-slate-300 text-xs">
+                          Exceptional performance throughout the tournament!
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* Action Button */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 1.6,
+                        duration: 0.5,
+                        ease: 'easeOut',
+                      }}
+                      className="text-center"
+                    >
+                      <Button
+                        asChild
+                        size="sm"
+                        className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0"
+                      >
+                        <Link
+                          to="/tournament-results"
+                          className="flex items-center gap-2"
+                        >
+                          <span className="text-sm">View Full Results</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              ) : null}
+
+              {/* Action Buttons - Only show during upcoming phase */}
+              {shouldShowCountdown && (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                  {user ? (
+                    // Authenticated user buttons
+                    <>
+                      <Button
+                        asChild
+                        size="lg"
+                        className="relative overflow-hidden bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] hover:text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 group"
+                      >
+                        <Link
+                          to={ROUTES.REGISTER_TEAM}
+                          className="flex items-center space-x-2 relative z-10"
+                        >
+                          <Users className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                          <span className="tracking-wide">
+                            Register Your Team
+                          </span>
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="lg"
+                        className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
+                      >
+                        <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
+                      </Button>
+                    </>
+                  ) : (
+                    // Guest user buttons
+                    <>
+                      <Button
+                        asChild
+                        size="lg"
+                        className="relative overflow-hidden bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] hover:text-black font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 group"
+                      >
+                        <Link
+                          to={ROUTES.REGISTER_TEAM}
+                          className="flex items-center space-x-2 relative z-10"
+                        >
+                          <Users className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                          <span className="text-sm">Register Your Team</span>
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="lg"
+                        className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
+                      >
+                        <Link to={ROUTES.INSTRUCTIONS}>How It Works</Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

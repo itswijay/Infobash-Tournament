@@ -10,6 +10,7 @@ import { RegisterTeamPage } from '@/pages/RegisterTeamPage'
 import { InstructionsPage } from '@/pages/InstructionsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { ProfileCompletionPage } from '@/pages/ProfileCompletionPage'
+import TournamentResultsPage from '@/pages/TournamentResultsPage'
 import { ROUTES } from '@/lib/constants'
 
 function RootLayout() {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PROFILE,
         element: <ProfilePage />,
+      },
+      {
+        path: ROUTES.TOURNAMENT_RESULTS,
+        element: <TournamentResultsPage />,
       },
     ],
   },

@@ -14,6 +14,7 @@ export const ROUTES = {
   INSTRUCTIONS: '/instructions',
   PROFILE: '/profile',
   PROFILE_COMPLETION: '/profile/complete',
+  TOURNAMENT_RESULTS: '/tournament-results',
 } as const
 
 // Player roles
