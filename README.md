@@ -100,6 +100,20 @@ The application uses the following main tables:
 - `teams`: Team details and metadata
 - `team_members`: Individual team member information
 - `tournaments`: Tournament configuration
+- `admin_audit_logs`: Admin action audit trail
+- `matches`: Match scheduling and results
+- `match_results`: Detailed match results
+- `user_roles`: User role assignments
+
+### Database Setup
+
+If you encounter database schema errors, run the database setup:
+
+```bash
+npm run setup-db
+```
+
+This will display the SQL scripts you need to run in your Supabase dashboard to create the required tables.
 
 ## Contributing
 

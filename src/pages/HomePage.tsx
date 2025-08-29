@@ -21,9 +21,12 @@ import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa'
 import { ROUTES } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useNearestTournament } from '@/hooks/useNearestTournament'
 import { ImageSlideshow } from '@/components/home/ImageSlideshow'
 import { slideshowImages, slideshowConfig } from '@/data/slideshow'
 import { motion } from 'framer-motion'
+import { getUpcomingMatches } from '@/lib/api/matches'
+import type { Match } from '@/lib/api/matches'
 
 const stats = [
   {
@@ -52,29 +55,13 @@ const stats = [
   },
 ]
 
-const upcomingMatches = [
-  {
-    id: '1',
-    team1: 'Avengers',
-    team2: 'Thunderbolts',
-    time: '9:00 AM',
-    venue: 'Hunduwa Ground',
-  },
-  {
-    id: '2',
-    team1: 'Justice League',
-    team2: 'Suicide Squad',
-    time: '11:00 AM',
-    venue: 'Hunduwa Ground',
-  },
-  {
-    id: '3',
-    team1: 'S.H.I.E.L.D.',
-    team2: 'Hydra',
-    time: '01:00 PM',
-    venue: 'Hunduwa Ground',
-  },
-]
+// Type for upcoming matches with additional display properties
+interface UpcomingMatch extends Match {
+  team1_name: string
+  team2_name: string
+  tournament_name: string
+  venue: string
+}
 
 const features = [
   {
@@ -102,6 +89,8 @@ const features = [
 
 export function HomePage() {
   const { user } = useAuth()
+  const { tournament: nearestTournament, startTime: tournamentStartTime } =
+    useNearestTournament()
   const [activeSection, setActiveSection] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
@@ -110,6 +99,8 @@ export function HomePage() {
     minutes: 0,
     seconds: 0,
   })
+  const [upcomingMatches, setUpcomingMatches] = useState<UpcomingMatch[]>([])
+  const [matchesLoading, setMatchesLoading] = useState(true)
 
   // Section configuration
   const sections = [
@@ -126,16 +117,72 @@ export function HomePage() {
     'upcoming' | 'live' | 'results'
   >('upcoming')
 
-  // Tournament timing constants (editable for testing)
-  const TOURNAMENT_START_TIME = new Date('2025-08-23T23:23:00').getTime()
-  const TOURNAMENT_DURATION_HOURS = 0.01
-  const TOURNAMENT_END_TIME =
-    TOURNAMENT_START_TIME + TOURNAMENT_DURATION_HOURS * 60 * 60 * 1000
+  // Tournament timing constants (dynamic from database)
+  const TOURNAMENT_START_TIME = tournamentStartTime
+    ? tournamentStartTime.getTime()
+    : null
+  const TOURNAMENT_DURATION_HOURS = nearestTournament ? 48 : 0 // Default 48 hours if no tournament
+  const TOURNAMENT_END_TIME = TOURNAMENT_START_TIME
+    ? TOURNAMENT_START_TIME + TOURNAMENT_DURATION_HOURS * 60 * 60 * 1000
+    : null
 
   const MANUAL_TOURNAMENT_END = false
 
+  // Function to fetch upcoming matches
+  const fetchUpcomingMatches = async () => {
+    try {
+      setMatchesLoading(true)
+      const matches = await getUpcomingMatches(3)
+      setUpcomingMatches(matches)
+    } catch (error) {
+      console.error('Error fetching upcoming matches:', error)
+      setUpcomingMatches([])
+      // Show a toast or error message to the user
+      // toast.error('Failed to load upcoming matches')
+    } finally {
+      setMatchesLoading(false)
+    }
+  }
+
+  // Function to format match date and time
+  const formatMatchDateTime = (scheduledAt: string | null) => {
+    if (!scheduledAt) return 'TBD'
+
+    const matchDate = new Date(scheduledAt)
+    const now = new Date()
+    const isToday = matchDate.toDateString() === now.toDateString()
+    const isTomorrow =
+      new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString() ===
+      matchDate.toDateString()
+
+    const timeString = matchDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+
+    if (isToday) {
+      return `Today, ${timeString}`
+    } else if (isTomorrow) {
+      return `Tomorrow, ${timeString}`
+    } else {
+      return matchDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+    }
+  }
+
   // Countdown timer effect
   useEffect(() => {
+    if (!TOURNAMENT_START_TIME) {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      return
+    }
+
     const targetDate = TOURNAMENT_START_TIME
 
     const updateCountdown = () => {
@@ -171,9 +218,9 @@ export function HomePage() {
 
       if (MANUAL_TOURNAMENT_END) {
         setTournamentPhase('results')
-      } else if (now < TOURNAMENT_START_TIME) {
+      } else if (TOURNAMENT_START_TIME && now < TOURNAMENT_START_TIME) {
         setTournamentPhase('upcoming')
-      } else if (now < TOURNAMENT_END_TIME) {
+      } else if (TOURNAMENT_END_TIME && now < TOURNAMENT_END_TIME) {
         setTournamentPhase('live')
       } else {
         setTournamentPhase('results')
@@ -186,7 +233,13 @@ export function HomePage() {
     return () => clearInterval(interval)
   }, [TOURNAMENT_START_TIME, TOURNAMENT_END_TIME, MANUAL_TOURNAMENT_END])
 
-  const shouldShowCountdown = tournamentPhase === 'upcoming'
+  // Fetch upcoming matches on component mount
+  useEffect(() => {
+    fetchUpcomingMatches()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const shouldShowCountdown =
+    tournamentPhase === 'upcoming' && TOURNAMENT_START_TIME !== null
 
   useEffect(() => {
     let autoScrollTimeout: NodeJS.Timeout
@@ -353,7 +406,22 @@ export function HomePage() {
               </p>
 
               {/* Countdown Timer or Happening Now */}
-              {shouldShowCountdown ? (
+              {!tournamentStartTime && nearestTournament === undefined ? (
+                // Loading State
+                <div className="mb-4 md:mb-6 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
+                  <div className="bg-gradient-to-r from-slate-500/20 to-gray-500/20 backdrop-blur-sm border-2 border-slate-400/30 rounded-2xl p-6 md:px-8 md:pb-6 shadow-2xl">
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-2 bg-slate-500 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4">
+                        <Calendar className="w-4 h-4 animate-spin" />
+                        Loading Tournament Info...
+                      </div>
+                      <p className="text-lg text-slate-300">
+                        Fetching the latest tournament information...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : shouldShowCountdown ? (
                 // Countdown Timer
                 <div className="grid grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-12 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
                   <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
@@ -401,6 +469,39 @@ export function HomePage() {
                     </div>
                   </div>
                 </div>
+              ) : !TOURNAMENT_START_TIME ? (
+                // No Upcoming Tournament Message
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{
+                    duration: 0.8,
+                    ease: 'easeOut',
+                    type: 'spring',
+                    stiffness: 100,
+                    damping: 15,
+                  }}
+                  className="mb-4 md:mb-6 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto"
+                >
+                  <div className="bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-sm border-2 border-blue-400/30 rounded-2xl p-6 md:px-8 md:pb-6 shadow-2xl">
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4">
+                        <Calendar className="w-4 h-4" />
+                        No Upcoming Tournaments
+                      </div>
+                      <h2 className="text-2xl md:text-4xl font-bold text-blue-400 mb-3 md:mb-4">
+                        Stay Tuned! 🏏
+                      </h2>
+                      <p className="text-lg md:text-xl text-blue-300 mb-4">
+                        There are no upcoming tournaments scheduled at the
+                        moment.
+                      </p>
+                      <p className="text-base text-blue-200">
+                        Check back later for new tournament announcements!
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               ) : tournamentPhase === 'live' ? (
                 // Happening Now Section
                 <motion.div
@@ -875,54 +976,165 @@ export function HomePage() {
         <div className="container py-2 md:py-6 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-4 md:mb-8">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mb-2 md:mb-4">
-                Upcoming Matches
-              </h2>
+              <div className="flex items-center justify-center gap-4 mb-2 md:mb-4">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[var(--text-primary)]">
+                  Upcoming Matches
+                </h2>
+                <Button
+                  onClick={fetchUpcomingMatches}
+                  disabled={matchesLoading}
+                  variant="outline"
+                  size="sm"
+                  className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] transition-all duration-200"
+                >
+                  <Clock className="w-4 h-4 mr-2" />
+                  {matchesLoading ? 'Refreshing...' : 'Refresh'}
+                </Button>
+              </div>
               <div className="mx-auto mb-4 md:mb-6 h-1 w-16 md:w-24 bg-gradient-gold rounded-full" />
               <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto px-4">
                 Don't miss these exciting upcoming cricket matches
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-5xl mx-auto px-4 md:px-0">
-              {upcomingMatches.map((match) => (
-                <Card
-                  key={match.id}
-                  className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-105"
-                >
-                  <CardHeader className="pb-1 md:pb-4 p-1 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="text-[var(--color-secondary)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2">
-                        <Clock className="w-2 h-2 md:w-4 md:h-4 mr-1 inline" />
-                        {match.time}
+            {matchesLoading ? (
+              // Loading state
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-5xl mx-auto px-4 md:px-0">
+                {[1, 2, 3].map((i) => (
+                  <Card
+                    key={i}
+                    className="bg-card-bg border-card-border animate-pulse"
+                  >
+                    <CardHeader className="pb-1 md:pb-4 p-1 md:p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="h-4 bg-gray-300 rounded w-20"></div>
+                        <div className="h-6 bg-gray-300 rounded w-16"></div>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2"
-                      >
-                        Live Soon
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-1 md:p-6 pt-0">
-                    <div className="text-center mb-1 md:mb-4">
-                      <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-0.5 md:mb-2">
-                        {match.team1}
+                    </CardHeader>
+                    <CardContent className="p-1 md:p-6 pt-0">
+                      <div className="text-center mb-1 md:mb-4">
+                        <div className="h-4 bg-gray-300 rounded w-24 mx-auto mb-2"></div>
+                        <div className="h-3 bg-gray-300 rounded w-8 mx-auto mb-2"></div>
+                        <div className="h-4 bg-gray-300 rounded w-28 mx-auto mb-4"></div>
                       </div>
-                      <div className="text-xs md:text-sm text-[var(--text-secondary)] mb-0.5 md:mb-2">
-                        vs
-                      </div>
-                      <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-1 md:mb-4">
-                        {match.team2}
-                      </div>
-                    </div>
-                    <div className="text-xs md:text-sm text-[var(--text-secondary)] text-center">
-                      📍 {match.venue}
-                    </div>
+                      <div className="h-3 bg-gray-300 rounded w-32 mx-auto"></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : upcomingMatches.length > 0 ? (
+              // Show upcoming matches
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-5xl mx-auto px-4 md:px-0">
+                {upcomingMatches.map((match) => {
+                  return (
+                    <Card
+                      key={match.id}
+                      className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-105"
+                    >
+                      <CardHeader className="pb-1 md:pb-4 p-1 md:p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="text-[var(--color-secondary)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2">
+                            <Clock className="w-2 h-2 md:w-4 md:h-4 mr-1 inline" />
+                            {formatMatchDateTime(match.scheduled_at)}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2"
+                          >
+                            Live Soon
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-1 md:p-6 pt-0">
+                        <div className="text-center mb-1 md:mb-4">
+                          <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-0.5 md:mb-2">
+                            {match.team1_name}
+                          </div>
+                          <div className="text-xs md:text-sm text-[var(--text-secondary)] mb-0.5 md:mb-2">
+                            vs
+                          </div>
+                          <div className="text-xs md:text-xl font-semibold text-[var(--text-primary)] mb-1 md:mb-4">
+                            {match.team2_name}
+                          </div>
+                        </div>
+                        <div className="text-xs md:text-sm text-[var(--text-secondary)] text-center">
+                          📍 {match.venue}
+                        </div>
+                        <div className="text-xs text-[var(--text-secondary)] text-center mt-2">
+                          🏆 {match.tournament_name}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              // No upcoming matches - show appropriate message based on tournament phase
+              <div className="max-w-2xl mx-auto px-4 md:px-0">
+                <Card className="bg-card-bg border-card-border text-center">
+                  <CardContent className="p-6 md:p-8">
+                    {tournamentPhase === 'upcoming' ? (
+                      <>
+                        <div className="text-4xl mb-4">🏏</div>
+                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
+                          No Matches Scheduled Yet
+                        </h3>
+                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
+                          Matches will be scheduled once the tournament begins.
+                          Stay tuned for updates!
+                        </p>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
+                        >
+                          <Link to={ROUTES.TOURNAMENTS}>
+                            View Tournament Details
+                          </Link>
+                        </Button>
+                      </>
+                    ) : tournamentPhase === 'live' ? (
+                      <>
+                        <div className="text-4xl mb-4">🎯</div>
+                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
+                          All Matches Are Live or Completed
+                        </h3>
+                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
+                          Check the matches page to see live scores and results!
+                        </p>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
+                        >
+                          <Link to={ROUTES.MATCHES}>View All Matches</Link>
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-4xl mb-4">🏆</div>
+                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
+                          Tournament Completed
+                        </h3>
+                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
+                          All matches have been played. Check the results page
+                          for final standings!
+                        </p>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
+                        >
+                          <Link to={ROUTES.TOURNAMENT_RESULTS}>
+                            View Results
+                          </Link>
+                        </Button>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              </div>
+            )}
 
             <div className="text-center mt-8 md:mt-8">
               <Button

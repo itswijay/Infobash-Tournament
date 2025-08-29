@@ -135,46 +135,6 @@ export async function sendConfirmationEmail({
   return await response.json()
 }
 
-// Fetch all registered teams with captain information
-export async function getAllTeams() {
-  // First, get all teams
-  const { data: teams, error: teamsError } = await supabase
-    .from('teams')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (teamsError) throw teamsError
-
-  // Then, get captain information for each team from team_members table
-  const teamsWithCaptains = await Promise.all(
-    teams.map(async (team) => {
-      const { data: captainData, error: captainError } = await supabase
-        .from('team_members')
-        .select('first_name, last_name, batch, campus_card')
-        .eq('team_id', team.id)
-        .eq('is_captain', true)
-        .single()
-
-      if (captainError) {
-        console.warn(
-          `Could not fetch captain for team ${team.id}:`,
-          captainError
-        )
-        return {
-          ...team,
-          captain: null,
-        }
-      }
-
-      return {
-        ...team,
-        captain: captainData,
-      }
-    })
-  )
-  return teamsWithCaptains
-}
-
 // Types
 export type TeamMemberInput = {
   first_name: string
@@ -208,13 +168,100 @@ export async function updateTeamMemberCampusCard(
   }
 }
 
-export async function getTeamMembers(teamId: string) {
+export interface Team {
+  id: string
+  name: string
+  captain_id: string
+  logo_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface TeamMember {
+  id: string
+  team_id: string
+  name: string
+  email: string
+  phone: string
+  role: 'captain' | 'member'
+  created_at: string
+  updated_at: string
+}
+
+// Get all teams
+export async function getAllTeams(): Promise<Team[]> {
+  try {
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching teams:', error)
+      throw new Error('Failed to fetch teams')
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getAllTeams:', error)
+    throw new Error('Failed to fetch teams')
+  }
+}
+
+// Get teams by tournament (teams that have registered for a specific tournament)
+export async function getTeamsByTournament(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _tournamentId: string
+): Promise<Team[]> {
+  try {
+    // This would need a tournament_registrations table or similar
+    // For now, we'll return all teams as a placeholder
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching teams:', error)
+      throw new Error('Failed to fetch teams')
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getTeamsByTournament:', error)
+    throw new Error('Failed to fetch teams')
+  }
+}
+
+// Get team by ID
+export async function getTeamById(id: string): Promise<Team | null> {
+  try {
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) {
+      console.error('Error fetching team:', error)
+      throw new Error('Failed to fetch team')
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error in getTeamById:', error)
+    throw new Error('Failed to fetch team')
+  }
+}
+
+// Get team members
+export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
   try {
     const { data, error } = await supabase
       .from('team_members')
       .select('*')
       .eq('team_id', teamId)
-      .order('is_captain', { ascending: false })
+      .order('name', { ascending: true })
 
     if (error) {
       console.error('Error fetching team members:', error)

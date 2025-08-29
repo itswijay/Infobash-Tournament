@@ -5,6 +5,8 @@ export interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
+  userRole: string | null
+  isAdmin: boolean
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
 }

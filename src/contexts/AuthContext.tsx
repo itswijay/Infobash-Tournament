@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { AuthContext } from './AuthContextType'
+import { checkUserRole } from '@/lib/api/admin'
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -9,6 +10,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  // Check user role whenever user changes
+  useEffect(() => {
+    const checkRole = async () => {
+      if (user) {
+        try {
+          const { isAdmin: adminStatus, role } = await checkUserRole()
+          setUserRole(role)
+          setIsAdmin(adminStatus)
+        } catch (error) {
+          console.error('Error checking user role:', error)
+          setUserRole(null)
+          setIsAdmin(false)
+        }
+      } else {
+        setUserRole(null)
+        setIsAdmin(false)
+      }
+    }
+
+    checkRole()
+  }, [user])
 
   useEffect(() => {
     // Get initial session
@@ -60,6 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     user,
     session,
     loading,
+    userRole,
+    isAdmin,
     signInWithGoogle,
     signOut,
   }

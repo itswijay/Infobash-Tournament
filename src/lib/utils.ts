@@ -99,6 +99,25 @@ export const isValidPhone = (phone: string) => {
   return phoneRegex.test(phone.replace(/[\s\-()]/g, ''))
 }
 
+// Tournament utilities
+export const formatTournamentStartTime = (startDate: string | Date) => {
+  const dateObj =
+    typeof startDate === 'string' ? parseISO(startDate) : startDate
+  return format(dateObj, "EEEE, MMMM do, yyyy 'at' h:mm a")
+}
+
+export const formatTournamentStartTimeShort = (startDate: string | Date) => {
+  const dateObj =
+    typeof startDate === 'string' ? parseISO(startDate) : startDate
+  return format(dateObj, 'MMM do, h:mm a')
+}
+
+export const getTimeUntilTournament = (startDate: string | Date) => {
+  const dateObj =
+    typeof startDate === 'string' ? parseISO(startDate) : startDate
+  return formatDistanceToNow(dateObj, { addSuffix: true })
+}
+
 // File utilities
 export const formatFileSize = (bytes: number) => {
   if (bytes === 0) return '0 Bytes'
@@ -144,4 +163,71 @@ export const removeFromStorage = (key: string): void => {
   } catch (error) {
     console.error('Error removing from localStorage:', error)
   }
+}
+
+/**
+ * Convert a local date and time to ISO string while preserving the local timezone
+ * This prevents the time from being shifted due to UTC conversion
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @param timeString - Time string in HH:MM format
+ * @returns ISO string that preserves local time
+ */
+export function localDateTimeToISO(
+  dateString: string,
+  timeString: string
+): string {
+  const dateTimeString = `${dateString}T${timeString}:00`
+  const dateObject = new Date(dateTimeString)
+
+  // Validate that the date is valid
+  if (isNaN(dateObject.getTime())) {
+    throw new Error('Invalid date or time format')
+  }
+
+  // Create ISO string that preserves local timezone
+  // We need to offset the timezone difference to keep the local time
+  const localOffset = dateObject.getTimezoneOffset() * 60000 // Convert minutes to milliseconds
+  const localDateTime = new Date(dateObject.getTime() - localOffset)
+
+  return localDateTime.toISOString()
+}
+
+/**
+ * Convert a local date to ISO string while preserving the local timezone
+ * @param dateString - Date string in YYYY-MM-DD format
+ * @returns ISO string that preserves local date
+ */
+export function localDateToISO(dateString: string): string {
+  const date = new Date(dateString)
+
+  // Validate that the date is valid
+  if (isNaN(date.getTime())) {
+    throw new Error('Invalid date format')
+  }
+
+  // Create ISO string that preserves local timezone
+  const localOffset = date.getTimezoneOffset() * 60000
+  const localDateTime = new Date(date.getTime() - localOffset)
+
+  return localDateTime.toISOString()
+}
+
+/**
+ * Convert a local datetime string to ISO string while preserving the local timezone
+ * @param dateTimeString - DateTime string that should be treated as local time
+ * @returns ISO string that preserves local time
+ */
+export function localDateTimeStringToISO(dateTimeString: string): string {
+  const date = new Date(dateTimeString)
+
+  // Validate that the date is valid
+  if (isNaN(date.getTime())) {
+    throw new Error('Invalid datetime format')
+  }
+
+  // Create ISO string that preserves local timezone
+  const localOffset = date.getTimezoneOffset() * 60000
+  const localDateTime = new Date(date.getTime() - localOffset)
+
+  return localDateTime.toISOString()
 }

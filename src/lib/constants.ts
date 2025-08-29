@@ -7,14 +7,19 @@ export const APP_DESCRIPTION =
 // Routes
 export const ROUTES = {
   HOME: '/',
+  REGISTER_TEAM: '/register-team',
   TOURNAMENTS: '/tournaments',
+  CREATE_TOURNAMENT: '/tournaments/create',
+  EDIT_TOURNAMENT: '/tournaments/:tournamentId/edit',
   TEAMS: '/teams',
   MATCHES: '/matches',
-  REGISTER_TEAM: '/register',
+  CREATE_MATCH: '/matches/create',
+  EDIT_MATCH: '/matches/:matchId/edit',
+  EDIT_MATCH_RESULT: '/matches/:matchId/edit-result',
+  TOURNAMENT_RESULTS: '/tournament-results',
   INSTRUCTIONS: '/instructions',
   PROFILE: '/profile',
   PROFILE_COMPLETION: '/profile/complete',
-  TOURNAMENT_RESULTS: '/tournament-results',
 } as const
 
 // Player roles

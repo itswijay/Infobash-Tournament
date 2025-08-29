@@ -4,8 +4,13 @@ import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { ProfileGuard } from '@/components/auth/ProfileGuard'
 import { HomePage } from '@/pages/HomePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
+import { CreateTournamentPage } from '@/pages/CreateTournamentPage'
+import { EditTournamentPage } from '@/pages/EditTournamentPage'
 import { TeamsPage } from '@/pages/TeamsPage'
 import { MatchesPage } from '@/pages/MatchesPage'
+import { CreateMatchPage } from '@/pages/CreateMatchPage'
+import EditMatchPage from '@/pages/EditMatchPage'
+import { EditMatchResultPage } from '@/pages/EditMatchResultPage'
 import { RegisterTeamPage } from '@/pages/RegisterTeamPage'
 import { InstructionsPage } from '@/pages/InstructionsPage'
 import { ProfilePage } from '@/pages/ProfilePage'
@@ -50,12 +55,32 @@ const router = createBrowserRouter([
         element: <TournamentsPage />,
       },
       {
+        path: ROUTES.CREATE_TOURNAMENT,
+        element: <CreateTournamentPage />,
+      },
+      {
+        path: '/tournaments/:tournamentId/edit',
+        element: <EditTournamentPage />,
+      },
+      {
         path: ROUTES.TEAMS,
         element: <TeamsPage />,
       },
       {
         path: ROUTES.MATCHES,
         element: <MatchesPage />,
+      },
+      {
+        path: ROUTES.CREATE_MATCH,
+        element: <CreateMatchPage />,
+      },
+      {
+        path: '/matches/:matchId/edit',
+        element: <EditMatchPage />,
+      },
+      {
+        path: '/matches/:matchId/edit-result',
+        element: <EditMatchResultPage />,
       },
       {
         path: ROUTES.REGISTER_TEAM,

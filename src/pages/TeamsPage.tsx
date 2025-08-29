@@ -11,16 +11,10 @@ import {
   ChevronUp,
 } from 'lucide-react'
 import { getAllTeams, getTeamMembers } from '@/lib/api/teams'
+import type { Team as ApiTeam } from '@/lib/api/teams'
 import toast from 'react-hot-toast'
 
-interface Team {
-  id: string
-  name: string
-  logo_url?: string
-  captain_id: string
-  tournament_id: string
-  created_at: string
-  updated_at: string
+interface TeamWithCaptain extends ApiTeam {
   captain?: {
     first_name: string
     last_name: string
@@ -29,22 +23,23 @@ interface Team {
   }
 }
 
-interface TeamMember {
-  id: string
-  first_name: string
-  last_name: string
+import type { TeamMember as ApiTeamMember } from '@/lib/api/teams'
+
+interface TeamMemberWithExtra extends ApiTeamMember {
+  first_name?: string
+  last_name?: string
   campus_card?: string
-  is_captain: boolean
-  user_id: string
+  is_captain?: boolean
+  user_id?: string
 }
 
 export function TeamsPage() {
-  const [teams, setTeams] = useState<Team[]>([])
+  const [teams, setTeams] = useState<TeamWithCaptain[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set())
   const [closingTeams, setClosingTeams] = useState<Set<string>>(new Set())
-  const [teamMembers, setTeamMembers] = useState<Record<string, TeamMember[]>>(
+  const [teamMembers, setTeamMembers] = useState<Record<string, TeamMemberWithExtra[]>>(
     {}
   )
   const [loadingMembers, setLoadingMembers] = useState<Set<string>>(new Set())
@@ -91,7 +86,7 @@ export function TeamsPage() {
       try {
         setLoading(true)
         const teamsData = await getAllTeams()
-        setTeams(teamsData || [])
+        setTeams((teamsData || []) as TeamWithCaptain[])
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to load teams'
@@ -132,7 +127,7 @@ export function TeamsPage() {
         try {
           setLoadingMembers((prev) => new Set(prev).add(teamId))
           const members = await getTeamMembers(teamId)
-          setTeamMembers((prev) => ({ ...prev, [teamId]: members }))
+          setTeamMembers((prev) => ({ ...prev, [teamId]: members as TeamMemberWithExtra[] }))
         } catch (err) {
           const errorMessage =
             err instanceof Error ? err.message : 'Failed to load team members'
@@ -169,7 +164,7 @@ export function TeamsPage() {
   }
 
   // Get member display name
-  const getMemberDisplayName = (member: TeamMember) => {
+  const getMemberDisplayName = (member: TeamMemberWithExtra) => {
     return member.campus_card || `${member.first_name} ${member.last_name}`
   }
 

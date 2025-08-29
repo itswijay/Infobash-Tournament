@@ -77,7 +77,6 @@ export function ImageSlideshow({
               loading="lazy"
             />
 
-            {/* Gradient Overlay for Better Visibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
           </motion.div>
         </AnimatePresence>
