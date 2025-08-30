@@ -19,6 +19,7 @@ import { TeamRegistrationForm } from '@/components/team/TeamRegistrationForm'
 import { Button } from '@/components/ui/button'
 import type { TeamMemberInput } from '@/lib/api/teams'
 import toast from 'react-hot-toast'
+import { useNearestTournament } from '@/hooks/useNearestTournament'
 
 interface Team {
   id: string
@@ -60,6 +61,8 @@ interface TeamMember {
 
 export function RegisterTeamPage() {
   const { user, loading } = useAuth()
+  const { tournament: activeTournament, loading: tournamentLoading } =
+    useNearestTournament()
 
   const [team, setTeam] = useState<Team | null>(null)
   const [teamLoading, setTeamLoading] = useState(false)
@@ -318,10 +321,75 @@ export function RegisterTeamPage() {
   }
 
   // Show loading while checking if user already registered a team
-  if (teamLoading || profileLoading) {
+  if (teamLoading || profileLoading || tournamentLoading) {
     return (
       <div className="container py-8">
         <PageLoading message="Loading registration form..." />
+      </div>
+    )
+  }
+
+  // Check tournament status for new registrations
+  if (
+    !team &&
+    activeTournament &&
+    activeTournament.status !== 'registration_open'
+  ) {
+    return (
+      <div className="container py-8 space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+            Registration Not Available
+          </h1>
+          <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
+          <p className="text-[var(--text-secondary)] mt-2">
+            Team registration is currently not open for this tournament
+          </p>
+        </div>
+
+        <div className="max-w-2xl mx-auto">
+          <Card className="bg-card-bg border-card-border">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4">
+                <div className="h-16 w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
+                  <Trophy className="h-8 w-8 text-[var(--color-secondary)]" />
+                </div>
+              </div>
+              <CardTitle className="text-xl text-[var(--text-primary)]">
+                {activeTournament.status === 'upcoming' &&
+                  'Registration Not Open Yet'}
+                {activeTournament.status === 'registration_closed' &&
+                  'Registration Closed'}
+                {activeTournament.status === 'ongoing' &&
+                  'Tournament in Progress'}
+                {activeTournament.status === 'completed' &&
+                  'Tournament Completed'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-6">
+              <div className="text-center py-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <p className="text-[var(--text-primary)] font-medium mb-2">
+                  {activeTournament.status === 'upcoming' &&
+                    'Tournament registration will open soon. Check back later!'}
+                  {activeTournament.status === 'registration_closed' &&
+                    'Team registration is now closed. Tournament will begin soon!'}
+                  {activeTournament.status === 'ongoing' &&
+                    'The tournament is currently running. Registration is closed.'}
+                  {activeTournament.status === 'completed' &&
+                    'This tournament has ended. Registration is closed.'}
+                </p>
+              </div>
+
+              <Button
+                onClick={() => window.history.back()}
+                variant="outline"
+                className="border-[var(--color-secondary)] text-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/10"
+              >
+                ← Go Back
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     )
   }
