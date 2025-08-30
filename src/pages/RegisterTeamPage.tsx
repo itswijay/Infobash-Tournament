@@ -164,7 +164,6 @@ export function RegisterTeamPage() {
           .update({ logo_url: null })
           .eq('id', team!.id)
       }
-      // If logoFile is undefined, no change to logo
 
       // Delete existing team members
       toast.loading('Updating team members...', { id: loadingToast })

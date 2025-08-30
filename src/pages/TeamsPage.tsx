@@ -23,15 +23,10 @@ interface TeamWithCaptain extends ApiTeam {
   }
 }
 
-import type { TeamMember as ApiTeamMember } from '@/lib/api/teams'
+import type { TeamMember } from '@/lib/api/teams'
 
-interface TeamMemberWithExtra extends ApiTeamMember {
-  first_name?: string
-  last_name?: string
-  campus_card?: string
-  is_captain?: boolean
-  user_id?: string
-}
+// Use the API TeamMember interface directly
+type TeamMemberWithExtra = TeamMember
 
 export function TeamsPage() {
   const [teams, setTeams] = useState<TeamWithCaptain[]>([])
@@ -39,9 +34,9 @@ export function TeamsPage() {
   const [error, setError] = useState<string | null>(null)
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set())
   const [closingTeams, setClosingTeams] = useState<Set<string>>(new Set())
-  const [teamMembers, setTeamMembers] = useState<Record<string, TeamMemberWithExtra[]>>(
-    {}
-  )
+  const [teamMembers, setTeamMembers] = useState<
+    Record<string, TeamMemberWithExtra[]>
+  >({})
   const [loadingMembers, setLoadingMembers] = useState<Set<string>>(new Set())
 
   // Add custom CSS animation
@@ -127,7 +122,10 @@ export function TeamsPage() {
         try {
           setLoadingMembers((prev) => new Set(prev).add(teamId))
           const members = await getTeamMembers(teamId)
-          setTeamMembers((prev) => ({ ...prev, [teamId]: members as TeamMemberWithExtra[] }))
+          setTeamMembers((prev) => ({
+            ...prev,
+            [teamId]: members as TeamMemberWithExtra[],
+          }))
         } catch (err) {
           const errorMessage =
             err instanceof Error ? err.message : 'Failed to load team members'
