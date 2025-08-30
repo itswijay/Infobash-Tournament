@@ -276,3 +276,33 @@ export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
     throw new Error('Failed to fetch team members')
   }
 }
+
+// Delete team
+export async function deleteTeam(teamId: string): Promise<void> {
+  try {
+    // Delete team members first (due to foreign key constraint)
+    const { error: membersError } = await supabase
+      .from('team_members')
+      .delete()
+      .eq('team_id', teamId)
+
+    if (membersError) {
+      console.error('Error deleting team members:', membersError)
+      throw new Error('Failed to delete team members')
+    }
+
+    // Delete the team
+    const { error: teamError } = await supabase
+      .from('teams')
+      .delete()
+      .eq('id', teamId)
+
+    if (teamError) {
+      console.error('Error deleting team:', teamError)
+      throw new Error('Failed to delete team')
+    }
+  } catch (error) {
+    console.error('Error in deleteTeam:', error)
+    throw new Error('Failed to delete team')
+  }
+}

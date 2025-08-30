@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Edit,
   X,
+  Trash2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getUserTeam } from '@/lib/api/teams'
@@ -207,6 +208,44 @@ export function RegisterTeamPage() {
     }
   }
 
+  const handleDeleteTeam = async () => {
+    if (!team) return
+
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to delete team "${team.name}"? This action cannot be undone and will remove all team members and data.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      const loadingToast = toast.loading('Deleting team...')
+
+      // Import and call deleteTeam function
+      await import('@/lib/api/teams').then((m) => m.deleteTeam(team.id))
+
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast)
+      toast.success(`Team "${team.name}" has been deleted successfully.`)
+
+      // Clear team data and redirect to team registration
+      setTeam(null)
+      setTeamMembers([])
+      setIsEditing(false)
+
+      // Reload page after a short delay to show the toast
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Failed to delete team. Please try again.'
+      toast.error(errorMessage)
+    }
+  }
+
   if (loading) {
     return (
       <div className="container py-8">
@@ -229,15 +268,15 @@ export function RegisterTeamPage() {
   if (!user) {
     return (
       <div className="container py-8 space-y-8">
-          <div className="text-center">
+        <div className="text-center">
           <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-              Register your Team for INFOBASH v4.0
-            </h1>
+            Register your Team for INFOBASH v4.0
+          </h1>
           <div className="mt-2 h-1 w-32 rounded-full bg-gradient-gold opacity-80 mx-auto" />
           <p className="text-[var(--text-secondary)] mt-2">
             Join the tournament and showcase your cricket skills
           </p>
-          </div>
+        </div>
 
         <div className="flex flex-col items-center justify-center max-w-lg mx-auto">
           {/* Sign In Card */}
@@ -245,7 +284,7 @@ export function RegisterTeamPage() {
             <CardHeader className="text-center">
               <div className="mx-auto mb-4">
                 <div className="h-16 w-16 rounded-full bg-[var(--color-accent-1)]/10 flex items-center justify-center mx-auto">
-                <Lock className="h-8 w-8 text-[var(--color-accent-1)]" />
+                  <Lock className="h-8 w-8 text-[var(--color-accent-1)]" />
                 </div>
               </div>
               <CardTitle className="text-xl text-[var(--text-primary)]">
@@ -350,14 +389,23 @@ export function RegisterTeamPage() {
                 </p>
               </div>
 
-              {/* Action Button */}
-              <div>
+              {/* Action Buttons */}
+              <div className="space-y-3">
                 <Button
                   onClick={handleEditTeam}
                   className="w-full bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] font-semibold py-3 transition-all duration-200 hover:scale-[1.02]"
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Team Details
+                </Button>
+
+                <Button
+                  onClick={handleDeleteTeam}
+                  variant="destructive"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 transition-all duration-200 hover:scale-[1.02]"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Team
                 </Button>
               </div>
             </CardContent>
@@ -446,15 +494,15 @@ export function RegisterTeamPage() {
   // Show registration form
   return (
     <div className="container py-8 space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-            Register Your Team
-          </h1>
-          <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
+      <div>
+        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          Register Your Team
+        </h1>
+        <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
         <p className="text-[var(--text-secondary)] mt-2">
-            Register your cricket team for upcoming tournaments
-          </p>
-        </div>
+          Register your cricket team for upcoming tournaments
+        </p>
+      </div>
 
       <div className="grid gap-8 md:grid-cols-3">
         {/* Info Card */}
@@ -493,42 +541,42 @@ export function RegisterTeamPage() {
 
         {/* Registration Form */}
         <div className="md:col-span-2">
-        <TeamRegistrationForm
-          captainProfile={captainProfile}
+          <TeamRegistrationForm
+            captainProfile={captainProfile}
             user={user!}
-          onSubmit={async ({ teamName, logoFile, members }) => {
-            try {
+            onSubmit={async ({ teamName, logoFile, members }) => {
+              try {
                 // Show loading toast
                 const loadingToast = toast.loading('Registering your team...')
 
-              // 1. Get current tournament
-              const tournament = await import('@/lib/api/teams')
-                .then((m) => m.getCurrentTournament())
-                .catch(() => null)
-              if (!tournament) throw new Error('No active tournament found.')
+                // 1. Get current tournament
+                const tournament = await import('@/lib/api/teams')
+                  .then((m) => m.getCurrentTournament())
+                  .catch(() => null)
+                if (!tournament) throw new Error('No active tournament found.')
 
-              // 2. Upload logo if provided
-              let logoUrl: string | undefined = undefined
-              if (logoFile) {
+                // 2. Upload logo if provided
+                let logoUrl: string | undefined = undefined
+                if (logoFile) {
                   toast.loading('Uploading team logo...', { id: loadingToast })
-                logoUrl = await import('@/lib/api/teams').then((m) =>
-                  m.uploadTeamLogo(logoFile, teamName)
-                )
-              }
+                  logoUrl = await import('@/lib/api/teams').then((m) =>
+                    m.uploadTeamLogo(logoFile, teamName)
+                  )
+                }
 
-              // 3. Register team and members
+                // 3. Register team and members
                 toast.loading('Creating team and adding members...', {
                   id: loadingToast,
                 })
                 await import('@/lib/api/teams').then((m) =>
-                m.registerTeam({
-                  teamName,
-                  logoUrl,
-                  members,
+                  m.registerTeam({
+                    teamName,
+                    logoUrl,
+                    members,
                     captainId: user!.id,
-                  tournamentId: tournament.id,
-                })
-              )
+                    tournamentId: tournament.id,
+                  })
+                )
 
                 // Dismiss loading toast and show success
                 toast.dismiss(loadingToast)
@@ -538,7 +586,7 @@ export function RegisterTeamPage() {
 
                 // Registration complete, reload page after a short delay to show the toast
                 setTimeout(() => {
-              window.location.reload()
+                  window.location.reload()
                 }, 2000)
               } catch (err: unknown) {
                 const errorMessage =
@@ -546,9 +594,9 @@ export function RegisterTeamPage() {
                     ? err.message
                     : 'Registration failed. Please try again.'
                 toast.error(errorMessage)
-            }
-          }}
-        />
+              }
+            }}
+          />
         </div>
       </div>
     </div>
