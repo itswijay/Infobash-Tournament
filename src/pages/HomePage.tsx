@@ -433,15 +433,27 @@ export function HomePage() {
       </div>
 
       {/* Countdown Section - Full Height */}
-      <section className="scroll-snap-section justify-center bg-[radial-gradient(circle_at_70%_40%,rgba(221,131,10,0.12),transparent_70%)] relative">
-        <div className="container py-4 md:py-12 flex items-center min-h-full">
+      <section className="scroll-snap-section justify-center relative overflow-hidden">
+        {/* Background Image with Dark Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-slow-zoom parallax-bg"
+          style={{
+            backgroundImage: `url('/cricket-match-with-player.jpg')`,
+          }}
+        />
+        {/* Dark Professional Overlay */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+        {/* Subtle Radial Gradient Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(221,131,10,0.15),transparent_70%)]" />
+
+        <div className="container py-4 md:py-12 flex items-center min-h-full relative z-10">
           <div className="w-full">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-3xl md:text-5xl font-bold mb-2 text-[var(--text-primary)]">
+              <h1 className="text-3xl md:text-5xl font-bold mb-2 text-white drop-shadow-lg">
                 InfoBash v4.0
               </h1>
-              <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
-              <p className="text-md md:text-xl text-[var(--text-secondary)] mb-6 md:mb-8 max-w-2xl mx-auto">
+              <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-90 rounded-full shadow-lg" />
+              <p className="text-md md:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-md font-medium">
                 {statusInfo.mainMessage}
               </p>
 

@@ -82,3 +82,23 @@
   outline: 2px solid var(--brand-focus);
   outline-offset: 2px;
 }
+
+/* Background Image Animations */
+@keyframes slow-zoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 20s ease-in-out infinite alternate;
+}
+
+/* Parallax effect for background images */
+.parallax-bg {
+  transform: translateZ(0);
+  will-change: transform;
+}
