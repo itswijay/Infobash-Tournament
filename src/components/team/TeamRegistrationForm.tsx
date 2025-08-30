@@ -16,6 +16,7 @@ import {
 import { Crown, Shield, X, Save, Users, UserPlus } from 'lucide-react'
 import type { TeamMemberInput } from '@/lib/api/teams'
 import type { User } from '@supabase/supabase-js'
+import toast from 'react-hot-toast'
 
 type TeamRegistrationFormProps = {
   user: User
@@ -244,11 +245,11 @@ export function TeamRegistrationForm({
       !newMember.last_name.trim() ||
       !newMember.batch.trim()
     ) {
-      setFormError('All member fields except campus card are required.')
+      toast.error('All member fields except campus card are required.')
       return
     }
     if (members.length >= 10) {
-      setFormError('You cannot add more than 10 members.')
+      toast.error('You cannot add more than 10 members.')
       return
     }
     // Gender constraint
@@ -259,11 +260,11 @@ export function TeamRegistrationForm({
       members.filter((m) => m.gender === 'female').length +
       (newMember.gender === 'female' ? 1 : 0)
     if (boys > 7) {
-      setFormError('You can only add up to 7 males.')
+      toast.error('You can only add up to 7 males.')
       return
     }
     if (girls > 3) {
-      setFormError('You can only add up to 3 females.')
+      toast.error('You can only add up to 3 females.')
       return
     }
     setMembers([...members, { ...newMember }])
@@ -297,17 +298,17 @@ export function TeamRegistrationForm({
     e.preventDefault()
     setFormError(null)
     if (!teamName.trim()) {
-      setFormError('Team name is required.')
+      toast.error('Team name is required.')
       return
     }
     if (members.length !== 10) {
-      setFormError('You must add exactly 10 members.')
+      toast.error('You must add exactly 10 members.')
       return
     }
     const boys = members.filter((m) => m.gender === 'male').length
     const girls = members.filter((m) => m.gender === 'female').length
     if (boys !== 7 || girls !== 3) {
-      setFormError('Team must have exactly 7 males and 3 females.')
+      toast.error('Team must have exactly 7 males and 3 females.')
       return
     }
     if (
@@ -315,7 +316,7 @@ export function TeamRegistrationForm({
         (m) => !m.first_name.trim() || !m.last_name.trim() || !m.batch.trim()
       )
     ) {
-      setFormError('All member fields except campus card are required.')
+      toast.error('All member fields except campus card are required.')
       return
     }
     setSubmitting(true)

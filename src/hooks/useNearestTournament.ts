@@ -13,6 +13,7 @@ interface UseNearestTournamentReturn {
   loading: boolean
   error: string | null
   refetch: () => Promise<void>
+  refreshStatus: () => Promise<void>
 }
 
 export function useNearestTournament(): UseNearestTournamentReturn {
@@ -52,14 +53,29 @@ export function useNearestTournament(): UseNearestTournamentReturn {
 
   useEffect(() => {
     fetchData()
+  }, []) // Only run once on mount
 
-    // Set up real-time updates every 30 seconds
+  // Separate effect for countdown monitoring
+  useEffect(() => {
+    if (!tournament || !startTime) return
+
+    // Check if tournament is in countdown phase
+    const now = new Date().getTime()
+    const targetTime = startTime.getTime()
+
+    if (targetTime <= now) return // Countdown already finished
+
+    // Set up interval to check when countdown finishes
     const interval = setInterval(() => {
-      fetchData()
-    }, 30000) // 30 seconds
+      const currentTime = new Date().getTime()
+      if (currentTime >= targetTime) {
+        // Countdown finished, refresh data
+        fetchData()
+      }
+    }, 1000) // Check every second for countdown completion
 
     return () => clearInterval(interval)
-  }, [])
+  }, [tournament?.id, startTime?.getTime()]) // Only depend on tournament ID and start time value
 
   return {
     tournament,
@@ -67,5 +83,16 @@ export function useNearestTournament(): UseNearestTournamentReturn {
     loading,
     error,
     refetch: fetchData,
+    // Add manual refresh for status updates
+    refreshStatus: async () => {
+      try {
+        // Only update statuses, don't change loading state
+        await updateTournamentStatuses()
+        // Then refresh tournament data
+        await fetchData()
+      } catch (err) {
+        console.error('Error refreshing status:', err)
+      }
+    },
   }
 }
