@@ -180,12 +180,14 @@ export interface Team {
 export interface TeamMember {
   id: string
   team_id: string
-  name: string
-  email: string
-  phone: string
-  role: 'captain' | 'member'
-  created_at: string
-  updated_at: string
+  user_id: string | null
+  first_name: string
+  last_name: string
+  gender: string
+  campus_card: string | null
+  batch: string
+  is_captain: boolean
+  joined_at: string
 }
 
 // Get all teams
@@ -261,7 +263,7 @@ export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
       .from('team_members')
       .select('*')
       .eq('team_id', teamId)
-      .order('name', { ascending: true })
+      .order('first_name', { ascending: true })
 
     if (error) {
       console.error('Error fetching team members:', error)
