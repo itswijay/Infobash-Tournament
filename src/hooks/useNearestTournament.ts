@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import {
   getNearestUpcomingTournament,
-  getNearestUpcomingTournamentStartTime,
+  updateTournamentStatuses,
+  getTournamentCountdownTarget,
 } from '@/lib/api/tournaments'
 import type { Tournament } from '@/lib/api/tournaments'
+import toast from 'react-hot-toast'
 
 interface UseNearestTournamentReturn {
   tournament: Tournament | null
@@ -24,16 +26,25 @@ export function useNearestTournament(): UseNearestTournamentReturn {
       setLoading(true)
       setError(null)
 
-      const [tournamentData, startTimeData] = await Promise.all([
-        getNearestUpcomingTournament(),
-        getNearestUpcomingTournamentStartTime(),
-      ])
+      // First update tournament statuses automatically
+      await updateTournamentStatuses()
 
-      setTournament(tournamentData)
-      setStartTime(startTimeData)
+      // Then get the active tournament
+      const tournamentData = await getNearestUpcomingTournament()
+
+      if (tournamentData) {
+        setTournament(tournamentData)
+        // Always use start_date for countdown as requested
+        setStartTime(getTournamentCountdownTarget(tournamentData))
+      } else {
+        setTournament(null)
+        setStartTime(null)
+        toast('No active tournaments found at the moment.', { icon: 'ℹ️' })
+      }
     } catch (err) {
-      console.error('Error fetching nearest tournament:', err)
-      setError('Failed to fetch nearest tournament data')
+      console.error('Error fetching active tournament:', err)
+      setError('Failed to fetch tournament data. Please check back later.')
+      toast.error('Failed to fetch tournament data. Please check back later.')
     } finally {
       setLoading(false)
     }
@@ -41,6 +52,13 @@ export function useNearestTournament(): UseNearestTournamentReturn {
 
   useEffect(() => {
     fetchData()
+
+    // Set up real-time updates every 30 seconds
+    const interval = setInterval(() => {
+      fetchData()
+    }, 30000) // 30 seconds
+
+    return () => clearInterval(interval)
   }, [])
 
   return {

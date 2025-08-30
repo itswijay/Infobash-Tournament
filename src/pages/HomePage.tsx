@@ -27,6 +27,7 @@ import { slideshowImages, slideshowConfig } from '@/data/slideshow'
 import { motion } from 'framer-motion'
 import { getUpcomingMatches } from '@/lib/api/matches'
 import type { Match } from '@/lib/api/matches'
+import type { Tournament } from '@/lib/api/tournaments'
 
 const stats = [
   {
@@ -89,8 +90,12 @@ const features = [
 
 export function HomePage() {
   const { user } = useAuth()
-  const { tournament: nearestTournament, startTime: tournamentStartTime } =
-    useNearestTournament()
+  const {
+    tournament: activeTournament,
+    startTime: tournamentStartTime,
+    error: tournamentError,
+    loading: tournamentLoading,
+  } = useNearestTournament()
   const [activeSection, setActiveSection] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
@@ -112,21 +117,10 @@ export function HomePage() {
     'footer',
   ]
 
-  // Tournament state management
-  const [tournamentPhase, setTournamentPhase] = useState<
-    'upcoming' | 'live' | 'results'
-  >('upcoming')
-
   // Tournament timing constants (dynamic from database)
   const TOURNAMENT_START_TIME = tournamentStartTime
     ? tournamentStartTime.getTime()
     : null
-  const TOURNAMENT_DURATION_HOURS = nearestTournament ? 48 : 0 // Default 48 hours if no tournament
-  const TOURNAMENT_END_TIME = TOURNAMENT_START_TIME
-    ? TOURNAMENT_START_TIME + TOURNAMENT_DURATION_HOURS * 60 * 60 * 1000
-    : null
-
-  const MANUAL_TOURNAMENT_END = false
 
   // Function to fetch upcoming matches
   const fetchUpcomingMatches = async () => {
@@ -137,8 +131,6 @@ export function HomePage() {
     } catch (error) {
       console.error('Error fetching upcoming matches:', error)
       setUpcomingMatches([])
-      // Show a toast or error message to the user
-      // toast.error('Failed to load upcoming matches')
     } finally {
       setMatchesLoading(false)
     }
@@ -176,9 +168,15 @@ export function HomePage() {
     }
   }
 
-  // Countdown timer effect
+  // Countdown timer effect - only for tournaments that are not ongoing
   useEffect(() => {
-    if (!TOURNAMENT_START_TIME) {
+    if (!TOURNAMENT_START_TIME || !activeTournament) {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      return
+    }
+
+    // Don't show countdown for ongoing tournaments
+    if (activeTournament.status === 'ongoing') {
       setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       return
     }
@@ -200,30 +198,8 @@ export function HomePage() {
         const seconds = Math.floor((difference % (1000 * 60)) / 1000)
 
         setTimeLeft({ days, hours, minutes, seconds })
-
-        const daysEl = document.getElementById('countdown-days')
-        const hoursEl = document.getElementById('countdown-hours')
-        const minutesEl = document.getElementById('countdown-minutes')
-        const secondsEl = document.getElementById('countdown-seconds')
-
-        if (daysEl) daysEl.textContent = days.toString().padStart(2, '0')
-        if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0')
-        if (minutesEl)
-          minutesEl.textContent = minutes.toString().padStart(2, '0')
-        if (secondsEl)
-          secondsEl.textContent = seconds.toString().padStart(2, '0')
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-      }
-
-      if (MANUAL_TOURNAMENT_END) {
-        setTournamentPhase('results')
-      } else if (TOURNAMENT_START_TIME && now < TOURNAMENT_START_TIME) {
-        setTournamentPhase('upcoming')
-      } else if (TOURNAMENT_END_TIME && now < TOURNAMENT_END_TIME) {
-        setTournamentPhase('live')
-      } else {
-        setTournamentPhase('results')
       }
     }
 
@@ -231,15 +207,91 @@ export function HomePage() {
     const interval = setInterval(updateCountdown, 1000)
 
     return () => clearInterval(interval)
-  }, [TOURNAMENT_START_TIME, TOURNAMENT_END_TIME, MANUAL_TOURNAMENT_END])
+  }, [TOURNAMENT_START_TIME, activeTournament])
 
   // Fetch upcoming matches on component mount
   useEffect(() => {
     fetchUpcomingMatches()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const shouldShowCountdown =
-    tournamentPhase === 'upcoming' && TOURNAMENT_START_TIME !== null
+  // Determine if countdown should be shown
+  const shouldShowCountdown: boolean = Boolean(
+    activeTournament &&
+      activeTournament.status !== 'ongoing' &&
+      activeTournament.status !== 'completed' &&
+      TOURNAMENT_START_TIME !== null
+  )
+
+  // Determine if action buttons should be shown
+  const shouldShowActionButtons =
+    activeTournament &&
+    activeTournament.status === 'registration_open' &&
+    shouldShowCountdown
+
+  // Get status-specific message and styling
+  const getStatusInfo = (tournament: Tournament | null) => {
+    if (!tournament)
+      return {
+        mainMessage: '',
+        statusMessage: '',
+        color: '',
+        showCountdown: false,
+      }
+
+    switch (tournament.status) {
+      case 'upcoming':
+        return {
+          mainMessage:
+            "FOC's grand cricket clash is almost here – get ready for the ultimate showdown!",
+          statusMessage:
+            'Infobash v4.0 is coming soon! Stay tuned for the biggest cricket event of the season.',
+          color: 'blue',
+          showCountdown: true,
+        }
+      case 'registration_open':
+        return {
+          mainMessage:
+            'Registration is now open! Register your team and join the competition!',
+          statusMessage:
+            "Don't miss out! Register your team now and secure your spot in the tournament.",
+          color: 'green',
+          showCountdown: true,
+        }
+      case 'registration_closed':
+        return {
+          mainMessage: 'Registration is closed. Tournament will begin soon!',
+          statusMessage:
+            'All teams are registered! The tournament is about to begin - get ready!',
+          color: 'orange',
+          showCountdown: true,
+        }
+      case 'ongoing':
+        return {
+          mainMessage: 'Tournament is happening now! Follow the live action!',
+          statusMessage:
+            'The tournament is live! Follow all the matches and cheer for your favorite teams!',
+          color: 'red',
+          showCountdown: false,
+        }
+      case 'completed':
+        return {
+          mainMessage: 'Tournament completed! Check out the results!',
+          statusMessage:
+            'The tournament has ended! Check out the final results and see who emerged victorious!',
+          color: 'purple',
+          showCountdown: false,
+        }
+      default:
+        return {
+          mainMessage: '',
+          statusMessage: '',
+          color: '',
+          showCountdown: false,
+        }
+    }
+  }
+
+  const statusInfo = getStatusInfo(activeTournament)
 
   useEffect(() => {
     let autoScrollTimeout: NodeJS.Timeout
@@ -390,23 +442,46 @@ export function HomePage() {
               </h1>
               <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-80 rounded-full" />
               <p className="text-md md:text-xl text-[var(--text-secondary)] mb-6 md:mb-8 max-w-2xl mx-auto">
-                {tournamentPhase === 'upcoming' ? (
-                  <>
-                    <span className="hidden md:inline">
-                      FOC's grand cricket clash is almost here – get ready for
-                      the ultimate showdown!
-                    </span>
-                    <span className="md:hidden">
-                      FOC's grand cricket clash is almost here
-                      <br />
-                      Get ready for the ultimate showdown!
-                    </span>
-                  </>
-                ) : null}
+                {statusInfo.mainMessage}
               </p>
 
-              {/* Countdown Timer or Happening Now */}
-              {!tournamentStartTime && nearestTournament === undefined ? (
+              {/* Error Message */}
+              {tournamentError && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{
+                    duration: 0.8,
+                    ease: 'easeOut',
+                    type: 'spring',
+                    stiffness: 100,
+                    damping: 15,
+                  }}
+                  className="mb-4 md:mb-6 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto"
+                >
+                  <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-sm border-2 border-red-400/30 rounded-2xl p-6 md:px-8 md:pb-6 shadow-2xl">
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4">
+                        <Calendar className="w-4 h-4" />
+                        Error Loading Tournament
+                      </div>
+                      <h2 className="text-2xl md:text-4xl font-bold text-red-400 mb-3 md:mb-4">
+                        Something went wrong! 😔
+                      </h2>
+                      <p className="text-lg md:text-xl text-red-300 mb-4">
+                        {tournamentError}
+                      </p>
+                      <p className="text-base text-red-200">
+                        Please check back later or contact support if the
+                        problem persists.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Status-Based Tournament Display */}
+              {tournamentLoading ? (
                 // Loading State
                 <div className="mb-4 md:mb-6 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
                   <div className="bg-gradient-to-r from-slate-500/20 to-gray-500/20 backdrop-blur-sm border-2 border-slate-400/30 rounded-2xl p-6 md:px-8 md:pb-6 shadow-2xl">
@@ -422,55 +497,106 @@ export function HomePage() {
                   </div>
                 </div>
               ) : shouldShowCountdown ? (
-                // Countdown Timer
-                <div className="grid grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-12 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
-                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                    <div
-                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                      id="countdown-days"
-                    >
-                      {String(timeLeft.days).padStart(2, '0')}
+                <>
+                  {/* Countdown Timer for Upcoming, Registration Open, and Registration Closed */}
+                  <div className="grid grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-8 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto">
+                    <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                      <div className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500">
+                        {String(timeLeft.days).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                        Days
+                      </div>
                     </div>
-                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                      Days
+                    <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                      <div className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500">
+                        {String(timeLeft.hours).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                        Hours
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                    <div
-                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                      id="countdown-hours"
-                    >
-                      {String(timeLeft.hours).padStart(2, '0')}
+                    <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                      <div className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500">
+                        {String(timeLeft.minutes).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                        Minutes
+                      </div>
                     </div>
-                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                      Hours
-                    </div>
-                  </div>
-                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                    <div
-                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                      id="countdown-minutes"
-                    >
-                      {String(timeLeft.minutes).padStart(2, '0')}
-                    </div>
-                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                      Minutes
-                    </div>
-                  </div>
-                  <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
-                    <div
-                      className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500"
-                      id="countdown-seconds"
-                    >
-                      {String(timeLeft.seconds).padStart(2, '0')}
-                    </div>
-                    <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
-                      Seconds
+                    <div className="bg-[color:rgb(255_255_255/0.06)] backdrop-blur-sm border border-[color:rgb(255_255_255/0.12)] rounded-lg p-4 md:p-6 lg:p-8 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px] md:min-h-[130px] lg:min-h-[160px] hover:scale-105 transition-transform duration-300">
+                      <div className="text-2xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)] mb-1 md:mb-2 lg:mb-3 transition-all duration-500">
+                        {String(timeLeft.seconds).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs md:text-sm lg:text-base text-[var(--text-secondary)] font-medium uppercase tracking-wider">
+                        Seconds
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : !TOURNAMENT_START_TIME ? (
-                // No Upcoming Tournament Message
+
+                  {/* Status Message Display */}
+                  {activeTournament && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.6,
+                        ease: 'easeOut',
+                        type: 'spring',
+                        stiffness: 100,
+                        damping: 15,
+                      }}
+                      className="mb-4 md:mb-8 max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto text-center"
+                    >
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4 text-white shadow-lg">
+                        {activeTournament.status === 'upcoming' && (
+                          <span className="bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2 rounded-full border border-blue-400/30">
+                            🏏 UPCOMING
+                          </span>
+                        )}
+                        {activeTournament.status === 'registration_open' && (
+                          <span className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-full border border-green-400/30">
+                            📝 REGISTRATION OPEN
+                          </span>
+                        )}
+                        {activeTournament.status === 'registration_closed' && (
+                          <span className="bg-gradient-to-r from-orange-500 to-amber-600 px-4 py-2 rounded-full border border-orange-400/30">
+                            ⏰ REGISTRATION CLOSED
+                          </span>
+                        )}
+                        {activeTournament.status === 'ongoing' && (
+                          <span className="bg-gradient-to-r from-red-500 to-pink-600 px-4 py-2 rounded-full border border-red-400/30 animate-pulse">
+                            🔥 LIVE NOW
+                          </span>
+                        )}
+                        {activeTournament.status === 'completed' && (
+                          <span className="bg-gradient-to-r from-purple-500 to-violet-600 px-4 py-2 rounded-full border border-purple-400/30">
+                            🏆 COMPLETED
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={`text-lg md:text-xl max-w-2xl mx-auto font-medium ${
+                          activeTournament.status === 'upcoming'
+                            ? 'text-blue-300'
+                            : activeTournament.status === 'registration_open'
+                            ? 'text-green-300'
+                            : activeTournament.status === 'registration_closed'
+                            ? 'text-orange-300'
+                            : activeTournament.status === 'ongoing'
+                            ? 'text-red-300'
+                            : activeTournament.status === 'completed'
+                            ? 'text-purple-300'
+                            : 'text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {statusInfo.statusMessage}
+                      </p>
+                    </motion.div>
+                  )}
+                </>
+              ) : !activeTournament ? (
+                // No Active Tournament Message
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -487,14 +613,13 @@ export function HomePage() {
                     <div className="text-center">
                       <div className="inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold mb-4">
                         <Calendar className="w-4 h-4" />
-                        No Upcoming Tournaments
+                        No Active Tournaments
                       </div>
                       <h2 className="text-2xl md:text-4xl font-bold text-blue-400 mb-3 md:mb-4">
                         Stay Tuned! 🏏
                       </h2>
                       <p className="text-lg md:text-xl text-blue-300 mb-4">
-                        There are no upcoming tournaments scheduled at the
-                        moment.
+                        There are no active tournaments at the moment.
                       </p>
                       <p className="text-base text-blue-200">
                         Check back later for new tournament announcements!
@@ -502,7 +627,7 @@ export function HomePage() {
                     </div>
                   </div>
                 </motion.div>
-              ) : tournamentPhase === 'live' ? (
+              ) : activeTournament?.status === 'ongoing' ? (
                 // Happening Now Section
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -626,7 +751,7 @@ export function HomePage() {
                     </div>
                   </div>
                 </motion.div>
-              ) : tournamentPhase === 'results' ? (
+              ) : activeTournament?.status === 'completed' ? (
                 // Results Section
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8, y: 30 }}
@@ -789,7 +914,7 @@ export function HomePage() {
               ) : null}
 
               {/* Action Buttons - Only show during upcoming phase */}
-              {shouldShowCountdown && (
+              {shouldShowActionButtons && (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                   {user ? (
                     // Authenticated user buttons
@@ -1073,7 +1198,7 @@ export function HomePage() {
               <div className="max-w-2xl mx-auto px-4 md:px-0">
                 <Card className="bg-card-bg border-card-border text-center">
                   <CardContent className="p-6 md:p-8">
-                    {tournamentPhase === 'upcoming' ? (
+                    {activeTournament?.status === 'upcoming' ? (
                       <>
                         <div className="text-4xl mb-4">🏏</div>
                         <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
@@ -1093,11 +1218,11 @@ export function HomePage() {
                           </Link>
                         </Button>
                       </>
-                    ) : tournamentPhase === 'live' ? (
+                    ) : activeTournament?.status === 'ongoing' ? (
                       <>
                         <div className="text-4xl mb-4">🎯</div>
                         <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
-                          All Matches Are Live or Completed
+                          Tournament is Live!
                         </h3>
                         <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
                           Check the matches page to see live scores and results!

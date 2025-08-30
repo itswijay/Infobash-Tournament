@@ -161,7 +161,6 @@ export async function getNearestUpcomingTournament(): Promise<Tournament | null>
     const { data, error } = await supabase
       .from('tournaments')
       .select('*')
-      .in('status', ['upcoming', 'registration_open', 'registration_closed'])
       .gte('start_date', now)
       .order('start_date', { ascending: true })
       .limit(1)
@@ -208,4 +207,188 @@ export async function deleteTournament(id: string): Promise<void> {
     console.error('Error in deleteTournament:', error)
     throw new Error('Failed to delete tournament')
   }
+}
+
+// get tournaments by status
+export async function getTournamentsByStatus(
+  status: Tournament['status']
+): Promise<Tournament[]> {
+  try {
+    const { data, error } = await supabase
+      .from('tournaments')
+      .select('*')
+      .eq('status', status)
+      .order('start_date', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching tournaments by status:', error)
+      throw new Error('Failed to fetch tournaments by status')
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getTournamentsByStatus:', error)
+    throw new Error('Failed to fetch tournaments by status')
+  }
+}
+
+// get the active tournament (ongoing, registration_open, registration_closed, or upcoming)
+export async function getActiveTournament(): Promise<Tournament | null> {
+  try {
+    // First try to get ongoing tournament
+    const { data: ongoingData, error: ongoingError } = await supabase
+      .from('tournaments')
+      .select('*')
+      .eq('status', 'ongoing')
+      .order('start_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (ongoingData) {
+      return ongoingData
+    }
+
+    if (ongoingError && ongoingError.code !== 'PGRST116') {
+      console.error('Error fetching ongoing tournament:', ongoingError)
+      throw new Error('Failed to fetch ongoing tournament')
+    }
+
+    // If no ongoing, try registration_open
+    const { data: regOpenData, error: regOpenError } = await supabase
+      .from('tournaments')
+      .select('*')
+      .eq('status', 'registration_open')
+      .order('start_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (regOpenData) {
+      return regOpenData
+    }
+
+    if (regOpenError && regOpenError.code !== 'PGRST116') {
+      console.error(
+        'Error fetching registration open tournament:',
+        regOpenError
+      )
+      throw new Error('Failed to fetch registration open tournament')
+    }
+
+    // If no registration_open, try registration_closed
+    const { data: regClosedData, error: regClosedError } = await supabase
+      .from('tournaments')
+      .select('*')
+      .eq('status', 'registration_closed')
+      .order('start_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (regClosedData) {
+      return regClosedData
+    }
+
+    if (regClosedError && regClosedError.code !== 'PGRST116') {
+      console.error(
+        'Error fetching registration closed tournament:',
+        regClosedError
+      )
+      throw new Error('Failed to fetch registration closed tournament')
+    }
+
+    // If no registration_closed, try upcoming
+    const { data: upcomingData, error: upcomingError } = await supabase
+      .from('tournaments')
+      .select('*')
+      .eq('status', 'upcoming')
+      .order('start_date', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (upcomingData) {
+      return upcomingData
+    }
+
+    if (upcomingError && upcomingError.code !== 'PGRST116') {
+      console.error('Error fetching upcoming tournament:', upcomingError)
+      throw new Error('Failed to fetch upcoming tournament')
+    }
+
+    // No active tournaments found
+    return null
+  } catch (error) {
+    console.error('Error in getActiveTournament:', error)
+    throw new Error('Failed to fetch active tournament')
+  }
+}
+
+// New function to automatically update tournament statuses based on current time
+export async function updateTournamentStatuses(): Promise<void> {
+  try {
+    const now = new Date().toISOString()
+
+    // Update registration_open to registration_closed when deadline passes
+    const { error: regClosedError } = await supabase
+      .from('tournaments')
+      .update({ status: 'registration_closed' })
+      .eq('status', 'registration_open')
+      .lt('registration_deadline', now)
+
+    if (regClosedError) {
+      console.error(
+        'Error updating registration_open to registration_closed:',
+        regClosedError
+      )
+    }
+
+    // Update registration_closed to ongoing when start_date arrives
+    const { error: ongoingError } = await supabase
+      .from('tournaments')
+      .update({ status: 'ongoing' })
+      .eq('status', 'registration_closed')
+      .lte('start_date', now)
+
+    if (ongoingError) {
+      console.error(
+        'Error updating registration_closed to ongoing:',
+        ongoingError
+      )
+    }
+
+    // Update ongoing to completed when end_date passes
+    const { error: completedError } = await supabase
+      .from('tournaments')
+      .update({ status: 'completed' })
+      .eq('status', 'ongoing')
+      .lt('end_date', now)
+
+    if (completedError) {
+      console.error('Error updating ongoing to completed:', completedError)
+    }
+
+    // Update upcoming to registration_open when registration_deadline is approaching (optional - you can remove this if you want manual control)
+    // This is optional - you might want to manually control when registration opens
+    // const { error: regOpenError } = await supabase
+    //   .from('tournaments')
+    //   .update({ status: 'registration_open' })
+    //   .eq('status', 'upcoming')
+    //   .lte('registration_deadline', now)
+
+    // if (regOpenError) {
+    //   console.error('Error updating upcoming to registration_open:', regOpenError)
+    // }
+  } catch (error) {
+    console.error('Error in updateTournamentStatuses:', error)
+    throw new Error('Failed to update tournament statuses')
+  }
+}
+
+// get tournament countdown target (always start_date)
+export function getTournamentCountdownTarget(tournament: Tournament): Date {
+  return new Date(tournament.start_date)
+}
+
+// check if tournament is in countdown phase
+export function isTournamentInCountdownPhase(tournament: Tournament): boolean {
+  const startDate = new Date(tournament.start_date)
+  return startDate > new Date()
 }
