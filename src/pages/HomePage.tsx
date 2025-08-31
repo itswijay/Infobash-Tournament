@@ -952,7 +952,7 @@ export function HomePage() {
                         size="lg"
                         className="border-2 border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm bg-[var(--brand-bg)]/10"
                       >
-                        <Link to={ROUTES.TOURNAMENTS}>View Tournaments</Link>
+                        <Link to={ROUTES.INSTRUCTIONS}>How It Works</Link>
                       </Button>
                     </>
                   ) : (
