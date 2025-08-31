@@ -438,7 +438,7 @@ export function HomePage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-slow-zoom parallax-bg"
           style={{
-            backgroundImage: `url('/cricket-match-with-player.jpg')`,
+            backgroundImage: `url('/cricket-match-with-player.webp')`,
           }}
         />
         {/* Dark Professional Overlay */}

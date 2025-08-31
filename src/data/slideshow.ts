@@ -21,52 +21,62 @@ const buildImageUrl = (filename: string) => {
 export const slideshowImages: Slide[] = [
   {
     id: '1',
-    imageUrl: buildImageUrl('1.jpg'),
+    imageUrl: buildImageUrl('1.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '2',
-    imageUrl: buildImageUrl('2.jpg'),
+    imageUrl: buildImageUrl('2.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '3',
-    imageUrl: buildImageUrl('3.jpg'),
+    imageUrl: buildImageUrl('3.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '4',
-    imageUrl: buildImageUrl('4.jpg'),
+    imageUrl: buildImageUrl('4.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '5',
-    imageUrl: buildImageUrl('5.jpg'),
+    imageUrl: buildImageUrl('5.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '6',
-    imageUrl: buildImageUrl('6.jpg'),
+    imageUrl: buildImageUrl('6.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '7',
-    imageUrl: buildImageUrl('7.jpg'),
+    imageUrl: buildImageUrl('7.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '8',
-    imageUrl: buildImageUrl('8.jpg'),
+    imageUrl: buildImageUrl('22.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '9',
-    imageUrl: buildImageUrl('9.jpg'),
+    imageUrl: buildImageUrl('17.webp'),
     alt: 'Previous Tournament Highlights',
   },
   {
     id: '10',
-    imageUrl: buildImageUrl('10.jpg'),
+    imageUrl: buildImageUrl('10.webp'),
+    alt: 'Previous Tournament Highlights',
+  },
+  {
+    id: '10',
+    imageUrl: buildImageUrl('14.webp'),
+    alt: 'Previous Tournament Highlights',
+  },
+  {
+    id: '10',
+    imageUrl: buildImageUrl('29.webp'),
     alt: 'Previous Tournament Highlights',
   },
 ]
