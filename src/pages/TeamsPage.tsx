@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { PageLoading } from '@/components/shared/LoadingSpinner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Users,
   Trophy,
@@ -9,9 +10,11 @@ import {
   Crown,
   ChevronDown,
   ChevronUp,
+  Trash2,
 } from 'lucide-react'
-import { getAllTeams, getTeamMembers } from '@/lib/api/teams'
+import { getAllTeams, getTeamMembers, deleteTeam } from '@/lib/api/teams'
 import type { Team as ApiTeam } from '@/lib/api/teams'
+import { useAuth } from '@/hooks/useAuth'
 import toast from 'react-hot-toast'
 
 interface TeamWithCaptain extends ApiTeam {
@@ -29,6 +32,7 @@ import type { TeamMember } from '@/lib/api/teams'
 type TeamMemberWithExtra = TeamMember
 
 export function TeamsPage() {
+  const { isAdmin } = useAuth()
   const [teams, setTeams] = useState<TeamWithCaptain[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -38,6 +42,7 @@ export function TeamsPage() {
     Record<string, TeamMemberWithExtra[]>
   >({})
   const [loadingMembers, setLoadingMembers] = useState<Set<string>>(new Set())
+  const [deletingTeams, setDeletingTeams] = useState<Set<string>>(new Set())
 
   // Add custom CSS animation
   useEffect(() => {
@@ -166,6 +171,58 @@ export function TeamsPage() {
     return member.campus_card || `${member.first_name} ${member.last_name}`
   }
 
+  // Delete team function (admin only)
+  const handleDeleteTeam = async (teamId: string, teamName: string) => {
+    if (!isAdmin) {
+      toast.error('Unauthorized: Admin access required')
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the team "${teamName}"? This action cannot be undone and will remove all team members.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      setDeletingTeams((prev) => new Set(prev).add(teamId))
+
+      await deleteTeam(teamId)
+
+      // Remove team from local state
+      setTeams((prev) => prev.filter((team) => team.id !== teamId))
+
+      // Clean up related state
+      setExpandedTeams((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(teamId)
+        return newSet
+      })
+      setClosingTeams((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(teamId)
+        return newSet
+      })
+      setTeamMembers((prev) => {
+        const newMembers = { ...prev }
+        delete newMembers[teamId]
+        return newMembers
+      })
+
+      toast.success(`Team "${teamName}" has been deleted successfully`)
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to delete team'
+      toast.error(errorMessage)
+    } finally {
+      setDeletingTeams((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(teamId)
+        return newSet
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="container py-8 page-enter">
@@ -213,12 +270,25 @@ export function TeamsPage() {
         <div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-                Teams
-              </h1>
+              <div className="flex items-center space-x-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                  Teams
+                </h1>
+                {isAdmin && (
+                  <Badge className="bg-red-600 text-white text-xs">
+                    Admin Mode
+                  </Badge>
+                )}
+              </div>
               <div className="mt-2 h-1 w-16 rounded-full bg-gradient-gold opacity-80" />
               <p className="text-[var(--text-secondary)]">
                 View all registered cricket teams
+                {isAdmin && (
+                  <span className="text-red-400 font-medium">
+                    {' '}
+                    • Admin controls enabled
+                  </span>
+                )}
               </p>
             </div>
 
@@ -264,12 +334,32 @@ export function TeamsPage() {
           <div className="space-y-3">
             {teams.map((team) => (
               <div key={team.id} className="space-y-0">
-                <Card
-                  className="bg-card-bg border-card-border hover:border-[var(--color-secondary)]/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group cursor-pointer"
-                  onClick={() => toggleTeamExpansion(team.id)}
-                >
+                <Card className="bg-card-bg border-card-border hover:border-[var(--color-secondary)]/50 transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group cursor-pointer relative">
                   <CardContent className="p-3 md:p-4">
-                    <div className="flex items-center space-x-3 md:space-x-4">
+                    {/* Admin Delete Button */}
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-2 right-2 h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteTeam(team.id, team.name)
+                        }}
+                        disabled={deletingTeams.has(team.id)}
+                      >
+                        {deletingTeams.has(team.id) ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-500 border-t-transparent" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    )}
+
+                    <div
+                      className="flex items-center space-x-3 md:space-x-4 cursor-pointer"
+                      onClick={() => toggleTeamExpansion(team.id)}
+                    >
                       {/* Team Logo */}
                       <div className="flex-shrink-0">
                         {team.logo_url ? (

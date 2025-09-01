@@ -158,12 +158,25 @@ export function TournamentsPage() {
       <div className="container py-8">
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-              Tournaments
-            </h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                Tournaments
+              </h1>
+              {isAdmin && (
+                <Badge className="bg-red-600 text-white text-xs">
+                  Admin Mode
+                </Badge>
+              )}
+            </div>
             <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
             <p className="text-[var(--text-secondary)]">
               Manage and view all cricket tournaments
+              {isAdmin && (
+                <span className="text-red-400 font-medium">
+                  {' '}
+                  • Admin controls enabled
+                </span>
+              )}
             </p>
           </div>
           <PageLoading message="Loading tournaments..." />
@@ -177,12 +190,25 @@ export function TournamentsPage() {
       <div className="container py-8">
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-              Tournaments
-            </h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                Tournaments
+              </h1>
+              {isAdmin && (
+                <Badge className="bg-red-600 text-white text-xs">
+                  Admin Mode
+                </Badge>
+              )}
+            </div>
             <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
             <p className="text-[var(--text-secondary)]">
               Manage and view all cricket tournaments
+              {isAdmin && (
+                <span className="text-red-400 font-medium">
+                  {' '}
+                  • Admin controls enabled
+                </span>
+              )}
             </p>
           </div>
           <div className="text-center py-12">
@@ -201,12 +227,25 @@ export function TournamentsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-              Tournaments
-            </h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                Tournaments
+              </h1>
+              {isAdmin && (
+                <Badge className="bg-red-600 text-white text-xs">
+                  Admin Mode
+                </Badge>
+              )}
+            </div>
             <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
             <p className="text-[var(--text-secondary)]">
               Manage and view all cricket tournaments
+              {isAdmin && (
+                <span className="text-red-400 font-medium">
+                  {' '}
+                  • Admin controls enabled
+                </span>
+              )}
             </p>
           </div>
 
