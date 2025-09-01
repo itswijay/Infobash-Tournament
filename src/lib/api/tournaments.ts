@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { localDateTimeStringToISO } from '@/lib/utils'
 
 export interface Tournament {
   id: string
@@ -83,15 +82,13 @@ export async function createTournament(
   tournamentData: CreateTournamentData
 ): Promise<Tournament> {
   try {
-    // Convert date strings to ISO format for database while preserving local timezone
+    // Store datetime strings as-is without any timezone conversion
     const formattedData = {
       ...tournamentData,
-      start_date: new Date(tournamentData.start_date).toISOString(),
-      end_date: new Date(tournamentData.end_date).toISOString(),
-      // Convert local datetime to ISO while preserving local time
-      registration_deadline: localDateTimeStringToISO(
-        tournamentData.registration_deadline
-      ),
+      // No conversion - store exactly as provided
+      start_date: tournamentData.start_date,
+      end_date: tournamentData.end_date,
+      registration_deadline: tournamentData.registration_deadline,
     }
 
     const { data, error } = await supabase
@@ -117,23 +114,11 @@ export async function updateTournament(
   tournamentData: UpdateTournamentData
 ): Promise<Tournament> {
   try {
-    // Convert date strings to ISO format if they exist
+    // Store datetime strings as-is without any timezone conversion
     const formattedData: Record<string, unknown> = { ...tournamentData }
 
-    if (tournamentData.start_date) {
-      formattedData.start_date = new Date(
-        tournamentData.start_date
-      ).toISOString()
-    }
-    if (tournamentData.end_date) {
-      formattedData.end_date = new Date(tournamentData.end_date).toISOString()
-    }
-    if (tournamentData.registration_deadline) {
-      // Convert local datetime to ISO while preserving local time
-      formattedData.registration_deadline = localDateTimeStringToISO(
-        tournamentData.registration_deadline
-      )
-    }
+    // No conversion needed - store exactly as provided
+    // The database will handle the datetime strings as-is
 
     const { data, error } = await supabase
       .from('tournaments')
@@ -384,11 +369,58 @@ export async function updateTournamentStatuses(): Promise<void> {
 
 // get tournament countdown target (always start_date)
 export function getTournamentCountdownTarget(tournament: Tournament): Date {
-  return new Date(tournament.start_date)
+  try {
+    console.log('Parsing tournament start date:', tournament.start_date)
+
+    let date: Date
+
+    if (tournament.start_date.includes('T')) {
+      // Parse "YYYY-MM-DDTHH:mm:ss" format
+      const [datePart, timePart] = tournament.start_date.split('T')
+      const [year, month, day] = datePart.split('-').map(Number)
+
+      // Handle time part
+      const cleanTimePart = timePart.replace('.000Z', '').replace('Z', '')
+      const [hours, minutes, seconds] = cleanTimePart.split(':').map(Number)
+
+      // Create Date object in local timezone
+      date = new Date(year, month - 1, day, hours, minutes, seconds || 0)
+    } else {
+      // Fallback for other formats
+      date = new Date(tournament.start_date)
+    }
+
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', tournament.start_date)
+      return new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+    }
+
+    console.log(
+      'Successfully parsed tournament start date (NO TIMEZONE CONVERSION):',
+      {
+        original: tournament.start_date,
+        parsed: date.toISOString(),
+        local: date.toString(),
+        timestamp: date.getTime(),
+        timezoneOffset: date.getTimezoneOffset(),
+      }
+    )
+
+    return date
+  } catch (error) {
+    console.error(
+      'Error parsing tournament start date:',
+      error,
+      tournament.start_date
+    )
+    // Return a future date to prevent countdown issues
+    return new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+  }
 }
 
 // check if tournament is in countdown phase
 export function isTournamentInCountdownPhase(tournament: Tournament): boolean {
-  const startDate = new Date(tournament.start_date)
+  const startDate = getTournamentCountdownTarget(tournament)
   return startDate > new Date()
 }

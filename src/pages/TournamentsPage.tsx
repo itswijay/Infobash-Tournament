@@ -125,6 +125,27 @@ export function TournamentsPage() {
     }
   }
 
+  const formatTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+
+      const hours = date.getUTCHours()
+      const minutes = date.getUTCMinutes()
+
+      const localDate = new Date(2000, 0, 1, hours, minutes)
+
+      // Format it in local time
+      return localDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+    } catch (error) {
+      console.error('Error formatting time:', error)
+      return 'Invalid Time'
+    }
+  }
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'upcoming':
@@ -334,7 +355,7 @@ export function TournamentsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0 p-4 md:p-6">
-                  <div className="grid grid-cols-4 gap-2 md:gap-8">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
                     <div className="flex flex-col items-center text-center">
                       <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
                       <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
@@ -342,6 +363,16 @@ export function TournamentsPage() {
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
                         {formatDate(tournament.start_date)}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center text-center">
+                      <Clock className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
+                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                        Start Time
+                      </div>
+                      <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
+                        {formatTime(tournament.start_date)}
                       </div>
                     </div>
 

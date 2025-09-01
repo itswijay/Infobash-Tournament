@@ -43,7 +43,9 @@ interface TournamentFormState {
   name: string
   description: string
   start_date: string
+  start_time: string
   end_date: string
+  end_time: string
   registration_deadline_date: string
   registration_deadline_time: string
   max_teams: string
@@ -75,7 +77,9 @@ export function TournamentForm({
     name: '',
     description: '',
     start_date: '',
+    start_time: '00:00',
     end_date: '',
+    end_time: '23:59',
     registration_deadline_date: '',
     registration_deadline_time: '00:00',
     max_teams: '16',
@@ -88,25 +92,21 @@ export function TournamentForm({
   // Initialize form with existing tournament data if editing
   useEffect(() => {
     if (tournament && isEditMode) {
-      const startDate = new Date(tournament.start_date)
-      const endDate = new Date(tournament.end_date)
-      const registrationDeadline = new Date(tournament.registration_deadline)
+      // Extract date and time directly from the datetime string without conversion
+      const startDateTime = tournament.start_date
+      const endDateTime = tournament.end_date
+      const registrationDateTime = tournament.registration_deadline
 
       setFormData({
         name: tournament.name,
         description: tournament.description || '',
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0],
-        registration_deadline_date: registrationDeadline
-          .toISOString()
-          .split('T')[0],
-        registration_deadline_time: `${registrationDeadline
-          .getUTCHours()
-          .toString()
-          .padStart(2, '0')}:${registrationDeadline
-          .getUTCMinutes()
-          .toString()
-          .padStart(2, '0')}`,
+        start_date: startDateTime.split('T')[0],
+        start_time: startDateTime.split('T')[1]?.substring(0, 5) || '00:00',
+        end_date: endDateTime.split('T')[0],
+        end_time: endDateTime.split('T')[1]?.substring(0, 5) || '23:59',
+        registration_deadline_date: registrationDateTime.split('T')[0],
+        registration_deadline_time:
+          registrationDateTime.split('T')[1]?.substring(0, 5) || '00:00',
         max_teams: tournament.max_teams.toString(),
         status: tournament.status,
         man_of_tournament: tournament.man_of_tournament || '',
@@ -132,13 +132,12 @@ export function TournamentForm({
   const validateForm = (): boolean => {
     const newErrors: Partial<TournamentFormState> = {}
     const today = new Date()
-    const startDate = new Date(formData.start_date)
-    const endDate = new Date(formData.end_date)
+    const todayString = today.toISOString().split('T')[0] // YYYY-MM-DD format
 
-    // Combine date and time for registration deadline
-    const registrationDeadline = new Date(
-      `${formData.registration_deadline_date}T${formData.registration_deadline_time}`
-    )
+    // Create datetime strings for comparison (no Date objects to avoid timezone issues)
+    const startDateTimeString = `${formData.start_date}T${formData.start_time}:00`
+    const endDateTimeString = `${formData.end_date}T${formData.end_time}:00`
+    const registrationDeadlineString = `${formData.registration_deadline_date}T${formData.registration_deadline_time}:00`
     const maxTeams = parseInt(formData.max_teams)
 
     // Name validation
@@ -148,18 +147,22 @@ export function TournamentForm({
       newErrors.name = 'Tournament name must be at least 3 characters'
     }
 
-    // Date validations
+    // Date and time validations
     if (!formData.start_date) {
       newErrors.start_date = 'Start date is required'
-    } else if (!isEditMode && startDate <= today) {
+    } else if (!formData.start_time) {
+      newErrors.start_time = 'Start time is required'
+    } else if (!isEditMode && formData.start_date <= todayString) {
       newErrors.start_date = 'Start date must be in the future'
     }
 
     if (!formData.end_date) {
       newErrors.end_date = 'End date is required'
-    } else if (endDate < startDate) {
+    } else if (!formData.end_time) {
+      newErrors.end_time = 'End time is required'
+    } else if (endDateTimeString < startDateTimeString) {
       newErrors.end_date =
-        'End date must be on or after start date (same-day tournaments are allowed)'
+        'End date and time must be on or after start date and time'
     }
 
     if (!formData.registration_deadline_date) {
@@ -168,10 +171,13 @@ export function TournamentForm({
     } else if (!formData.registration_deadline_time) {
       newErrors.registration_deadline_time =
         'Registration deadline time is required'
-    } else if (registrationDeadline >= startDate) {
+    } else if (registrationDeadlineString >= startDateTimeString) {
       newErrors.registration_deadline_date =
         'Registration deadline must be before tournament start date and time'
-    } else if (!isEditMode && registrationDeadline <= today) {
+    } else if (
+      !isEditMode &&
+      formData.registration_deadline_date <= todayString
+    ) {
       newErrors.registration_deadline_date =
         'Registration deadline must be in the future'
     }
@@ -197,14 +203,16 @@ export function TournamentForm({
 
     try {
       // Format: YYYY-MM-DDTHH:mm:ss (local time, no timezone)
+      const startDateTime = `${formData.start_date}T${formData.start_time}:00`
+      const endDateTime = `${formData.end_date}T${formData.end_time}:00`
       const registrationDeadline = `${formData.registration_deadline_date}T${formData.registration_deadline_time}:00`
 
       // Convert form data to the expected format
       const submitData: TournamentFormData = {
         name: formData.name,
         description: formData.description,
-        start_date: formData.start_date,
-        end_date: formData.end_date,
+        start_date: startDateTime,
+        end_date: endDateTime,
         registration_deadline: registrationDeadline,
         max_teams: parseInt(formData.max_teams),
         status: formData.status,
@@ -269,57 +277,116 @@ export function TournamentForm({
             />
           </div>
 
-          {/* Dates Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Start Date */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="start_date"
-                className="text-[var(--text-primary)] flex items-center gap-2"
-              >
-                <Calendar className="w-4 h-4" />
-                Start Date *
-              </Label>
-              <Input
-                id="start_date"
-                type="date"
-                value={formData.start_date}
-                onChange={(e) =>
-                  handleInputChange('start_date', e.target.value)
-                }
-                className={errors.start_date ? 'border-red-500' : ''}
-              />
-              {errors.start_date && (
-                <p className="text-red-500 text-sm">{errors.start_date}</p>
-              )}
-            </div>
-
-            {/* End Date */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="end_date"
-                className="text-[var(--text-primary)] flex items-center gap-2"
-              >
-                <Calendar className="w-4 h-4" />
-                End Date *
-              </Label>
-              <Input
-                id="end_date"
-                type="date"
-                value={formData.end_date}
-                onChange={(e) => handleInputChange('end_date', e.target.value)}
-                className={errors.end_date ? 'border-red-500' : ''}
-              />
-              {errors.end_date && (
-                <p className="text-red-500 text-sm">{errors.end_date}</p>
-              )}
-              {formData.start_date &&
-                formData.end_date === formData.start_date && (
-                  <p className="text-[var(--text-secondary)] text-xs">
-                    ✓ Automatically set to same date as start date
-                  </p>
+          {/* Start Date and Time */}
+          <div className="space-y-2">
+            <Label
+              htmlFor="start_date"
+              className="text-[var(--text-primary)] flex items-center gap-2"
+            >
+              <Calendar className="w-4 h-4" />
+              Start Date & Time *
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label
+                  htmlFor="start_date"
+                  className="text-xs text-[var(--text-secondary)]"
+                >
+                  Date
+                </Label>
+                <Input
+                  id="start_date"
+                  type="date"
+                  value={formData.start_date}
+                  onChange={(e) =>
+                    handleInputChange('start_date', e.target.value)
+                  }
+                  className={errors.start_date ? 'border-red-500' : ''}
+                />
+                {errors.start_date && (
+                  <p className="text-red-500 text-sm">{errors.start_date}</p>
                 )}
+              </div>
+              <div className="space-y-1">
+                <Label
+                  htmlFor="start_time"
+                  className="text-xs text-[var(--text-secondary)]"
+                >
+                  Time
+                </Label>
+                <Input
+                  id="start_time"
+                  type="time"
+                  value={formData.start_time}
+                  onChange={(e) =>
+                    handleInputChange('start_time', e.target.value)
+                  }
+                  className={errors.start_time ? 'border-red-500' : ''}
+                />
+                {errors.start_time && (
+                  <p className="text-red-500 text-sm">{errors.start_time}</p>
+                )}
+              </div>
             </div>
+          </div>
+
+          {/* End Date and Time */}
+          <div className="space-y-2">
+            <Label
+              htmlFor="end_date"
+              className="text-[var(--text-primary)] flex items-center gap-2"
+            >
+              <Calendar className="w-4 h-4" />
+              End Date & Time *
+            </Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <Label
+                  htmlFor="end_date"
+                  className="text-xs text-[var(--text-secondary)]"
+                >
+                  Date
+                </Label>
+                <Input
+                  id="end_date"
+                  type="date"
+                  value={formData.end_date}
+                  onChange={(e) =>
+                    handleInputChange('end_date', e.target.value)
+                  }
+                  className={errors.end_date ? 'border-red-500' : ''}
+                />
+                {errors.end_date && (
+                  <p className="text-red-500 text-sm">{errors.end_date}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <Label
+                  htmlFor="end_time"
+                  className="text-xs text-[var(--text-secondary)]"
+                >
+                  Time
+                </Label>
+                <Input
+                  id="end_time"
+                  type="time"
+                  value={formData.end_time}
+                  onChange={(e) =>
+                    handleInputChange('end_time', e.target.value)
+                  }
+                  className={errors.end_time ? 'border-red-500' : ''}
+                />
+                {errors.end_time && (
+                  <p className="text-red-500 text-sm">{errors.end_time}</p>
+                )}
+              </div>
+            </div>
+            {formData.start_date &&
+              formData.end_date === formData.start_date && (
+                <p className="text-[var(--text-secondary)] text-xs">
+                  ✓ Automatically set to same date as start date
+                </p>
+              )}
           </div>
 
           {/* Registration Deadline Row */}
