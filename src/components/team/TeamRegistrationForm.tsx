@@ -252,6 +252,38 @@ export function TeamRegistrationForm({
       toast.error('You cannot add more than 10 members.')
       return
     }
+
+    // Check if user is trying to add themselves as a team member
+    const captain = members.find((m) => m.is_captain)
+    if (
+      captain &&
+      newMember.first_name.toLowerCase().trim() ===
+        captain.first_name.toLowerCase().trim() &&
+      newMember.last_name.toLowerCase().trim() ===
+        captain.last_name.toLowerCase().trim() &&
+      newMember.batch.toLowerCase().trim() ===
+        captain.batch.toLowerCase().trim()
+    ) {
+      toast.error(
+        'You are already the team captain and cannot be added as a regular member.'
+      )
+      return
+    }
+
+    // Check for duplicate members (same name and batch)
+    const isDuplicate = members.some(
+      (member) =>
+        member.first_name.toLowerCase().trim() ===
+          newMember.first_name.toLowerCase().trim() &&
+        member.last_name.toLowerCase().trim() ===
+          newMember.last_name.toLowerCase().trim() &&
+        member.batch.toLowerCase().trim() ===
+          newMember.batch.toLowerCase().trim()
+    )
+    if (isDuplicate) {
+      toast.error('This member is already added to the team.')
+      return
+    }
     // Gender constraint
     const boys =
       members.filter((m) => m.gender === 'male').length +
@@ -450,6 +482,11 @@ export function TeamRegistrationForm({
             <div className="text-xs text-[var(--text-secondary)]">
               Exactly 10 members required. 7 males and 3 females. You (the
               captain) will add all team members during registration.
+              <br />
+              <span className="text-orange-600 font-medium">
+                Note: You are already added as the team captain, so don't add
+                yourself again.
+              </span>
             </div>
           </div>
 
