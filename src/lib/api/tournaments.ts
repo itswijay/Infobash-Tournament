@@ -424,3 +424,75 @@ export function isTournamentInCountdownPhase(tournament: Tournament): boolean {
   const startDate = getTournamentCountdownTarget(tournament)
   return startDate > new Date()
 }
+
+// Tournament statistics interface
+export interface TournamentStats {
+  activeTournaments: number
+  registeredTeams: number
+  matchesPlayed: number
+  liveMatches: number
+}
+
+// Get tournament statistics
+export async function getTournamentStats(): Promise<TournamentStats> {
+  try {
+    // Get active tournaments (upcoming, registration_open, ongoing)
+    const { data: activeTournaments, error: tournamentsError } = await supabase
+      .from('tournaments')
+      .select('id')
+      .in('status', ['upcoming', 'registration_open', 'ongoing'])
+
+    if (tournamentsError) {
+      console.error('Error fetching active tournaments:', tournamentsError)
+      throw new Error('Failed to fetch active tournaments')
+    }
+
+    // Get total registered teams
+    const { data: teams, error: teamsError } = await supabase
+      .from('teams')
+      .select('id')
+
+    if (teamsError) {
+      console.error('Error fetching teams:', teamsError)
+      throw new Error('Failed to fetch teams')
+    }
+
+    // Get matches played (completed matches)
+    const { data: completedMatches, error: matchesError } = await supabase
+      .from('matches')
+      .select('id')
+      .eq('status', 'completed')
+
+    if (matchesError) {
+      console.error('Error fetching completed matches:', matchesError)
+      throw new Error('Failed to fetch completed matches')
+    }
+
+    // Get live matches
+    const { data: liveMatches, error: liveMatchesError } = await supabase
+      .from('matches')
+      .select('id')
+      .eq('status', 'live')
+
+    if (liveMatchesError) {
+      console.error('Error fetching live matches:', liveMatchesError)
+      throw new Error('Failed to fetch live matches')
+    }
+
+    return {
+      activeTournaments: activeTournaments?.length || 0,
+      registeredTeams: teams?.length || 0,
+      matchesPlayed: completedMatches?.length || 0,
+      liveMatches: liveMatches?.length || 0,
+    }
+  } catch (error) {
+    console.error('Error in getTournamentStats:', error)
+    // Return default values on error
+    return {
+      activeTournaments: 0,
+      registeredTeams: 0,
+      matchesPlayed: 0,
+      liveMatches: 0,
+    }
+  }
+}

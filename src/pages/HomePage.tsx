@@ -28,33 +28,9 @@ import { motion } from 'framer-motion'
 import { getUpcomingMatches } from '@/lib/api/matches'
 import type { Match } from '@/lib/api/matches'
 import type { Tournament } from '@/lib/api/tournaments'
+import { getTournamentStats, type TournamentStats } from '@/lib/api/tournaments'
 
-const stats = [
-  {
-    label: 'Active Tournaments',
-    value: '0',
-    icon: Trophy,
-    color: 'text-[var(--color-secondary)]',
-  },
-  {
-    label: 'Registered Teams',
-    value: '0',
-    icon: Users,
-    color: 'text-[var(--color-secondary)]',
-  },
-  {
-    label: 'Matches Played',
-    value: '0',
-    icon: Calendar,
-    color: 'text-[var(--color-secondary)]',
-  },
-  {
-    label: 'Live Matches',
-    value: '0',
-    icon: Play,
-    color: 'text-[var(--color-secondary)]',
-  },
-]
+// Dynamic stats will be created in the component using tournamentStats state
 
 // Type for upcoming matches with additional display properties
 interface UpcomingMatch extends Match {
@@ -106,6 +82,13 @@ export function HomePage() {
   })
   const [upcomingMatches, setUpcomingMatches] = useState<UpcomingMatch[]>([])
   const [matchesLoading, setMatchesLoading] = useState(true)
+  const [tournamentStats, setTournamentStats] = useState<TournamentStats>({
+    activeTournaments: 0,
+    registeredTeams: 0,
+    matchesPlayed: 0,
+    liveMatches: 0,
+  })
+  const [statsLoading, setStatsLoading] = useState(true)
 
   // Section configuration
   const sections = [
@@ -133,6 +116,20 @@ export function HomePage() {
       setUpcomingMatches([])
     } finally {
       setMatchesLoading(false)
+    }
+  }
+
+  // Function to fetch tournament statistics
+  const fetchTournamentStats = async () => {
+    try {
+      setStatsLoading(true)
+      const stats = await getTournamentStats()
+      setTournamentStats(stats)
+    } catch (error) {
+      console.error('Error fetching tournament statistics:', error)
+      // Keep default values on error
+    } finally {
+      setStatsLoading(false)
     }
   }
 
@@ -209,10 +206,11 @@ export function HomePage() {
     return () => clearInterval(interval)
   }, [TOURNAMENT_START_TIME, activeTournament])
 
-  // Fetch upcoming matches on component mount
+  // Fetch upcoming matches and statistics on component mount
   useEffect(() => {
     fetchUpcomingMatches()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    fetchTournamentStats()
+  }, [])
 
   // Determine if countdown should be shown
   const shouldShowCountdown: boolean = Boolean(
@@ -227,6 +225,36 @@ export function HomePage() {
     activeTournament &&
     activeTournament.status === 'registration_open' &&
     shouldShowCountdown
+
+  // Create dynamic stats array
+  const stats = [
+    {
+      label: 'Active Tournaments',
+      value: statsLoading
+        ? '...'
+        : tournamentStats.activeTournaments.toString(),
+      icon: Trophy,
+      color: 'text-[var(--color-secondary)]',
+    },
+    {
+      label: 'Registered Teams',
+      value: statsLoading ? '...' : tournamentStats.registeredTeams.toString(),
+      icon: Users,
+      color: 'text-[var(--color-secondary)]',
+    },
+    {
+      label: 'Matches Played',
+      value: statsLoading ? '...' : tournamentStats.matchesPlayed.toString(),
+      icon: Calendar,
+      color: 'text-[var(--color-secondary)]',
+    },
+    {
+      label: 'Live Matches',
+      value: statsLoading ? '...' : tournamentStats.liveMatches.toString(),
+      icon: Play,
+      color: 'text-[var(--color-secondary)]',
+    },
+  ]
 
   // Get status-specific message and styling
   const getStatusInfo = (tournament: Tournament | null) => {
