@@ -16,7 +16,16 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet'
-import { Trophy, Users, Calendar, UserPlus, Menu, Home } from 'lucide-react'
+import {
+  Trophy,
+  Users,
+  Calendar,
+  UserPlus,
+  Menu,
+  Home,
+  User,
+  LogOut,
+} from 'lucide-react'
 import { APP_NAME, ROUTES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
@@ -183,41 +192,68 @@ export function Header() {
               {!loading && (
                 <div className="border-b border-[var(--brand-border)] pb-4">
                   {user ? (
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-[color:rgb(255_255_255/0.05)]">
-                      <div className="h-10 w-10 rounded-full bg-[var(--color-secondary)]/20 flex items-center justify-center">
-                        <Avatar className="h-10 w-10 ring-2 ring-[color:rgb(255_255_255/0.1)]">
-                          <AvatarImage
-                            src={
-                              user.user_metadata?.avatar_url ||
-                              user.user_metadata?.picture
-                            }
-                            alt={
-                              user.user_metadata?.full_name ||
-                              user.email ||
-                              'User'
-                            }
-                            referrerPolicy="no-referrer"
-                            crossOrigin="anonymous"
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent-1)] text-[var(--brand-bg)] font-semibold text-sm">
-                            {user.user_metadata?.full_name
-                              ?.split(' ')
-                              ?.map((name: string) => name[0])
-                              ?.join('')
-                              ?.toUpperCase() ||
-                              user.email?.[0]?.toUpperCase() ||
-                              '?'}
-                          </AvatarFallback>
-                        </Avatar>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3 p-3 rounded-lg bg-[color:rgb(255_255_255/0.05)]">
+                        <div className="h-10 w-10 rounded-full bg-[var(--color-secondary)]/20 flex items-center justify-center">
+                          <Avatar className="h-10 w-10 ring-2 ring-[color:rgb(255_255_255/0.1)]">
+                            <AvatarImage
+                              src={
+                                user.user_metadata?.avatar_url ||
+                                user.user_metadata?.picture
+                              }
+                              alt={
+                                user.user_metadata?.full_name ||
+                                user.email ||
+                                'User'
+                              }
+                              referrerPolicy="no-referrer"
+                              crossOrigin="anonymous"
+                              className="object-cover"
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent-1)] text-[var(--brand-bg)] font-semibold text-sm">
+                              {user.user_metadata?.full_name
+                                ?.split(' ')
+                                ?.map((name: string) => name[0])
+                                ?.join('')
+                                ?.toUpperCase() ||
+                                user.email?.[0]?.toUpperCase() ||
+                                '?'}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-white">
+                            {user.user_metadata?.full_name || user.email}
+                          </div>
+                          <div className="text-xs text-white/70">
+                            {user.email}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-white">
-                          {user.user_metadata?.full_name || user.email}
-                        </div>
-                        <div className="text-xs text-white/70">
-                          {user.email}
-                        </div>
+
+                      {/* Profile Actions - Mobile */}
+                      <div className="grid gap-2">
+                        <Link
+                          to={ROUTES.PROFILE}
+                          className="flex items-center rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[color:rgb(255_255_255/0.05)] hover:text-[var(--color-secondary)]"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          Profile
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setIsOpen(false)
+                            // Import and call signOut function
+                            import('@/lib/supabase').then(({ supabase }) => {
+                              supabase.auth.signOut()
+                            })
+                          }}
+                          className="flex items-center rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[color:rgb(255_255_255/0.05)] hover:text-red-400"
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Sign out
+                        </button>
                       </div>
                     </div>
                   ) : (
