@@ -140,6 +140,7 @@ export type TeamMemberInput = {
   gender: 'male' | 'female'
   campus_card?: string
   batch: string
+  index_number: string
   is_captain: boolean
   user_id?: string
 }
@@ -165,6 +166,27 @@ export async function updateTeamMemberCampusCard(
   }
 }
 
+/**
+ * Update a team member's index_number field
+ * This is used to sync index_number between user_profiles and team_members tables
+ */
+export async function updateTeamMemberIndexNumber(
+  userId: string,
+  indexNumber: string
+): Promise<void> {
+  const { error } = await supabase
+    .from('team_members')
+    .update({ index_number: indexNumber })
+    .eq('user_id', userId)
+
+  if (error) {
+    console.warn(
+      `Failed to update team member index_number for user ${userId}:`,
+      error
+    )
+  }
+}
+
 export interface Team {
   id: string
   name: string
@@ -183,6 +205,7 @@ export interface TeamMember {
   gender: string
   campus_card: string | null
   batch: string
+  index_number: string | null
   is_captain: boolean
   joined_at: string
 }
@@ -343,6 +366,22 @@ export async function getTeamMembers(teamId: string): Promise<TeamMember[]> {
 // Delete team
 export async function deleteTeam(teamId: string): Promise<void> {
   try {
+    // First, check if team exists
+    const { data: existingTeam, error: checkError } = await supabase
+      .from('teams')
+      .select('id')
+      .eq('id', teamId)
+      .single()
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Error checking team existence:', checkError)
+      throw new Error('Failed to verify team existence')
+    }
+
+    if (!existingTeam) {
+      throw new Error('Team not found')
+    }
+
     // Delete team members first (due to foreign key constraint)
     const { error: membersError } = await supabase
       .from('team_members')
@@ -351,7 +390,7 @@ export async function deleteTeam(teamId: string): Promise<void> {
 
     if (membersError) {
       console.error('Error deleting team members:', membersError)
-      throw new Error('Failed to delete team members')
+      throw new Error(`Failed to delete team members: ${membersError.message}`)
     }
 
     // Delete the team
@@ -362,10 +401,13 @@ export async function deleteTeam(teamId: string): Promise<void> {
 
     if (teamError) {
       console.error('Error deleting team:', teamError)
-      throw new Error('Failed to delete team')
+      throw new Error(`Failed to delete team: ${teamError.message}`)
     }
   } catch (error) {
     console.error('Error in deleteTeam:', error)
+    if (error instanceof Error) {
+      throw error
+    }
     throw new Error('Failed to delete team')
   }
 }

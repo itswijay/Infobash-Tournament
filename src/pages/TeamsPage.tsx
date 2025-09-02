@@ -211,9 +211,10 @@ export function TeamsPage() {
 
       toast.success(`Team "${teamName}" has been deleted successfully`)
     } catch (err) {
+      console.error('Error deleting team:', err)
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to delete team'
-      toast.error(errorMessage)
+      toast.error(`Failed to delete team: ${errorMessage}`)
     } finally {
       setDeletingTeams((prev) => {
         const newSet = new Set(prev)

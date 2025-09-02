@@ -26,6 +26,7 @@ type TeamRegistrationFormProps = {
     gender: 'male' | 'female'
     campus_card?: string
     batch: string
+    index_number: string
   } | null
   onSubmit: (data: {
     teamName: string
@@ -51,6 +52,7 @@ type TeamRegistrationFormProps = {
     gender: 'male' | 'female'
     campus_card?: string
     batch: string
+    index_number?: string
     is_captain: boolean
     user_id?: string
     created_at: string
@@ -139,6 +141,24 @@ const MemberInput: React.FC<MemberInputProps> = ({
           disabled={disabled}
         />
       </div>
+      <div className="space-y-2">
+        <Label className="text-[var(--text-primary)]">
+          Index Number<span className="text-red-500">*</span>
+        </Label>
+        <Input
+          value={member.index_number || ''}
+          onChange={(e) => onChange('index_number', e.target.value)}
+          className="bg-[var(--brand-bg)] border-[var(--brand-border)] text-[var(--text-primary)]"
+          placeholder="Enter index number"
+          required={!member.user_id} // Only required for new members, not existing ones
+          disabled={disabled}
+        />
+        {!member.index_number && member.user_id && (
+          <p className="text-xs text-orange-600">
+            Index number missing for existing member
+          </p>
+        )}
+      </div>
       <div className="md:col-span-2 space-y-2">
         <Label className="text-[var(--text-primary)]">
           Campus Card (Optional)
@@ -178,6 +198,7 @@ export function TeamRegistrationForm({
         gender: member.gender,
         campus_card: member.campus_card,
         batch: member.batch,
+        index_number: member.index_number || '',
         is_captain: member.is_captain,
         user_id: member.user_id,
       }))
@@ -190,6 +211,7 @@ export function TeamRegistrationForm({
         gender: captainProfile?.gender || 'male',
         campus_card: captainProfile?.campus_card || '',
         batch: captainProfile?.batch || '',
+        index_number: captainProfile?.index_number || '',
         is_captain: true,
         user_id: user?.id,
       },
@@ -201,6 +223,7 @@ export function TeamRegistrationForm({
     gender: 'male',
     campus_card: '',
     batch: '',
+    index_number: '',
     is_captain: false,
   })
   const [formError, setFormError] = useState<string | null>(null)
@@ -243,7 +266,8 @@ export function TeamRegistrationForm({
     if (
       !newMember.first_name.trim() ||
       !newMember.last_name.trim() ||
-      !newMember.batch.trim()
+      !newMember.batch.trim() ||
+      !newMember.index_number.trim()
     ) {
       toast.error('All member fields except campus card are required.')
       return
@@ -284,6 +308,17 @@ export function TeamRegistrationForm({
       toast.error('This member is already added to the team.')
       return
     }
+
+    // Check for duplicate index number
+    const isIndexDuplicate = members.some(
+      (member) =>
+        member.index_number.toLowerCase().trim() ===
+        newMember.index_number.toLowerCase().trim()
+    )
+    if (isIndexDuplicate) {
+      toast.error('This index number is already used by another team member.')
+      return
+    }
     // Gender constraint
     const boys =
       members.filter((m) => m.gender === 'male').length +
@@ -306,6 +341,7 @@ export function TeamRegistrationForm({
       gender: 'male',
       campus_card: '',
       batch: '',
+      index_number: '',
       is_captain: false,
     })
   }
@@ -343,6 +379,15 @@ export function TeamRegistrationForm({
       toast.error('Team must have exactly 7 males and 3 females.')
       return
     }
+
+    // Check if any existing members are missing index numbers
+    const membersWithoutIndex = members.filter((m) => !m.index_number?.trim())
+    if (membersWithoutIndex.length > 0) {
+      toast.error(
+        'Please add index numbers for all team members before submitting.'
+      )
+      return
+    }
     if (
       members.some(
         (m) => !m.first_name.trim() || !m.last_name.trim() || !m.batch.trim()
@@ -368,10 +413,20 @@ export function TeamRegistrationForm({
 
       await onSubmit({ teamName, logoFile: finalLogoFile, members })
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Registration failed. Please try again.'
+      let errorMessage = 'Registration failed. Please try again.'
+
+      if (err instanceof Error) {
+        if (
+          err.message.includes(
+            'duplicate key value violates unique constraint "team_members_index_number_key"'
+          )
+        ) {
+          errorMessage = 'One or more index numbers are already in use.'
+        } else {
+          errorMessage = err.message
+        }
+      }
+
       setFormError(errorMessage)
     } finally {
       setSubmitting(false)
@@ -517,6 +572,16 @@ export function TeamRegistrationForm({
                         <span className="capitalize">{member.gender}</span>
                         <span>|</span>
                         <span>Batch: {member.batch}</span>
+                        <span>|</span>
+                        <span
+                          className={
+                            !member.index_number
+                              ? 'text-orange-600 font-medium'
+                              : ''
+                          }
+                        >
+                          Index: {member.index_number || 'Not set'}
+                        </span>
                         {member.campus_card && (
                           <>
                             <span>|</span>

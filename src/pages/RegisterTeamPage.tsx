@@ -38,6 +38,7 @@ interface CaptainProfile {
   last_name: string
   gender: 'male' | 'female'
   batch: string
+  index_number: string
   campus_card?: string
   is_completed: boolean
   avatar_url?: string
@@ -53,6 +54,7 @@ interface TeamMember {
   gender: 'male' | 'female'
   campus_card?: string
   batch: string
+  index_number: string
   is_captain: boolean
   user_id?: string
   created_at: string
@@ -74,7 +76,7 @@ export function RegisterTeamPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       setTeamLoading(true)
       setProfileLoading(true)
       Promise.all([
@@ -99,7 +101,7 @@ export function RegisterTeamPage() {
           setProfileLoading(false)
         })
     }
-  }, [user])
+  }, [user?.id])
 
   const fetchTeamMembers = async (teamId: string) => {
     try {
@@ -234,11 +236,6 @@ export function RegisterTeamPage() {
       setTeam(null)
       setTeamMembers([])
       setIsEditing(false)
-
-      // Reload page after a short delay to show the toast
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000)
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
@@ -653,9 +650,17 @@ export function RegisterTeamPage() {
                   `Team "${teamName}" successfully registered! Welcome to InfoBash v4.0!`
                 )
 
-                // Registration complete, reload page after a short delay to show the toast
-                setTimeout(() => {
-                  window.location.reload()
+                // Registration complete, refresh team data after a short delay to show the toast
+                setTimeout(async () => {
+                  try {
+                    const newTeam = await getUserTeam(user!.id)
+                    setTeam(newTeam)
+                    if (newTeam) {
+                      await fetchTeamMembers(newTeam.id)
+                    }
+                  } catch (error) {
+                    console.error('Error refreshing team data:', error)
+                  }
                 }, 2000)
               } catch (err: unknown) {
                 const errorMessage =
