@@ -92,10 +92,8 @@ export function MatchForm({
 
   const fetchTeams = useCallback(async (tournamentId: string) => {
     try {
-      console.log('Fetching teams for tournament:', tournamentId)
       setLoadingTeams(true)
       const teamsData = await getTeamsByTournament(tournamentId)
-      console.log('Teams fetched:', teamsData)
       setTeams(teamsData)
     } catch (error) {
       console.error('Error fetching teams:', error)
@@ -108,7 +106,6 @@ export function MatchForm({
   // Initialize teams from prop if in edit mode
   useEffect(() => {
     if (isEditMode && initialTeams && initialTeams.length > 0) {
-      console.log('Setting teams from prop:', initialTeams)
       setTeams(initialTeams)
     }
   }, [isEditMode, initialTeams])
@@ -116,7 +113,6 @@ export function MatchForm({
   // Initialize form with existing match data if editing
   useEffect(() => {
     if (match && isEditMode) {
-      console.log('Initializing form with match data:', match)
       const matchDate = new Date(match.scheduled_at || '')
       const timeString = matchDate.toTimeString().slice(0, 5) // Get HH:MM format
 
@@ -129,7 +125,6 @@ export function MatchForm({
         status: match.status,
       }
 
-      console.log('Setting form data:', initialFormData)
       setFormData(initialFormData)
     }
   }, [match, isEditMode])

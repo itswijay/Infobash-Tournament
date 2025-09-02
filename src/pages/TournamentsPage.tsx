@@ -178,19 +178,19 @@ export function TournamentsPage() {
     return (
       <div className="container py-8">
         <div className="space-y-6">
-          <div>
-            <div className="flex items-center space-x-3">
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                 Tournaments
               </h1>
               {isAdmin && (
-                <Badge className="bg-red-600 text-white text-xs">
+                <Badge className="bg-red-600 text-white text-xs w-fit">
                   Admin Mode
                 </Badge>
               )}
             </div>
             <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-[var(--text-secondary)] text-sm md:text-base">
               Manage and view all cricket tournaments
               {isAdmin && (
                 <span className="text-red-400 font-medium">
@@ -210,19 +210,19 @@ export function TournamentsPage() {
     return (
       <div className="container py-8">
         <div className="space-y-6">
-          <div>
-            <div className="flex items-center space-x-3">
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                 Tournaments
               </h1>
               {isAdmin && (
-                <Badge className="bg-red-600 text-white text-xs">
+                <Badge className="bg-red-600 text-white text-xs w-fit">
                   Admin Mode
                 </Badge>
               )}
             </div>
             <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
-            <p className="text-[var(--text-secondary)]">
+            <p className="text-[var(--text-secondary)] text-sm md:text-base">
               Manage and view all cricket tournaments
               {isAdmin && (
                 <span className="text-red-400 font-medium">
@@ -246,40 +246,42 @@ export function TournamentsPage() {
   return (
     <div className="container py-8">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-                Tournaments
-              </h1>
-              {isAdmin && (
-                <Badge className="bg-red-600 text-white text-xs">
-                  Admin Mode
-                </Badge>
-              )}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                  Tournaments
+                </h1>
+                {isAdmin && (
+                  <Badge className="bg-red-600 text-white text-xs w-fit">
+                    Admin Mode
+                  </Badge>
+                )}
+              </div>
+              <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
+              <p className="text-[var(--text-secondary)] text-sm md:text-base">
+                Manage and view all cricket tournaments
+                {isAdmin && (
+                  <span className="text-red-400 font-medium">
+                    {' '}
+                    • Admin controls enabled
+                  </span>
+                )}
+              </p>
             </div>
-            <div className="mt-2 h-1 w-20 rounded-full bg-gradient-gold opacity-80" />
-            <p className="text-[var(--text-secondary)]">
-              Manage and view all cricket tournaments
-              {isAdmin && (
-                <span className="text-red-400 font-medium">
-                  {' '}
-                  • Admin controls enabled
-                </span>
-              )}
-            </p>
-          </div>
 
-          {/* Admin Create Button */}
-          {isAdmin && (
-            <Button
-              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
-              onClick={handleCreateTournament}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Tournament
-            </Button>
-          )}
+            {/* Admin Create Button */}
+            {isAdmin && (
+              <Button
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white w-full sm:w-auto"
+                onClick={handleCreateTournament}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Tournament
+              </Button>
+            )}
+          </div>
         </div>
 
         {tournaments.length === 0 ? (
@@ -298,67 +300,71 @@ export function TournamentsPage() {
                 key={tournament.id}
                 className="bg-card-bg border-card-border hover:border-[var(--color-accent-1)]/50 transition-all duration-200 hover:scale-[1.02]"
               >
-                <CardHeader className="px-4 pt-4 pb-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-base md:text-lg lg:text-xl text-[var(--text-primary)] mb-2">
-                        {tournament.name}
-                      </CardTitle>
-                      {tournament.description && (
-                        <p className="text-[var(--text-secondary)] text-xs md:text-sm">
-                          {tournament.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className={`border ${getStatusColor(
-                          tournament.status
-                        )} text-xs md:text-sm px-2 md:px-3 py-1 md:py-2`}
-                      >
-                        {getStatusText(tournament.status)}
-                      </Badge>
+                <CardHeader className="px-3 sm:px-4 pt-4 pb-0">
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base md:text-lg lg:text-xl text-[var(--text-primary)] mb-2 break-words">
+                          {tournament.name}
+                        </CardTitle>
+                        {tournament.description && (
+                          <p className="text-[var(--text-secondary)] text-xs md:text-sm break-words">
+                            {tournament.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-end gap-2">
+                        <Badge
+                          variant="outline"
+                          className={`border ${getStatusColor(
+                            tournament.status
+                          )} text-xs md:text-sm px-2 md:px-3 py-1 md:py-2 flex-shrink-0`}
+                        >
+                          {getStatusText(tournament.status)}
+                        </Badge>
 
-                      {/* Admin Action Buttons */}
-                      {isAdmin && (
-                        <div className="flex items-center gap-1 ml-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 w-8 p-0 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-                            onClick={() => handleEditTournament(tournament.id)}
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 w-8 p-0 border-red-600 text-red-400 hover:bg-red-700 hover:text-white"
-                            onClick={() =>
-                              handleDeleteTournament(
-                                tournament.id,
-                                tournament.name
-                              )
-                            }
-                            disabled={deletingId === tournament.id}
-                          >
-                            {deletingId === tournament.id ? (
-                              <Trash2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-3 h-3" />
-                            )}
-                          </Button>
-                        </div>
-                      )}
+                        {/* Admin Action Buttons */}
+                        {isAdmin && (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                              onClick={() =>
+                                handleEditTournament(tournament.id)
+                              }
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 border-red-600 text-red-400 hover:bg-red-700 hover:text-white"
+                              onClick={() =>
+                                handleDeleteTournament(
+                                  tournament.id,
+                                  tournament.name
+                                )
+                              }
+                              disabled={deletingId === tournament.id}
+                            >
+                              {deletingId === tournament.id ? (
+                                <Trash2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-3 h-3" />
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0 p-4 md:p-6">
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
-                    <div className="flex flex-col items-center text-center">
+                <CardContent className="pt-0 p-3 sm:p-4 md:p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+                    <div className="flex flex-col items-center text-center p-2 bg-[var(--brand-bg)]/5 rounded-lg">
                       <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
-                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                      <div className="text-[10px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
                         Start Date
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
@@ -366,9 +372,9 @@ export function TournamentsPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center p-2 bg-[var(--brand-bg)]/5 rounded-lg">
                       <Clock className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
-                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                      <div className="text-[10px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
                         Start Time
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
@@ -376,9 +382,9 @@ export function TournamentsPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center p-2 bg-[var(--brand-bg)]/5 rounded-lg">
                       <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
-                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                      <div className="text-[10px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
                         End Date
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
@@ -386,9 +392,9 @@ export function TournamentsPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center p-2 bg-[var(--brand-bg)]/5 rounded-lg sm:col-span-2 lg:col-span-1">
                       <Clock className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
-                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                      <div className="text-[10px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
                         Registration Deadline
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">
@@ -396,9 +402,9 @@ export function TournamentsPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center p-2 bg-[var(--brand-bg)]/5 rounded-lg sm:col-span-2 lg:col-span-1">
                       <Users className="w-4 h-4 md:w-5 md:h-5 text-[var(--color-secondary)] mb-2" />
-                      <div className="text-[9px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
+                      <div className="text-[10px] md:text-xs text-[var(--text-secondary)] mb-1 leading-tight">
                         Max Teams
                       </div>
                       <div className="text-xs md:text-sm text-[var(--text-primary)] font-medium">

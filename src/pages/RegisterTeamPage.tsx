@@ -253,7 +253,7 @@ export function RegisterTeamPage() {
       <div className="container py-8">
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
               Register Your Team
             </h1>
             <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
@@ -271,7 +271,7 @@ export function RegisterTeamPage() {
     return (
       <div className="container py-8 space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
             Register your Team for INFOBASH v4.0
           </h1>
           <div className="mt-2 h-1 w-32 rounded-full bg-gradient-gold opacity-80 mx-auto" />
@@ -282,19 +282,19 @@ export function RegisterTeamPage() {
 
         <div className="flex flex-col items-center justify-center max-w-lg mx-auto">
           {/* Sign In Card */}
-          <Card className="bg-card-bg border-card-border md:col-span-2">
-            <CardHeader className="text-center">
+          <Card className="bg-card-bg border-card-border w-full">
+            <CardHeader className="text-center p-4">
               <div className="mx-auto mb-4">
-                <div className="h-16 w-16 rounded-full bg-[var(--color-accent-1)]/10 flex items-center justify-center mx-auto">
-                  <Lock className="h-8 w-8 text-[var(--color-accent-1)]" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-[var(--color-accent-1)]/10 flex items-center justify-center mx-auto">
+                  <Lock className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-accent-1)]" />
                 </div>
               </div>
-              <CardTitle className="text-xl text-[var(--text-primary)]">
+              <CardTitle className="text-lg md:text-xl text-[var(--text-primary)]">
                 Sign In Required
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-center space-y-6">
-              <p className="text-[var(--text-secondary)]">
+            <CardContent className="text-center space-y-4 p-4">
+              <p className="text-[var(--text-secondary)] text-sm md:text-base">
                 You need to sign in with your Google account before you can
                 register your team for tournaments.
               </p>
@@ -308,7 +308,7 @@ export function RegisterTeamPage() {
                   Sign In to Register Team
                 </GoogleLoginButton>
 
-                <p className="text-sm text-[var(--text-secondary)]">
+                <p className="text-xs md:text-sm text-[var(--text-secondary)]">
                   Sign in securely with Google to access team registration and
                   tournament features.
                 </p>
@@ -338,7 +338,7 @@ export function RegisterTeamPage() {
     return (
       <div className="container py-8 space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
             Registration Not Available
           </h1>
           <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
@@ -349,13 +349,13 @@ export function RegisterTeamPage() {
 
         <div className="max-w-2xl mx-auto">
           <Card className="bg-card-bg border-card-border">
-            <CardHeader className="text-center">
+            <CardHeader className="text-center p-4">
               <div className="mx-auto mb-4">
-                <div className="h-16 w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
-                  <Trophy className="h-8 w-8 text-[var(--color-secondary)]" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
+                  <Trophy className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-secondary)]" />
                 </div>
               </div>
-              <CardTitle className="text-xl text-[var(--text-primary)]">
+              <CardTitle className="text-lg md:text-xl text-[var(--text-primary)]">
                 {activeTournament.status === 'upcoming' &&
                   'Registration Not Open Yet'}
                 {activeTournament.status === 'registration_closed' &&
@@ -366,9 +366,9 @@ export function RegisterTeamPage() {
                   'Tournament Completed'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-center space-y-6">
-              <div className="text-center py-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                <p className="text-[var(--text-primary)] font-medium mb-2">
+            <CardContent className="text-center space-y-4 p-4">
+              <div className="text-center py-3 md:py-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <p className="text-[var(--text-primary)] font-medium mb-2 text-sm md:text-base">
                   {activeTournament.status === 'upcoming' &&
                     'Tournament registration will open soon. Check back later!'}
                   {activeTournament.status === 'registration_closed' &&
@@ -383,7 +383,7 @@ export function RegisterTeamPage() {
               <Button
                 onClick={() => window.history.back()}
                 variant="outline"
-                className="border-[var(--color-secondary)] text-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/10"
+                className="border-[var(--color-secondary)] text-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/10 w-full sm:w-auto"
               >
                 ← Go Back
               </Button>
@@ -399,7 +399,7 @@ export function RegisterTeamPage() {
     return (
       <div className="container py-8 space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
             Team Already Registered
           </h1>
           <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
@@ -410,17 +410,17 @@ export function RegisterTeamPage() {
 
         <div className="max-w-2xl mx-auto">
           <Card className="bg-card-bg border-card-border">
-            <CardHeader className="text-center">
+            <CardHeader className="text-center p-4">
               <div className="mx-auto mb-4">
                 {team.logo_url ? (
                   <img
                     src={team.logo_url}
                     alt={`${team.name} logo`}
-                    className="h-24 w-24 rounded-full object-cover mx-auto border-4 border-[var(--color-secondary)]/20"
+                    className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover mx-auto border-4 border-[var(--color-secondary)]/20"
                   />
                 ) : (
-                  <div className="h-24 w-24 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto border-4 border-[var(--color-secondary)]/20">
-                    <span className="text-3xl font-bold text-[var(--color-secondary)]">
+                  <div className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto border-4 border-[var(--color-secondary)]/20">
+                    <span className="text-2xl md:text-3xl font-bold text-[var(--color-secondary)]">
                       {team.name
                         .split(' ')
                         .map((word) => word[0]?.toUpperCase())
@@ -430,27 +430,27 @@ export function RegisterTeamPage() {
                   </div>
                 )}
               </div>
-              <CardTitle className="text-2xl text-[var(--text-primary)] mb-2">
+              <CardTitle className="text-xl md:text-2xl text-[var(--text-primary)] mb-2">
                 {team.name}
               </CardTitle>
               <div className="flex items-center justify-center space-x-2 text-[var(--text-secondary)]">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                <span className="text-sm font-medium">
+                <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
+                <span className="text-xs md:text-sm font-medium">
                   Team Successfully Registered!
                 </span>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 p-4">
               {/* Status Section */}
               <div className="border-t border-[var(--brand-border)]"></div>
 
               {/* Success Message */}
-              <div className="text-center py-4 bg-green-500/10 rounded-lg border border-green-500/20">
-                <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p className="text-[var(--text-primary)] font-medium mb-1">
+              <div className="text-center py-3 md:py-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8 text-green-500 mx-auto mb-2" />
+                <p className="text-[var(--text-primary)] font-medium mb-1 text-sm md:text-base">
                   Welcome to InfoBash v4.0!
                 </p>
-                <p className="text-[var(--text-secondary)] text-sm">
+                <p className="text-[var(--text-secondary)] text-xs md:text-sm">
                   Your team "{team.name}" is now registered and ready to
                   participate in the tournament.
                 </p>
@@ -460,7 +460,7 @@ export function RegisterTeamPage() {
               <div className="space-y-3">
                 <Button
                   onClick={handleEditTeam}
-                  className="w-full bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] font-semibold py-3 transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent-1)] hover:from-[var(--color-secondary)]/90 hover:to-[var(--color-accent-1)]/90 text-[var(--brand-bg)] font-semibold py-2 md:py-3 transition-all duration-200 hover:scale-[1.02] text-sm md:text-base"
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Team Details
@@ -469,7 +469,7 @@ export function RegisterTeamPage() {
                 <Button
                   onClick={handleDeleteTeam}
                   variant="destructive"
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 md:py-3 transition-all duration-200 hover:scale-[1.02] text-sm md:text-base"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete Team
@@ -486,54 +486,56 @@ export function RegisterTeamPage() {
   if (team && isEditing) {
     return (
       <div className="container py-8 space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-              Edit Team
-            </h1>
-            <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
-            <p className="text-[var(--text-secondary)] mt-2">
-              Update your team information and members
-            </p>
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
+                Edit Team
+              </h1>
+              <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
+              <p className="text-[var(--text-secondary)] mt-2 text-sm md:text-base">
+                Update your team information and members
+              </p>
+            </div>
+            <Button
+              onClick={handleCancelEdit}
+              variant="outline"
+              className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)]/10 w-full sm:w-auto"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel Edit
+            </Button>
           </div>
-          <Button
-            onClick={handleCancelEdit}
-            variant="outline"
-            className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)]/10"
-          >
-            <X className="mr-2 h-4 w-4" />
-            Cancel Edit
-          </Button>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-3">
           {/* Info Card */}
-          <Card className="bg-card-bg border-card-border">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4">
-                <div className="h-16 w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
-                  <Edit className="h-8 w-8 text-[var(--color-secondary)]" />
+          <Card className="bg-card-bg border-card-border lg:order-1">
+            <CardHeader className="text-center p-4">
+              <div className="mx-auto mb-3">
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
+                  <Edit className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-secondary)]" />
                 </div>
               </div>
-              <CardTitle className="text-[var(--text-primary)]">
+              <CardTitle className="text-lg md:text-xl text-[var(--text-primary)]">
                 Edit Team
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 p-4 pt-0">
               <div className="flex items-center space-x-3 text-sm">
-                <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+                <Users className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
                 <span className="text-[var(--text-secondary)]">
                   Update team details
                 </span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
-                <Shield className="h-4 w-4 text-[var(--color-secondary)]" />
+                <Shield className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
                 <span className="text-[var(--text-secondary)]">
                   Modify members
                 </span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
-                <Trophy className="h-4 w-4 text-[var(--color-secondary)]" />
+                <Trophy className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
                 <span className="text-[var(--text-secondary)]">
                   Change logo
                 </span>
@@ -542,7 +544,7 @@ export function RegisterTeamPage() {
           </Card>
 
           {/* Edit Form */}
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2 lg:order-2">
             <TeamRegistrationForm
               captainProfile={captainProfile}
               user={user!}
@@ -562,7 +564,7 @@ export function RegisterTeamPage() {
   return (
     <div className="container py-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)]">
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
           Register Your Team
         </h1>
         <div className="mt-2 h-1 w-28 rounded-full bg-gradient-gold opacity-80" />
@@ -571,34 +573,34 @@ export function RegisterTeamPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-6 lg:gap-8 lg:grid-cols-3">
         {/* Info Card */}
-        <Card className="bg-card-bg border-card-border">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4">
-              <div className="h-16 w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
-                <Users className="h-8 w-8 text-[var(--color-secondary)]" />
+        <Card className="bg-card-bg border-card-border lg:order-1">
+          <CardHeader className="text-center p-4">
+            <div className="mx-auto mb-3">
+              <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-[var(--color-secondary)]/10 flex items-center justify-center mx-auto">
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-[var(--color-secondary)]" />
               </div>
             </div>
-            <CardTitle className="text-[var(--text-primary)]">
+            <CardTitle className="text-lg md:text-xl text-[var(--text-primary)]">
               Team Requirements
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 p-4 pt-0">
             <div className="flex items-center space-x-3 text-sm">
-              <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+              <Users className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
               <span className="text-[var(--text-secondary)]">
                 Exactly 10 members
               </span>
             </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <Shield className="h-4 w-4 text-[var(--color-secondary)]" />
+            <div className="flex items-center space-x-3 text-sm">
+              <Shield className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
               <span className="text-[var(--text-secondary)]">
                 7 males, 3 females
               </span>
             </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <Trophy className="h-4 w-4 text-[var(--color-secondary)]" />
+            <div className="flex items-center space-x-3 text-sm">
+              <Trophy className="h-4 w-4 text-[var(--color-secondary)] flex-shrink-0" />
               <span className="text-[var(--text-secondary)]">
                 Captain included
               </span>
@@ -607,7 +609,7 @@ export function RegisterTeamPage() {
         </Card>
 
         {/* Registration Form */}
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2 lg:order-2">
           <TeamRegistrationForm
             captainProfile={captainProfile}
             user={user!}

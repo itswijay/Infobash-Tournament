@@ -370,8 +370,6 @@ export async function updateTournamentStatuses(): Promise<void> {
 // get tournament countdown target (always start_date)
 export function getTournamentCountdownTarget(tournament: Tournament): Date {
   try {
-    console.log('Parsing tournament start date:', tournament.start_date)
-
     let date: Date
 
     if (tournament.start_date.includes('T')) {
@@ -392,20 +390,8 @@ export function getTournamentCountdownTarget(tournament: Tournament): Date {
 
     // Check if the date is valid
     if (isNaN(date.getTime())) {
-      console.error('Invalid date:', tournament.start_date)
       return new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
     }
-
-    console.log(
-      'Successfully parsed tournament start date (NO TIMEZONE CONVERSION):',
-      {
-        original: tournament.start_date,
-        parsed: date.toISOString(),
-        local: date.toString(),
-        timestamp: date.getTime(),
-        timezoneOffset: date.getTimezoneOffset(),
-      }
-    )
 
     return date
   } catch (error) {
