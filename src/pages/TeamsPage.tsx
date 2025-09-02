@@ -482,26 +482,33 @@ export function TeamsPage() {
                           </div>
                         ) : teamMembers[team.id] ? (
                           <div className="space-y-2">
-                            {teamMembers[team.id].map((member) => (
-                              <div
-                                key={member.id}
-                                className="flex items-center justify-between p-2 rounded-lg bg-[var(--brand-bg)]/5 border border-[var(--card-border)]/50 hover:bg-[var(--brand-bg)]/10 transition-colors duration-200"
-                              >
-                                <div className="flex items-center space-x-2">
+                            {teamMembers[team.id]
+                              .sort((a, b) => {
+                                // Captain first, then others
+                                if (a.is_captain && !b.is_captain) return -1
+                                if (!a.is_captain && b.is_captain) return 1
+                                return 0
+                              })
+                              .map((member) => (
+                                <div
+                                  key={member.id}
+                                  className="flex items-center justify-between p-2 rounded-lg bg-[var(--brand-bg)]/5 border border-[var(--card-border)]/50 hover:bg-[var(--brand-bg)]/10 transition-colors duration-200"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    {member.is_captain && (
+                                      <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
+                                    )}
+                                    <span className="text-sm text-[var(--text-primary)] font-medium">
+                                      {getMemberDisplayName(member)}
+                                    </span>
+                                  </div>
                                   {member.is_captain && (
-                                    <Crown className="h-3 w-3 text-[var(--color-secondary)]" />
+                                    <Badge className="bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] text-xs">
+                                      Captain
+                                    </Badge>
                                   )}
-                                  <span className="text-sm text-[var(--text-primary)] font-medium">
-                                    {getMemberDisplayName(member)}
-                                  </span>
                                 </div>
-                                {member.is_captain && (
-                                  <Badge className="bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] text-xs">
-                                    Captain
-                                  </Badge>
-                                )}
-                              </div>
-                            ))}
+                              ))}
                           </div>
                         ) : (
                           <div className="text-center py-4 text-[var(--text-secondary)] text-sm">
