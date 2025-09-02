@@ -272,7 +272,7 @@ export function HomePage() {
           mainMessage:
             "FOC's grand cricket clash is almost here – get ready for the ultimate showdown!",
           statusMessage:
-            'Infobash v4.0 is coming soon! Stay tuned for the biggest cricket event of the season.',
+            'Info Bash v4.0 is coming soon! Stay tuned for the biggest cricket event of the season.',
           color: 'blue',
           showCountdown: true,
         }
@@ -320,6 +320,125 @@ export function HomePage() {
   }
 
   const statusInfo = getStatusInfo(activeTournament)
+
+  // Get section-specific information for upcoming matches section
+  const getMatchesSectionInfo = (tournament: Tournament | null) => {
+    const defaultConfig = {
+      title: 'Upcoming Matches',
+      description: "Don't miss these exciting upcoming cricket matches",
+      actionButtonText: 'View All Matches',
+      actionButtonLink: ROUTES.MATCHES,
+      badgeText: '',
+      badgeColor: '',
+      showRefresh: true,
+      icon: Clock,
+    }
+
+    if (!tournament) return defaultConfig
+
+    const configs = {
+      upcoming: {
+        ...defaultConfig,
+        badgeText: 'UPCOMING',
+        badgeColor: 'from-blue-500 to-indigo-600',
+      },
+      registration_open: {
+        ...defaultConfig,
+        description: 'Matches will be scheduled once registration closes',
+        actionButtonText: 'View Tournament Details',
+        actionButtonLink: ROUTES.TOURNAMENTS,
+        badgeText: 'REGISTRATION OPEN',
+        badgeColor: 'from-green-500 to-emerald-600',
+      },
+      registration_closed: {
+        ...defaultConfig,
+        description:
+          'Tournament is about to begin - matches will be scheduled soon!',
+        actionButtonText: 'View Tournament Details',
+        actionButtonLink: ROUTES.TOURNAMENTS,
+        badgeText: 'STARTING SOON',
+        badgeColor: 'from-orange-500 to-amber-600',
+      },
+      ongoing: {
+        title: 'Live Matches',
+        description: 'Follow the live action and real-time scores',
+        actionButtonText: 'View Live Matches',
+        actionButtonLink: ROUTES.MATCHES,
+        badgeText: 'LIVE NOW',
+        badgeColor: 'from-red-500 to-pink-600',
+        showRefresh: true,
+        icon: Play,
+      },
+      completed: {
+        title: 'Tournament Results',
+        description: 'Check out the final results and standings',
+        actionButtonText: 'View Results',
+        actionButtonLink: ROUTES.TOURNAMENT_RESULTS,
+        badgeText: 'COMPLETED',
+        badgeColor: 'from-purple-500 to-violet-600',
+        showRefresh: false,
+        icon: Trophy,
+      },
+    }
+
+    return configs[tournament.status] || defaultConfig
+  }
+
+  const matchesSectionInfo = getMatchesSectionInfo(activeTournament)
+
+  // Get empty state content based on tournament status
+  const getEmptyStateContent = (tournament: Tournament | null) => {
+    if (!tournament) {
+      return {
+        title: 'No Active Tournament',
+        description:
+          'There are no active tournaments at the moment. Check back later!',
+        buttonText: 'View All Tournaments',
+        buttonLink: ROUTES.TOURNAMENTS,
+      }
+    }
+
+    const emptyStates = {
+      upcoming: {
+        title: 'No Matches Scheduled Yet',
+        description:
+          'Matches will be scheduled once the tournament begins. Stay tuned for updates!',
+        buttonText: 'View Tournament Details',
+        buttonLink: ROUTES.TOURNAMENTS,
+      },
+      registration_open: {
+        title: 'Registration in Progress',
+        description:
+          'Matches will be scheduled once registration closes and teams are finalized.',
+        buttonText: 'View Tournament Details',
+        buttonLink: ROUTES.TOURNAMENTS,
+      },
+      registration_closed: {
+        title: 'Tournament Starting Soon',
+        description:
+          'All teams are registered! Matches will be scheduled and announced shortly.',
+        buttonText: 'View Tournament Details',
+        buttonLink: ROUTES.TOURNAMENTS,
+      },
+      ongoing: {
+        title: 'Tournament is Live!',
+        description: 'Check the matches page to see live scores and results!',
+        buttonText: 'View All Matches',
+        buttonLink: ROUTES.MATCHES,
+      },
+      completed: {
+        title: 'Tournament Completed',
+        description:
+          'All matches have been played. Check the results page for final standings!',
+        buttonText: 'View Results',
+        buttonLink: ROUTES.TOURNAMENT_RESULTS,
+      },
+    }
+
+    return emptyStates[tournament.status] || emptyStates.upcoming
+  }
+
+  const emptyStateContent = getEmptyStateContent(activeTournament)
 
   useEffect(() => {
     let autoScrollTimeout: NodeJS.Timeout
@@ -478,7 +597,7 @@ export function HomePage() {
           <div className="w-full">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-3xl md:text-5xl font-bold mb-2 text-white drop-shadow-lg">
-                InfoBash v4.0
+                Info Bash v4.0
               </h1>
               <div className="mx-auto mb-6 h-1 w-32 bg-gradient-gold opacity-90 rounded-full shadow-lg" />
               <p className="text-md md:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-md font-medium">
@@ -506,7 +625,7 @@ export function HomePage() {
                         Error Loading Tournament
                       </div>
                       <h2 className="text-2xl md:text-4xl font-bold text-red-400 mb-3 md:mb-4">
-                        Something went wrong! 😔
+                        Something went wrong!
                       </h2>
                       <p className="text-lg md:text-xl text-red-300 mb-4">
                         {tournamentError}
@@ -596,37 +715,37 @@ export function HomePage() {
                         )}
                         {activeTournament.status === 'registration_open' && (
                           <span className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-full border border-green-400/30">
-                            📝 REGISTRATION OPEN
+                            REGISTRATION OPEN
                           </span>
                         )}
                         {activeTournament.status === 'registration_closed' && (
                           <span className="bg-gradient-to-r from-orange-500 to-amber-600 px-4 py-2 rounded-full border border-orange-400/30">
-                            ⏰ REGISTRATION CLOSED
+                            REGISTRATION CLOSED
                           </span>
                         )}
                         {activeTournament.status === 'ongoing' && (
                           <span className="bg-gradient-to-r from-red-500 to-pink-600 px-4 py-2 rounded-full border border-red-400/30 animate-pulse">
-                            🔥 LIVE NOW
+                            LIVE NOW
                           </span>
                         )}
                         {activeTournament.status === 'completed' && (
                           <span className="bg-gradient-to-r from-purple-500 to-violet-600 px-4 py-2 rounded-full border border-purple-400/30">
-                            🏆 COMPLETED
+                            COMPLETED
                           </span>
                         )}
                       </div>
                       <p
                         className={`text-lg md:text-xl max-w-2xl mx-auto font-medium ${
                           activeTournament.status === 'upcoming'
-                            ? 'text-blue-300'
+                            ? 'text-white'
                             : activeTournament.status === 'registration_open'
-                            ? 'text-green-300'
+                            ? 'text-white'
                             : activeTournament.status === 'registration_closed'
-                            ? 'text-orange-300'
+                            ? 'text-white'
                             : activeTournament.status === 'ongoing'
-                            ? 'text-red-300'
+                            ? 'text-white'
                             : activeTournament.status === 'completed'
-                            ? 'text-purple-300'
+                            ? 'text-white'
                             : 'text-[var(--text-secondary)]'
                         }`}
                       >
@@ -1049,12 +1168,12 @@ export function HomePage() {
         <div className="container py-2 md:py-24 flex items-center min-h-full">
           <div className="w-full">
             <div className="text-center mb-4 md:mb-16">
-              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-[var(--text-primary)] mb-2">
                 Tournament Statistics
               </h2>
               <div className="mx-auto mb-4 h-1 w-24 bg-gradient-gold rounded-full" />
               <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-                Real-time statistics from our active cricket tournaments
+                Real-time statistics from the active cricket tournaments
               </p>
             </div>
 
@@ -1099,7 +1218,7 @@ export function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8 px-2 md:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 px-2 md:px-0">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon
                 return (
@@ -1143,22 +1262,46 @@ export function HomePage() {
             <div className="text-center mb-4 md:mb-8">
               <div className="flex items-center justify-center gap-4 mb-2 md:mb-4">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[var(--text-primary)]">
-                  Upcoming Matches
+                  {matchesSectionInfo.title}
                 </h2>
-                <Button
-                  onClick={fetchUpcomingMatches}
-                  disabled={matchesLoading}
-                  variant="outline"
-                  size="sm"
-                  className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] transition-all duration-200"
-                >
-                  <Clock className="w-4 h-4 mr-2" />
-                  {matchesLoading ? 'Refreshing...' : 'Refresh'}
-                </Button>
+                {matchesSectionInfo.showRefresh && (
+                  <Button
+                    onClick={fetchUpcomingMatches}
+                    disabled={matchesLoading}
+                    variant="outline"
+                    size="sm"
+                    className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)] transition-all duration-200"
+                  >
+                    <matchesSectionInfo.icon className="w-4 h-4 mr-2" />
+                    {matchesLoading ? 'Refreshing...' : 'Refresh'}
+                  </Button>
+                )}
               </div>
+
               <div className="mx-auto mb-4 md:mb-6 h-1 w-16 md:w-24 bg-gradient-gold rounded-full" />
+
+              {/* Dynamic Badge */}
+              {matchesSectionInfo.badgeText && (
+                <div className="flex items-center justify-center mb-3 md:mb-4">
+                  <span
+                    className={`inline-flex items-center gap-2 bg-gradient-to-r ${
+                      matchesSectionInfo.badgeColor
+                    } text-white px-4 py-2 rounded-full text-sm md:text-base font-semibold shadow-lg ${
+                      activeTournament?.status === 'ongoing'
+                        ? 'animate-pulse'
+                        : ''
+                    }`}
+                  >
+                    {activeTournament?.status === 'ongoing' && (
+                      <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+                    )}
+                    {matchesSectionInfo.badgeText}
+                  </span>
+                </div>
+              )}
+
               <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto px-4">
-                Don't miss these exciting upcoming cricket matches
+                {matchesSectionInfo.description}
               </p>
             </div>
 
@@ -1204,9 +1347,15 @@ export function HomePage() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2"
+                            className={`text-xs md:text-sm px-1 md:px-3 py-0.5 md:py-2 ${
+                              activeTournament?.status === 'ongoing'
+                                ? 'border-red-500 text-red-500 animate-pulse'
+                                : 'border-[var(--color-accent-1)] text-[var(--color-accent-1)]'
+                            }`}
                           >
-                            Live Soon
+                            {activeTournament?.status === 'ongoing'
+                              ? 'Live Now'
+                              : 'Live Soon'}
                           </Badge>
                         </div>
                       </CardHeader>
@@ -1223,10 +1372,10 @@ export function HomePage() {
                           </div>
                         </div>
                         <div className="text-xs md:text-sm text-[var(--text-secondary)] text-center">
-                          📍 {match.venue}
+                          {match.venue}
                         </div>
                         <div className="text-xs text-[var(--text-secondary)] text-center mt-2">
-                          🏆 {match.tournament_name}
+                          {match.tournament_name}
                         </div>
                       </CardContent>
                     </Card>
@@ -1234,68 +1383,16 @@ export function HomePage() {
                 })}
               </div>
             ) : (
-              // No upcoming matches - show appropriate message based on tournament phase
+              // No matches - show appropriate message based on tournament phase
               <div className="max-w-2xl mx-auto px-4 md:px-0">
                 <Card className="bg-card-bg border-card-border text-center">
                   <CardContent className="p-6 md:p-8">
-                    {activeTournament?.status === 'upcoming' ? (
-                      <>
-                        <div className="text-4xl mb-4">🏏</div>
-                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
-                          No Matches Scheduled Yet
-                        </h3>
-                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
-                          Matches will be scheduled once the tournament begins.
-                          Stay tuned for updates!
-                        </p>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
-                        >
-                          <Link to={ROUTES.TOURNAMENTS}>
-                            View Tournament Details
-                          </Link>
-                        </Button>
-                      </>
-                    ) : activeTournament?.status === 'ongoing' ? (
-                      <>
-                        <div className="text-4xl mb-4">🎯</div>
-                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
-                          Tournament is Live!
-                        </h3>
-                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
-                          Check the matches page to see live scores and results!
-                        </p>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
-                        >
-                          <Link to={ROUTES.MATCHES}>View All Matches</Link>
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-4xl mb-4">🏆</div>
-                        <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
-                          Tournament Completed
-                        </h3>
-                        <p className="text-sm md:text-base text-[var(--text-secondary)] mb-4">
-                          All matches have been played. Check the results page
-                          for final standings!
-                        </p>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="border-[var(--color-accent-1)] text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1)] hover:text-[var(--brand-bg)]"
-                        >
-                          <Link to={ROUTES.TOURNAMENT_RESULTS}>
-                            View Results
-                          </Link>
-                        </Button>
-                      </>
-                    )}
+                    <h3 className="text-lg md:text-xl font-semibold text-[var(--text-primary)] mb-2">
+                      {emptyStateContent.title}
+                    </h3>
+                    <p className="text-sm md:text-base text-[var(--text-secondary)]">
+                      {emptyStateContent.description}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -1307,8 +1404,8 @@ export function HomePage() {
                 size="lg"
                 className="bg-[var(--color-secondary)] hover:bg-[var(--color-accent-1)] text-[var(--brand-bg)] hover:text-[var(--brand-bg)] font-semibold px-6 md:px-8 py-2 md:py-3 text-sm md:text-base transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
-                <Link to={ROUTES.MATCHES}>
-                  View All Matches
+                <Link to={matchesSectionInfo.actionButtonLink}>
+                  {matchesSectionInfo.actionButtonText}
                   <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>

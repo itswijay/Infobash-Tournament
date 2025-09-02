@@ -1,6 +1,6 @@
 // Application constants
 
-export const APP_NAME = 'InfoBash'
+export const APP_NAME = 'Info Bash'
 export const APP_DESCRIPTION =
   'Professional cricket tournament management system'
 

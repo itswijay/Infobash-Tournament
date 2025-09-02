@@ -233,10 +233,16 @@ export async function getUpcomingMatches(limit: number = 3): Promise<
         *,
         team1:team1_id(name),
         team2:team2_id(name),
-        tournament:tournament_id(name)
+        tournament:tournament_id(name, status)
       `
       )
       .eq('status', 'scheduled')
+      .in('tournament.status', [
+        'upcoming',
+        'registration_open',
+        'registration_closed',
+        'ongoing',
+      ])
       .order('scheduled_at', { ascending: true })
       .limit(limit)
 

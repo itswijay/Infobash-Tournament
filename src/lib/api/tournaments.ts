@@ -436,11 +436,16 @@ export interface TournamentStats {
 // Get tournament statistics
 export async function getTournamentStats(): Promise<TournamentStats> {
   try {
-    // Get active tournaments (upcoming, registration_open, ongoing)
+    // Get active tournaments (upcoming, registration_open, registration_closed, ongoing)
     const { data: activeTournaments, error: tournamentsError } = await supabase
       .from('tournaments')
       .select('id')
-      .in('status', ['upcoming', 'registration_open', 'ongoing'])
+      .in('status', [
+        'upcoming',
+        'registration_open',
+        'registration_closed',
+        'ongoing',
+      ])
 
     if (tournamentsError) {
       console.error('Error fetching active tournaments:', tournamentsError)
