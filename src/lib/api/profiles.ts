@@ -8,6 +8,7 @@ export interface UserProfile {
   last_name: string
   gender: 'male' | 'female'
   batch: string
+  index_number: string
   campus_card?: string
   is_completed: boolean
   avatar_url?: string
@@ -20,6 +21,7 @@ export interface CreateProfileData {
   last_name: string
   gender: 'male' | 'female'
   batch: string
+  index_number: string
   campus_card?: string
   avatar_url?: string
 }

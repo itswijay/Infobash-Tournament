@@ -30,6 +30,7 @@ interface ProfileFormData {
   lastName: string
   gender: string
   batch: string
+  indexNumber: string
   campusCard: string
 }
 
@@ -44,6 +45,7 @@ export const ProfileCompletionPage: React.FC = () => {
     lastName: '',
     gender: '',
     batch: '',
+    indexNumber: '',
     campusCard: '',
   })
   const [errors, setErrors] = useState<Partial<ProfileFormData>>({})
@@ -121,6 +123,10 @@ export const ProfileCompletionPage: React.FC = () => {
       newErrors.batch = 'Batch must be in format XX/XX (e.g., 23/24)'
     }
 
+    if (!formData.indexNumber.trim()) {
+      newErrors.indexNumber = 'Index number is required'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -148,6 +154,7 @@ export const ProfileCompletionPage: React.FC = () => {
         last_name: formData.lastName.trim(),
         gender: formData.gender as 'male' | 'female',
         batch: formData.batch.trim(),
+        index_number: formData.indexNumber.trim(),
         campus_card: formData.campusCard.trim() || undefined,
         avatar_url: avatarUrl,
       })
@@ -158,11 +165,23 @@ export const ProfileCompletionPage: React.FC = () => {
       navigate(ROUTES.HOME)
     } catch (error) {
       console.error('Error saving profile:', error)
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to save profile. Please try again.'
-      )
+
+      // Handle specific error cases
+      if (error instanceof Error) {
+        if (
+          error.message.includes(
+            'duplicate key value violates unique constraint "user_profiles_index_number_key"'
+          )
+        ) {
+          toast.error(
+            'Index number already exists'
+          )
+        } else {
+          toast.error(error.message)
+        }
+      } else {
+        toast.error('Failed to save profile. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -289,6 +308,30 @@ export const ProfileCompletionPage: React.FC = () => {
                 </Select>
                 {errors.gender && (
                   <p className="text-red-400 text-sm">{errors.gender}</p>
+                )}
+              </div>
+
+              {/* Index Number Field */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="indexNumber"
+                  className="text-white font-medium flex items-center gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  Index Number *
+                </Label>
+                <Input
+                  id="indexNumber"
+                  type="text"
+                  value={formData.indexNumber}
+                  onChange={(e) =>
+                    handleInputChange('indexNumber', e.target.value)
+                  }
+                  className="bg-[color:rgb(255_255_255/0.1)] border-[color:rgb(255_255_255/0.2)] text-white placeholder-[color:rgb(255_255_255/0.5)] focus:border-[var(--color-accent-1)] focus:ring-[var(--color-accent-1)]/50"
+                  placeholder="Enter your index number"
+                />
+                {errors.indexNumber && (
+                  <p className="text-red-400 text-sm">{errors.indexNumber}</p>
                 )}
               </div>
 

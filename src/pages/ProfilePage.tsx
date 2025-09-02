@@ -20,6 +20,7 @@ interface ProfileFormData {
   firstName: string
   lastName: string
   batch: string
+  indexNumber: string
   campusCard: string
 }
 
@@ -34,6 +35,7 @@ export function ProfilePage() {
     firstName: '',
     lastName: '',
     batch: '',
+    indexNumber: '',
     campusCard: '',
   })
   const [errors, setErrors] = useState<Partial<ProfileFormData>>({})
@@ -51,6 +53,7 @@ export function ProfilePage() {
             firstName: userProfile.first_name,
             lastName: userProfile.last_name,
             batch: userProfile.batch,
+            indexNumber: userProfile.index_number,
             campusCard: userProfile.campus_card || '',
           })
         }
@@ -101,6 +104,10 @@ export function ProfilePage() {
       newErrors.batch = 'Batch must be in format XX/XX (e.g., 23/24)'
     }
 
+    if (!formData.indexNumber.trim()) {
+      newErrors.indexNumber = 'Index number is required'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -125,6 +132,7 @@ export function ProfilePage() {
         first_name: formData.firstName.trim(),
         last_name: formData.lastName.trim(),
         batch: formData.batch.trim(),
+        index_number: formData.indexNumber.trim(),
         campus_card: formData.campusCard.trim() || undefined,
       })
 
@@ -137,9 +145,21 @@ export function ProfilePage() {
       }, 1500) // Small delay to show the success message
     } catch (error) {
       console.error('Error updating profile:', error)
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to update profile'
-      )
+
+      // Handle specific error cases
+      if (error instanceof Error) {
+        if (
+          error.message.includes(
+            'duplicate key value violates unique constraint "user_profiles_index_number_key"'
+          )
+        ) {
+          toast.error('Index number already exists')
+        } else {
+          toast.error(error.message)
+        }
+      } else {
+        toast.error('Failed to update profile')
+      }
     } finally {
       setIsUpdating(false)
     }
@@ -333,6 +353,29 @@ export function ProfilePage() {
                   <p className="text-xs text-[var(--text-secondary)]">
                     Email address cannot be changed
                   </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="indexNumber"
+                    className="text-[var(--text-primary)]"
+                  >
+                    Index Number
+                  </Label>
+                  <Input
+                    id="indexNumber"
+                    type="text"
+                    value={formData.indexNumber}
+                    onChange={(e) =>
+                      handleInputChange('indexNumber', e.target.value)
+                    }
+                    className="bg-[var(--brand-bg)] border-[var(--brand-border)] text-[var(--text-primary)]"
+                    placeholder="Enter your index number"
+                    required
+                  />
+                  {errors.indexNumber && (
+                    <p className="text-sm text-red-500">{errors.indexNumber}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
