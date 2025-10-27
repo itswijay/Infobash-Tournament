@@ -43,7 +43,7 @@ const navigation = [
     name: 'Tournaments',
     href: ROUTES.TOURNAMENTS,
     icon: Trophy,
-    badge: 'Active',
+    badge: 'Inactive',
   },
   {
     name: 'Teams',
